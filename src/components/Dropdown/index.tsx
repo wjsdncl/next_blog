@@ -70,8 +70,7 @@ const Dropdown: React.FC<DropdownProps> = ({ className = '', name, value, option
 							<div
 								className={optionClassName}
 								key={option.value}
-								onClick={() => onChange(name, option.value)}
-							>
+								onClick={() => onChange(name, option.value)}>
 								{option.label}
 							</div>
 						);

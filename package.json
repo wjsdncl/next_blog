@@ -6,17 +6,19 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+		"lint": "next eslint .",
 		"format": "prettier --write ."
 	},
 	"dependencies": {
 		"dotenv": "^16.4.5",
+		"lodash": "^4.17.21",
 		"next": "14.2.3",
 		"react": "^18",
 		"react-dom": "^18",
 		"sass": "^1.77.4"
 	},
 	"devDependencies": {
+		"@types/lodash": "^4.17.4",
 		"@types/node": "^20",
 		"@types/react": "^18",
 		"@types/react-dom": "^18",

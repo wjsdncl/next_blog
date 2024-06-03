@@ -41,9 +41,10 @@ const useDeviceSize = () => {
 	const [deviceSize, setDeviceSize] = useState('desktop');
 
 	useEffect(() => {
-		const handleResize = () => {
-			setDeviceSize(getDeviceSize());
-		};
+		const handleResize = () =>
+			throttle(() => {
+				setDeviceSize(getDeviceSize());
+			}, 200);
 
 		window.addEventListener('resize', handleResize);
 		handleResize(); // 초기 사이즈 설정
