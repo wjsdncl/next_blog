@@ -1,3 +1,4 @@
+import { table } from 'console';
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -21,7 +22,7 @@ const config: Config = {
 					DEFAULT: 'hsl(210, 40%, 95%)',
 				},
 				_black: {
-					DEFAULT: 'hsl(0, 0%, 7%)',
+					DEFAULT: '#212121',
 				},
 				primary: {
 					DEFAULT: 'hsl(270, 100%, 80%)',
@@ -36,6 +37,16 @@ const config: Config = {
 					800: 'hsl(270, 20%, 15%)',
 					900: 'hsl(270, 20%, 10%)',
 				},
+			},
+			width: {
+				mobile: '360px',
+				tablet: '760px',
+				desktop: '1200px',
+			},
+			screens: {
+				mobile: '375px',
+				tablet: '768px',
+				desktop: '1280px',
 			},
 		},
 	},

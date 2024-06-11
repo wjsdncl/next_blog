@@ -14,7 +14,7 @@ export function ThemeDropdown() {
 
 	return (
 		<Dropdown
-			className='w-32'
+			className='mobile:w-16 desktop:w-32 tablet:w-32 h-10'
 			name='theme'
 			value={theme}
 			options={[
