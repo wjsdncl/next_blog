@@ -5,8 +5,6 @@ import Image from 'next/image';
 
 import useDeviceSize from '@/hooks/useDeviceSize';
 
-import SortIcon from '@/../public/icons/ic_sort.svg';
-
 interface Option {
 	label: string;
 	value: string;
@@ -18,6 +16,7 @@ interface DropdownProps {
 	value: string | undefined;
 	options: Option[];
 	onChange: (name: string, value: string) => void;
+	image?: string;
 }
 
 /**
@@ -40,7 +39,14 @@ interface DropdownProps {
  * 	onChange={(name, value) => setOrder(value)}
  * />
  */
-const Dropdown: React.FC<DropdownProps> = ({ className = '', name, value, options, onChange }) => {
+const Dropdown: React.FC<DropdownProps> = ({
+	className = '',
+	name,
+	value,
+	options,
+	onChange,
+	image,
+}) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const inputRef = useRef<HTMLDivElement | null>(null);
 
@@ -70,6 +76,9 @@ const Dropdown: React.FC<DropdownProps> = ({ className = '', name, value, option
 
 	const selectedOption = options.find((option) => option.value === value);
 
+	const selectedIcon =
+		selectedOption?.value === 'system' ? '◑' : selectedOption?.value === 'light' ? '○' : '●';
+
 	return (
 		<div
 			className={`relative flex cursor-pointer items-center justify-between gap-2.5 rounded-lg border border-solid border-gray-700 p-2.5 text-left text-base font-normal leading-6 ${isOpen ? 'open' : ''} ${className}`}
@@ -77,9 +86,13 @@ const Dropdown: React.FC<DropdownProps> = ({ className = '', name, value, option
 			onBlur={handleBlur}
 			ref={inputRef}>
 			{isMobile ? (
-				<div className='relative h-7 w-7'>
-					<Image src={SortIcon} alt='정렬' fill />
-				</div>
+				image ? (
+					<div className='relative h-7 w-7'>
+						<Image src={image} alt='이미지' fill />
+					</div>
+				) : (
+					<span>{selectedIcon}</span>
+				)
 			) : (
 				<span>{selectedOption?.label}</span>
 			)}
@@ -88,12 +101,12 @@ const Dropdown: React.FC<DropdownProps> = ({ className = '', name, value, option
 				▲
 			</span>
 			{isOpen && (
-				<div className='absolute left-0 right-0 top-full z-10 mt-2.5 origin-top transform overflow-hidden rounded-lg border border-solid border-gray-200 transition-transform'>
+				<div className='mobile:w-28 absolute left-0 right-0 top-full z-10 mt-2.5 origin-top transform overflow-hidden rounded-lg border border-solid border-gray-700 bg-_white transition-transform dark:bg-_black'>
 					{options.map((option) => {
 						const selected = value === option.value;
 						return (
 							<div
-								className={`cursor-pointer border-b border-solid border-gray-200 p-2 text-base font-normal leading-6 ${selected ? 'bg-gray-300 dark:bg-gray-500' : ''} hover:bg-gray-200 dark:hover:bg-gray-600`}
+								className={`cursor-pointer border-b border-solid border-gray-700 p-2 text-base font-normal leading-6 ${selected ? 'bg-gray-300 dark:bg-gray-500' : ''} hover:bg-gray-200 dark:hover:bg-gray-600`}
 								key={option.value}
 								onClick={() => onChange(name, option.value)}>
 								{option.label}

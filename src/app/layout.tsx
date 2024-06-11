@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='ko' className={`${pretendard.variable} `} suppressHydrationWarning>
-			<body className='font-pretendard'>
+			<body className='bg-_white font-pretendard dark:bg-_black'>
 				<ThemeProvider>
 					<Header />
 					{children}
