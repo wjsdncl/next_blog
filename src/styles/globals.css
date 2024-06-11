@@ -1,0 +1,41 @@
+@import './_reset.css'; /* 초기화 CSS 파일 불러오기 */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	/* Colors */
+
+	--white: hsl(210, 40%, 95%);
+	--black: hsl(0, 0%, 7%);
+
+	/* Gray */
+	--gray: hsl(0, 0%, 50%);
+	--gray-100: hsl(0, 0%, 90%);
+	--gray-200: hsl(0, 0%, 80%);
+	--gray-300: hsl(0, 0%, 70%);
+	--gray-400: hsl(0, 0%, 60%);
+	--gray-500: hsl(0, 0%, 50%);
+	--gray-600: hsl(0, 0%, 40%);
+	--gray-700: hsl(0, 0%, 30%);
+	--gray-800: hsl(0, 0%, 20%);
+	--gray-900: hsl(0, 0%, 10%);
+
+	/* Error */
+	--error: hsl(349, 52%, 61%);
+
+	/* Primary */
+
+	/* Purple */
+	--purple-50: hsl(269, 92%, 95%);
+	--purple-100: hsl(269, 91%, 88%);
+	--purple-200: hsl(272, 100%, 85%);
+	--purple-300: hsl(270, 100%, 80%);
+	--purple-400: hsl(267, 95%, 76%);
+	--purple-500: hsl(270, 20%, 30%);
+	--purple-600: hsl(270, 20%, 25%);
+	--purple-700: hsl(270, 20%, 20%);
+	--purple-800: hsl(270, 20%, 15%);
+	--purple-900: hsl(270, 20%, 10%);
+}
