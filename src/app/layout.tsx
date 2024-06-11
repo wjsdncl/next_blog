@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import '@/styles/globals.scss';
+import '@/styles/globals.css';
 
 import localFont from 'next/font/local';
 import Header from '@/containers/Navigation/Header';
 import Footer from '@/containers/Navigation/Footer';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 const pretendard = localFont({
 	src: '../../public/fonts/PretendardVariable.woff2',
@@ -23,11 +24,13 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang='ko' className={`${pretendard.variable}`}>
+		<html lang='ko' className={`${pretendard.variable} `} suppressHydrationWarning>
 			<body className='font-pretendard'>
-				<Header />
-				{children}
-				<Footer />
+				<ThemeProvider>
+					<Header />
+					{children}
+					<Footer />
+				</ThemeProvider>
 			</body>
 		</html>
 	);
