@@ -1,10 +1,6 @@
-'use client';
-
-import Image from 'next/image';
 import Link from 'next/link';
 
 import '@/styles/globals.css';
-import LogoIcon from '@/../public/icons/ic_logo.svg';
 
 import { ThemeDropdown } from '@/components/ThemeDropdown';
 
