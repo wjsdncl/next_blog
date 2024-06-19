@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import '@/styles/globals.css';
 
+import { Analytics } from '@vercel/analytics/react';
 import localFont from 'next/font/local';
 import Header from '@/containers/Navigation/Header';
 import Footer from '@/containers/Navigation/Footer';
@@ -31,6 +32,7 @@ export default function RootLayout({
 					{children}
 					<Footer />
 				</ThemeProvider>
+				<Analytics />
 			</body>
 		</html>
 	);
