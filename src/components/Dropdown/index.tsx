@@ -101,7 +101,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 				▲
 			</span>
 			{isOpen && (
-				<div className='mobile:w-28 absolute left-0 right-0 top-full z-10 mt-2.5 origin-top transform overflow-hidden rounded-lg border border-solid border-gray-700 bg-_white transition-transform dark:bg-_black'>
+				<div className='absolute left-0 right-0 top-full z-10 mt-2.5 origin-top transform overflow-hidden rounded-lg border border-solid border-gray-700 bg-_white transition-transform dark:bg-_black mobile:w-28'>
 					{options.map((option) => {
 						const selected = value === option.value;
 						return (
