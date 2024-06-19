@@ -12,7 +12,7 @@ const Header = () => {
 	return (
 		<>
 			<header className='bg-_white dark:bg-_black'>
-				<div className='desktop:w-desktop tablet:w-tablet mobile:w-mobile z-40 mx-auto gap-6 border-b-2 border-solid border-b-gray-600 bg-_white pb-6 pt-16 dark:border-b-gray-300 dark:bg-_black'>
+				<div className='z-40 mx-auto gap-6 border-b-2 border-solid border-b-gray-600 bg-_white pb-6 pt-16 dark:border-b-gray-300 dark:bg-_black mobile:w-mobile tablet:w-tablet desktop:w-desktop'>
 					<div className='flex flex-col gap-10 px-8'>
 						<div className='flex flex-row items-center justify-between'>
 							<Link href='/' className='z-50'>
