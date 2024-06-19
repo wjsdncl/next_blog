@@ -1,4 +1,5 @@
 import { table } from 'console';
+import _ from 'lodash';
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -23,6 +24,18 @@ const config: Config = {
 				},
 				_black: {
 					DEFAULT: '#212121',
+				},
+				_gray: {
+					DEFAULT: 'hsl(0, 0%, 50%)',
+					100: 'hsl(0, 0%, 90%)',
+					200: 'hsl(0, 0%, 80%)',
+					300: 'hsl(0, 0%, 70%)',
+					400: 'hsl(0, 0%, 60%)',
+					500: 'hsl(0, 0%, 50%)',
+					600: 'hsl(0, 0%, 40%)',
+					700: 'hsl(0, 0%, 30%)',
+					800: 'hsl(0, 0%, 20%)',
+					900: 'hsl(0, 0%, 10%)',
 				},
 				primary: {
 					DEFAULT: 'hsl(270, 100%, 80%)',
