@@ -1,5 +1,4 @@
 import { table } from 'console';
-import _ from 'lodash';
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -63,7 +62,6 @@ const config: Config = {
 			},
 		},
 	},
-	plugins: [require('@tailwindcss/typography')],
 	darkMode: 'class',
 };
 export default config;
