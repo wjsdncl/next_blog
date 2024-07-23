@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import Dropdown from '../Dropdown';
 import { useTheme } from 'next-themes';
