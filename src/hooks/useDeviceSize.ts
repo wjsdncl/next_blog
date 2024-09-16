@@ -1,5 +1,6 @@
-import { throttle } from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+
+import { throttle } from "@/utils/DelayManager";
 
 /**
  * 디바이스 사이즈를 반환하는 함수
@@ -13,17 +14,17 @@ import { useEffect, useState } from 'react';
  * @returns {('mobile' | 'tablet' | 'desktop')}
  */
 const getDeviceSize = () => {
-	if (typeof window !== 'undefined') {
-		const screenWidth = window.innerWidth;
-		if (screenWidth < 768) {
-			return 'mobile';
-		} else if (screenWidth <= 1200) {
-			return 'tablet';
-		} else {
-			return 'desktop';
-		}
-	}
-	return 'desktop'; // 기본 값
+  if (typeof window !== "undefined") {
+    const screenWidth = window.innerWidth;
+    if (screenWidth < 768) {
+      return "mobile";
+    } else if (screenWidth <= 1200) {
+      return "tablet";
+    } else {
+      return "desktop";
+    }
+  }
+  return "desktop"; // 기본 값
 };
 
 /**
@@ -38,19 +39,19 @@ const getDeviceSize = () => {
  * console.log(deviceSize); // 'mobile' | 'tablet' | 'desktop'
  */
 const useDeviceSize = () => {
-	const [deviceSize, setDeviceSize] = useState('desktop');
-	useEffect(() => {
-		const handleResize = throttle(() => setDeviceSize(getDeviceSize()), 200);
+  const [deviceSize, setDeviceSize] = useState("desktop");
+  useEffect(() => {
+    const handleResize = throttle(() => setDeviceSize(getDeviceSize()), 200);
 
-		window.addEventListener('resize', handleResize);
-		handleResize(); // 초기 사이즈 설정
+    window.addEventListener("resize", handleResize);
+    handleResize(); // 초기 사이즈 설정
 
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
-	}, []);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
-	return deviceSize;
+  return deviceSize;
 };
 
 export default useDeviceSize;
