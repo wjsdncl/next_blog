@@ -1,8 +1,9 @@
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
-import "@/styles/globals.css";
-import localFont from "next/font/local";
 
+import "@/styles/globals.css";
+
+import localFont from "next/font/local";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { ThemeProvider } from "@/components/ThemeProvider";
