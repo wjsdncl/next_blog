@@ -32,7 +32,7 @@
   "globals": {
     "_": true,
   },
-  "plugins": ["import", "html", "react", "@typescript-eslint", "tailwindcss", "prettier"],
+  "plugins": ["import", "react", "@typescript-eslint", "tailwindcss", "prettier"],
   "rules": {
     "import/no-unresolved": 0,
     "no-console": "warn",

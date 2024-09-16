@@ -7,7 +7,7 @@
  * @param {number} delay - 지연 시간(ms)
  * @returns {(...args: Parameters<T>) => void} - 디바운스된 함수
  */
-const debounce = <T extends (...args: any[]) => any>(fn: T, delay: number) => {
+const debounce = <T extends (...args: unknown[]) => unknown>(fn: T, delay: number) => {
   let timeout: ReturnType<typeof setTimeout>;
 
   return (...args: Parameters<T>): void => {
@@ -27,7 +27,7 @@ const debounce = <T extends (...args: any[]) => any>(fn: T, delay: number) => {
  * @param {number} limit - 제한 시간(ms)
  * @returns {(...args: Parameters<T>) => void} - 쓰로틀링된 함수
  */
-const throttle = <T extends (...args: any[]) => any>(fn: T, limit: number) => {
+const throttle = <T extends (...args: unknown[]) => unknown>(fn: T, limit: number) => {
   let lastRan: number | null = null;
   let timeout: ReturnType<typeof setTimeout> | null = null;
 
