@@ -31,10 +31,6 @@ const formatDate = (dateString: string) => {
   }); // YYYY년 MM월 DD일 형식으로 변환
 };
 
-const formattedTitle = (title: string) => {
-  return title.replace(/\s+/g, "-").toLowerCase();
-};
-
 export default function Page() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ["posts"],
@@ -92,11 +88,7 @@ export default function Page() {
         {data?.pages.map((page, pageIndex) =>
           page.data.map((blog: BlogType) => (
             <article key={`${pageIndex}-${blog.id}`} className="flex flex-col gap-4 text-text-primary">
-              <Link
-                href={`/blog/${blog.id}`}
-                as={`/blog/${formattedTitle(blog.title)}`}
-                className="flex flex-col gap-4"
-              >
+              <Link href={`/blog/${blog.title.replace(/\s+/g, "-")}`} className="flex flex-col gap-4">
                 {blog.coverImage && (
                   <div className="relative flex h-96 w-full items-center justify-center">
                     <Image src={blog.coverImage} alt={"coverImage"} className="object-cover" fill sizes="300" />
@@ -111,9 +103,9 @@ export default function Page() {
 
               <div className="flex flex-wrap gap-3">
                 {blog.tags.map((tag) => (
-                  <button key={tag} type="button" className="rounded-md bg-gray-200 px-3 py-2 font-medium">
+                  <Link key={tag} href={`/blog?tag=${tag}`} className="rounded-md bg-gray-200 px-3 py-2 font-medium">
                     {tag}
-                  </button>
+                  </Link>
                 ))}
               </div>
 
