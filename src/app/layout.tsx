@@ -26,9 +26,7 @@ export default function RootLayout({ children }: Readonly<React.PropsWithChildre
       <body className="size-full min-h-dvh bg-background-primary font-pretendard text-text-primary">
         <ThemeProvider>
           <Header />
-          <main className="mx-auto min-h-[calc(100dvh-276px)] w-mobile tablet:w-tablet desktop:w-desktop">
-            {children}
-          </main>
+          <main className="min-h-[calc(100dvh-276px)] w-full">{children}</main>
           <Footer />
           <Analytics />
         </ThemeProvider>

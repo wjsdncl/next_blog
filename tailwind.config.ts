@@ -34,14 +34,12 @@ export default {
         pretendard: ["var(--font-pretendard)"],
       },
       width: {
-        mobile: "360px",
-        tablet: "760px",
+        tablet: "768px",
         desktop: "1200px",
       },
       screens: {
-        mobile: "375px",
         tablet: "768px",
-        desktop: "1280px",
+        desktop: "1200px",
       },
     },
   },

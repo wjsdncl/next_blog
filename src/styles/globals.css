@@ -6,37 +6,31 @@
   --color-white: hsl(210, 40%, 95%);
   --color-black: #212121;
 
-  --color-gray: {
-    100: "hsl(0, 0%, 90%)",
-    200: "hsl(0, 0%, 80%)",
-    300: "hsl(0, 0%, 70%)",
-    400: "hsl(0, 0%, 60%)",
-    500: "hsl(0, 0%, 50%)",
-    600: "hsl(0, 0%, 40%)",
-    700: "hsl(0, 0%, 30%)",
-    800: "hsl(0, 0%, 20%)",
-    900: "hsl(0, 0%, 10%)",
-  };
+  --color-gray-100: hsl(0, 0%, 90%);
+  --color-gray-200: hsl(0, 0%, 80%);
+  --color-gray-300: hsl(0, 0%, 70%);
+  --color-gray-400: hsl(0, 0%, 60%);
+  --color-gray-500: hsl(0, 0%, 50%);
+  --color-gray-600: hsl(0, 0%, 40%);
+  --color-gray-700: hsl(0, 0%, 30%);
+  --color-gray-800: hsl(0, 0%, 20%);
+  --color-gray-900: hsl(0, 0%, 10%);
 
   --text-primary: #000;
-
   --background-primary: var(--color-white);
 }
 
 .dark {
-  --color-gray: {
-    900: "hsl(0, 0%, 90%)",
-    800: "hsl(0, 0%, 80%)",
-    700: "hsl(0, 0%, 70%)",
-    600: "hsl(0, 0%, 60%)",
-    500: "hsl(0, 0%, 50%)",
-    400: "hsl(0, 0%, 40%)",
-    300: "hsl(0, 0%, 30%)",
-    200: "hsl(0, 0%, 20%)",
-    100: "hsl(0, 0%, 10%)",
-  };
+  --color-gray-900: hsl(0, 0%, 90%);
+  --color-gray-800: hsl(0, 0%, 80%);
+  --color-gray-700: hsl(0, 0%, 70%);
+  --color-gray-600: hsl(0, 0%, 60%);
+  --color-gray-500: hsl(0, 0%, 50%);
+  --color-gray-400: hsl(0, 0%, 40%);
+  --color-gray-300: hsl(0, 0%, 30%);
+  --color-gray-200: hsl(0, 0%, 20%);
+  --color-gray-100: hsl(0, 0%, 10%);
 
   --text-primary: #fff;
-
   --background-primary: var(--color-black);
 }

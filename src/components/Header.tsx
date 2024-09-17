@@ -6,15 +6,15 @@ import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
   return (
-    <header className="h-[220px]">
-      <div className="z-10 mx-auto gap-6 border-b-2 border-solid border-b-gray-600 pb-6 pt-16 mobile:w-mobile tablet:w-tablet desktop:w-desktop">
-        <div className="flex flex-col gap-10 px-8">
-          <section className="flex flex-row items-center justify-between">
+    <header className="min-h-[220px]">
+      <div className="z-10 mx-auto w-full gap-6 border-b-2 border-solid border-b-gray-600 pb-6 pt-16 tablet:w-tablet desktop:w-desktop">
+        <div className="flex flex-col gap-10 px-4">
+          <section className="flex items-center justify-between">
             <Link href="/" className="z-20">
               <span className="text-6xl">wjsdncl Blog</span>
             </Link>
 
-            <div className="flex flex-row gap-4">
+            <div className="flex gap-4">
               <ThemeToggle />
               {/* <button className='w-20 rounded-lg border-2 border-gray-600 px-4 dark:border-gray-400'>
 									로그인
