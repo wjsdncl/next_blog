@@ -1,0 +1,105 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "coverImage": "/images/image.png",
+      "category": "Technology",
+      "title": "Next.js와 TypeScript의 장점",
+      "content": "Next.js와 TypeScript를 사용하여 프로젝트를 효율적으로 관리하는 방법에 대해 설명합니다.",
+      "tags": ["Next.js", "TypeScript", "JavaScript"],
+      "createdAt": "2024-09-01T12:00:00Z",
+      "comments": 5,
+      "likes": 20
+    },
+    {
+      "id": 2,
+      "category": "Lifestyle",
+      "title": "건강한 라이프스타일을 유지하는 방법",
+      "content": "건강한 식단과 운동 루틴으로 건강한 라이프스타일을 유지하는 방법을 소개합니다.",
+      "tags": ["Health", "Lifestyle"],
+      "createdAt": "2024-09-02T14:30:00Z",
+      "comments": 2,
+      "likes": 15
+    },
+    {
+      "id": 3,
+      "category": "Health",
+      "title": "일상에서 쉽게 실천할 수 있는 건강 습관",
+      "content": "간단한 건강 습관을 통해 건강을 개선하는 방법에 대해 알아봅니다.",
+      "tags": ["Health", "Wellness"],
+      "createdAt": "2024-09-03T09:45:00Z",
+      "comments": 1,
+      "likes": 10
+    },
+    {
+      "id": 4,
+      "category": "Education",
+      "title": "효과적인 학습 방법",
+      "content": "효율적으로 학습하는 방법과 전략을 공유합니다.",
+      "tags": ["Education", "Learning"],
+      "createdAt": "2024-09-04T11:15:00Z",
+      "comments": 3,
+      "likes": 12
+    },
+    {
+      "id": 5,
+      "category": "Travel",
+      "title": "여행을 계획할 때 알아두면 좋은 팁",
+      "content": "여행을 더욱 즐겁고 효율적으로 계획할 수 있는 팁을 제공합니다.",
+      "tags": ["Travel", "Tips"],
+      "createdAt": "2024-09-05T10:00:00Z",
+      "comments": 4,
+      "likes": 18
+    },
+    {
+      "id": 6,
+      "category": "Technology",
+      "title": "웹 개발 트렌드 2024",
+      "content": "2024년에 주목해야 할 최신 웹 개발 트렌드에 대해 알아봅니다.",
+      "tags": ["Web Development", "Trends"],
+      "createdAt": "2024-09-06T16:20:00Z",
+      "comments": 6,
+      "likes": 25
+    },
+    {
+      "id": 7,
+      "category": "Lifestyle",
+      "title": "자기 계발을 위한 최고의 방법들",
+      "content": "자기 계발을 위해 실천할 수 있는 다양한 방법을 소개합니다.",
+      "tags": ["Self Improvement", "Lifestyle"],
+      "createdAt": "2024-09-07T13:50:00Z",
+      "comments": 3,
+      "likes": 17
+    },
+    {
+      "id": 8,
+      "category": "Health",
+      "title": "스트레스를 줄이는 간단한 명상 기법",
+      "content": "일상에서 쉽게 할 수 있는 명상 기법으로 스트레스를 줄이는 방법을 배워봅니다.",
+      "tags": ["Meditation", "Health"],
+      "createdAt": "2024-09-08T08:30:00Z",
+      "comments": 2,
+      "likes": 13
+    },
+    {
+      "id": 9,
+      "category": "Technology",
+      "title": "프론트엔드 개발에서 중요한 10가지 도구",
+      "content": "프론트엔드 개발자들이 반드시 알아야 할 도구 10가지를 소개합니다.",
+      "tags": ["Frontend", "Tools"],
+      "createdAt": "2024-09-09T15:00:00Z",
+      "comments": 7,
+      "likes": 30
+    },
+    {
+      "id": 10,
+      "category": "Travel",
+      "title": "숨겨진 여행지 소개",
+      "content": "잘 알려지지 않은 숨겨진 여행지를 소개합니다.",
+      "tags": ["Travel", "Hidden Gems"],
+      "createdAt": "2024-09-10T17:45:00Z",
+      "comments": 5,
+      "likes": 22
+    }
+  ]
+}

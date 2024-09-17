@@ -26,6 +26,7 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:@next/next/recommended",
     "plugin:tailwindcss/recommended",
+    "plugin:@tanstack/eslint-plugin-query/recommended",
   ],
   "globals": {
     "_": true,

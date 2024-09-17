@@ -6,6 +6,7 @@ import "@/styles/globals.css";
 import localFont from "next/font/local";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import QueryProvider from "@/components/QueryProvider";
 import ThemeProvider from "@/components/ThemeProvider";
 
 const pretendard = localFont({
@@ -25,10 +26,12 @@ export default function RootLayout({ children }: Readonly<React.PropsWithChildre
     <html lang="ko" className={pretendard.variable}>
       <body className="size-full min-h-dvh bg-background-primary font-pretendard text-text-primary">
         <ThemeProvider>
-          <Header />
-          <main className="min-h-[calc(100dvh-276px)] w-full">{children}</main>
-          <Footer />
-          <Analytics />
+          <QueryProvider>
+            <Header />
+            <main className="min-h-[calc(100dvh-276px)] w-full">{children}</main>
+            <Footer />
+            <Analytics />
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>
