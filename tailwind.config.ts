@@ -8,31 +8,30 @@ export default {
   ],
   theme: {
     colors: {
+      white: "var(--color-white)",
+      black: "var(--color-black)",
+      gray: {
+        100: "var(--color-gray-100)",
+        200: "var(--color-gray-200)",
+        300: "var(--color-gray-300)",
+        400: "var(--color-gray-400)",
+        500: "var(--color-gray-500)",
+        600: "var(--color-gray-600)",
+        700: "var(--color-gray-700)",
+        800: "var(--color-gray-800)",
+        900: "var(--color-gray-900)",
+      },
+      background: {
+        primary: "var(--background-primary)",
+      },
+      text: {
+        primary: "var(--text-primary)",
+      },
       error: "#EF4444",
     },
     extend: {
       fontFamily: {
         pretendard: ["var(--font-pretendard)"],
-      },
-      colors: {
-        _white: {
-          DEFAULT: "hsl(210, 40%, 95%)",
-        },
-        _black: {
-          DEFAULT: "#212121",
-        },
-        _gray: {
-          DEFAULT: "hsl(0, 0%, 50%)",
-          100: "hsl(0, 0%, 90%)",
-          200: "hsl(0, 0%, 80%)",
-          300: "hsl(0, 0%, 70%)",
-          400: "hsl(0, 0%, 60%)",
-          500: "hsl(0, 0%, 50%)",
-          600: "hsl(0, 0%, 40%)",
-          700: "hsl(0, 0%, 30%)",
-          800: "hsl(0, 0%, 20%)",
-          900: "hsl(0, 0%, 10%)",
-        },
       },
       width: {
         mobile: "360px",

@@ -6,7 +6,7 @@ import "@/styles/globals.css";
 import localFont from "next/font/local";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { ThemeProvider } from "@/components/ThemeProvider";
+import ThemeProvider from "@/components/ThemeProvider";
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
@@ -20,20 +20,18 @@ export const metadata: Metadata = {
   description: "next.js로 만든 개발 블로그입니다.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<React.PropsWithChildren>) {
   return (
-    <html lang="ko" className={`${pretendard.variable} `} suppressHydrationWarning>
-      <body className="bg-_white font-pretendard dark:bg-_black">
+    <html lang="ko" className={pretendard.variable}>
+      <body className="size-full min-h-dvh bg-background-primary font-pretendard text-text-primary">
         <ThemeProvider>
           <Header />
-          {children}
+          <main className="mx-auto min-h-[calc(100dvh-276px)] w-mobile tablet:w-tablet desktop:w-desktop">
+            {children}
+          </main>
           <Footer />
+          <Analytics />
         </ThemeProvider>
-        <Analytics />
       </body>
     </html>
   );

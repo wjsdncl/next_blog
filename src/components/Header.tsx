@@ -1,41 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useTheme } from "next-themes";
 
-import Dropdown from "./Dropdown";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
-  const { theme, setTheme } = useTheme();
-  const label = theme === "system" ? "◑ System" : theme === "light" ? "○ Light" : "● Dark";
-
   return (
-    <header className="min-h-[220px] bg-_white dark:bg-_black">
-      <div className="z-10 mx-auto gap-6 border-b-2 border-solid border-b-_gray-600 bg-_white pb-6 pt-16 mobile:w-mobile tablet:w-tablet desktop:w-desktop dark:border-b-_gray-300 dark:bg-_black">
+    <header className="h-[220px]">
+      <div className="z-10 mx-auto gap-6 border-b-2 border-solid border-b-gray-600 pb-6 pt-16 mobile:w-mobile tablet:w-tablet desktop:w-desktop">
         <div className="flex flex-col gap-10 px-8">
-          <div className="flex flex-row items-center justify-between">
+          <section className="flex flex-row items-center justify-between">
             <Link href="/" className="z-20">
               <span className="text-6xl">wjsdncl Blog</span>
             </Link>
 
             <div className="flex flex-row gap-4">
-              <Dropdown
-                options={[
-                  { label: "◑ System", value: "system" },
-                  { label: "○ Light", value: "light" },
-                  { label: "● Dark", value: "dark" },
-                ]}
-                placeholder={label}
-                onSelect={(value) => setTheme(value)}
-                showSelectedLabelAsPlaceholder
-              />
+              <ThemeToggle />
               {/* <button className='w-20 rounded-lg border-2 border-gray-600 px-4 dark:border-gray-400'>
 									로그인
 								</button> */}
             </div>
-          </div>
+          </section>
 
-          <div className="flex size-full items-center">
+          <section className="flex size-full items-center">
             <div className="">
               <nav>
                 <ul className="mx-5 flex gap-4 text-lg font-semibold">
@@ -53,7 +40,7 @@ export default function Header() {
                 </ul>
               </nav>
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </header>

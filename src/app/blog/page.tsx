@@ -1,9 +1,7 @@
-export default function BlogPage() {
+export default function Page() {
   return (
-    <main className="min-h-[calc(100dvh-276px)] bg-_white dark:bg-_black">
-      <div className="mx-auto my-0 flex h-full flex-col justify-between bg-_white py-10 mobile:w-mobile tablet:w-tablet desktop:w-desktop dark:bg-_black">
-        <span>불로그 입니다.</span>
-      </div>
-    </main>
+    <div className="flex h-full flex-col justify-between py-10 mobile:w-mobile tablet:w-tablet desktop:w-desktop">
+      <span>불로그 입니다.</span>
+    </div>
   );
 }
