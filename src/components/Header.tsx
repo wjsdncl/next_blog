@@ -14,11 +14,11 @@ export default function Header() {
               <span className="text-6xl">wjsdncl Blog</span>
             </Link>
 
-            <div className="flex gap-4">
+            <div className="flex items-center gap-4">
+              <Link href={"/login"} className="text-lg font-medium text-text-primary">
+                로그인
+              </Link>
               <ThemeToggle />
-              {/* <button className='w-20 rounded-lg border-2 border-gray-600 px-4 dark:border-gray-400'>
-									로그인
-								</button> */}
             </div>
           </section>
 

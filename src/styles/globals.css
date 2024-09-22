@@ -2,8 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+input:-webkit-autofill {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: var(--text-primary);
+}
+
 :root {
-  --color-white: hsl(210, 40%, 95%);
+  --color-white: #f0f0f0;
   --color-black: #212121;
 
   --color-gray-100: hsl(0, 0%, 90%);
@@ -18,6 +23,8 @@
 
   --text-primary: #212121;
   --background-primary: var(--color-white);
+  --background-secondary: #d6d6d6;
+  --background-tertiary: #b8b8b8;
 }
 
 .dark {
@@ -33,4 +40,6 @@
 
   --text-primary: hsl(210, 40%, 95%);
   --background-primary: var(--color-black);
+  --background-secondary: #292929;
+  --background-tertiary: #414141;
 }

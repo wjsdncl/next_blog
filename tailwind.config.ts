@@ -23,9 +23,23 @@ export default {
       },
       background: {
         primary: "var(--background-primary)",
+        secondary: "var(--background-secondary)",
+        tertiary: "var(--background-tertiary)",
       },
       text: {
         primary: "var(--text-primary)",
+      },
+      brand: {
+        primary: "#656079",
+        secondary: "#888497",
+        tertiary: "#ABA8B5",
+        quaternary: "#CDCCD2",
+      },
+      brand_dark: {
+        primary: "#656079",
+        secondary: "#545063",
+        tertiary: "#43414D",
+        quaternary: "#323137",
       },
       error: "#EF4444",
     },
