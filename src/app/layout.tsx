@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import QueryProvider from "@/components/QueryProvider";
 import ThemeProvider from "@/components/ThemeProvider";
+import Toaster from "@/components/Toaster";
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: Readonly<React.PropsWithChildre
             <main className="min-h-[calc(100dvh-276px)] w-full">{children}</main>
             <Footer />
             <Analytics />
+            <Toaster />
           </QueryProvider>
         </ThemeProvider>
       </body>

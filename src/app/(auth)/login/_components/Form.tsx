@@ -8,14 +8,18 @@ import { SubmitHandler } from "react-hook-form";
 import Form from "@/components/Form";
 import { SignIn } from "@/services/auth.api";
 import { SignInForm } from "@/types/authType";
+import toast from "@/utils/Toast";
 
 export default function LoginForm() {
   const router = useRouter();
 
   const SignInMutation = useMutation({
     mutationFn: async (data: SignInForm) => SignIn(data),
+    onMutate: () => {
+      alert("로그인 중입니다.");
+    },
     onSuccess: (data) => {
-      alert("로그인이 완료되었습니다.");
+      toast.success("로그인 성공!");
 
       setCookie("accessToken", data.accessToken, { path: "/", maxAge: 60 * 60 * 24 * 3 });
       setCookie("refreshToken", data.refreshToken, { path: "/", maxAge: 60 * 60 * 24 * 30 });

@@ -55,6 +55,26 @@ export default {
         tablet: "768px",
         desktop: "1200px",
       },
+      keyframes: {
+        "scale-up": {
+          "0%": { transform: "scale(0)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        fadeIn: {
+          "0%": { opacity: "0", transform: "translateY(-20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "20%, 60%": { transform: "translateX(-5px)" },
+          "40%, 80%": { transform: "translateX(5px)" },
+        },
+      },
+      animation: {
+        "scale-up": "scale-up 0.3s ease-out 0.1s forwards",
+        "fade-shake": "fadeIn 0.3s ease-in-out forwards, shake 0.3s ease-in-out 0.3s forwards",
+        "fade-in": "fadeIn 0.3s ease-in-out forwards",
+      },
     },
   },
   darkMode: "selector",
