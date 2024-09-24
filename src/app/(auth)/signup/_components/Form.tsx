@@ -1,20 +1,20 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SubmitHandler, useFormContext } from "react-hook-form";
 import Form from "@/components/Form";
 import { SignUp } from "@/services/auth.api";
 import { SignUpForm } from "@/types/authType";
+import toast from "@/utils/Toast";
 
 export default function RegisterForm() {
   const router = useRouter();
 
   const signUpMutation = useMutation({
+    mutationKey: ["auth"],
     mutationFn: async (data: SignUpForm) => SignUp(data),
     onSuccess: () => {
-      alert("회원가입이 완료되었습니다.");
       router.push("/login");
     },
     onError: (error) => alert(error),
@@ -22,7 +22,11 @@ export default function RegisterForm() {
 
   const onSubmit: SubmitHandler<SignUpForm> = (data) => {
     if (signUpMutation.isPending) return;
-    signUpMutation.mutate({ email: data.email, name: data.name, password: data.password });
+    toast.promise(signUpMutation.mutateAsync(data), {
+      loading: "회원가입 중...",
+      success: "회원가입 성공",
+      error: "회원가입 실패",
+    });
   };
 
   return (
@@ -39,7 +43,10 @@ export default function RegisterForm() {
           placeholder="이메일을 입력해주세요."
           validation={{
             required: { value: true, message: "이메일을 입력해주세요." },
-            pattern: { value: /^\S+@\S+$/i, message: "이메일 형식이 올바르지 않습니다." },
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
+              message: "이메일 형식이 올바르지 않습니다.",
+            },
           }}
         />
       </div>
@@ -60,6 +67,7 @@ export default function RegisterForm() {
         <Form.Input<SignUpForm>
           label="name"
           placeholder="닉네임 입력해주세요."
+          autoComplete="username"
           validation={{
             required: { value: true, message: "닉네임을 입력해주세요." },
             minLength: { value: 2, message: "닉네임은 2자 이상이어야 합니다." },
@@ -83,10 +91,15 @@ export default function RegisterForm() {
         <Form.Input<SignUpForm>
           label="password"
           placeholder="비밀번호를 입력해주세요."
+          autoComplete="new-password"
           type={"password"}
           validation={{
             required: { value: true, message: "비밀번호를 입력해주세요." },
             minLength: { value: 6, message: "비밀번호는 6자 이상이어야 합니다." },
+            pattern: {
+              value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+              message: "비밀번호는 영어와 숫자를 포함해야 합니다.",
+            },
           }}
         />
       </div>
@@ -116,17 +129,6 @@ export default function RegisterForm() {
       <div className="flex h-12 w-full items-center justify-end">
         <Form.Submit text="회원가입" />
       </div>
-
-      <div className="pt-5" />
-
-      <div className="flex w-full items-center justify-center">
-        <p>
-          계정이 있다면{"\u00A0"}
-          <Link href={"/login"} className="font-semibold text-brand_dark-secondary underline dark:text-brand-secondary">
-            로그인하기
-          </Link>
-        </p>
-      </div>
     </Form>
   );
 }
@@ -139,6 +141,7 @@ function PasswordConfirmInput() {
     <Form.Input<SignUpForm>
       label="passwordConfirm"
       placeholder="비밀번호를 다시 입력해주세요."
+      autoComplete="new-password"
       type={"password"}
       validation={{
         required: { value: true, message: "비밀번호를 다시 입력해주세요." },

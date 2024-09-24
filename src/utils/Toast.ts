@@ -1,4 +1,4 @@
-import useToastStore, { ToastType } from "@/store/ToastStore";
+import useToastStore, { ToastType } from "@/stores/ToastStore";
 
 const toast = {
   success: (message: string, duration: number = 2000) =>

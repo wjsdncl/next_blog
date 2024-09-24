@@ -1,37 +1,42 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { setCookie } from "cookies-next";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SubmitHandler } from "react-hook-form";
 import Form from "@/components/Form";
 import { SignIn } from "@/services/auth.api";
-import { SignInForm } from "@/types/authType";
+import useUserStore from "@/stores/UserStore";
+import { SignInForm, SignInResponse } from "@/types/authType";
 import toast from "@/utils/Toast";
 
 export default function LoginForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const SignInMutation = useMutation({
+  const SignInMutation = useMutation<SignInResponse, Error, SignInForm>({
+    mutationKey: ["auth"],
     mutationFn: async (data: SignInForm) => SignIn(data),
-    onMutate: () => {
-      alert("로그인 중입니다.");
-    },
     onSuccess: (data) => {
-      toast.success("로그인 성공!");
+      setCookie("accessToken", data.accessToken, { path: "/", secure: true, sameSite: "strict" });
+      setCookie("refreshToken", data.refreshToken, { path: "/", secure: true, sameSite: "strict" });
 
-      setCookie("accessToken", data.accessToken, { path: "/", maxAge: 60 * 60 * 24 * 3 });
-      setCookie("refreshToken", data.refreshToken, { path: "/", maxAge: 60 * 60 * 24 * 30 });
+      useUserStore.setState({ isLoggedIn: true });
+
+      // 유저 정보 갱신
+      queryClient.refetchQueries({ queryKey: ["user"] });
 
       router.push("/");
     },
-    onError: (error) => alert(error),
   });
 
   const onSubmit: SubmitHandler<SignInForm> = (data) => {
     if (SignInMutation.isPending) return;
-    SignInMutation.mutate(data);
+    toast.promise(SignInMutation.mutateAsync(data), {
+      loading: "로그인 중...",
+      success: "로그인 성공",
+      error: "로그인 실패",
+    });
   };
 
   return (
@@ -46,6 +51,7 @@ export default function LoginForm() {
         <Form.Input<SignInForm>
           label="email"
           placeholder="이메일을 입력해주세요."
+          autoComplete="email"
           validation={{
             required: { value: true, message: "이메일을 입력해주세요." },
             pattern: { value: /^\S+@\S+$/i, message: "이메일 형식이 올바르지 않습니다." },
@@ -69,6 +75,7 @@ export default function LoginForm() {
         <Form.Input<SignInForm>
           label="password"
           placeholder="비밀번호를 입력해주세요."
+          autoComplete="current-password"
           type={"password"}
           validation={{
             required: { value: true, message: "비밀번호를 입력해주세요." },
@@ -84,21 +91,7 @@ export default function LoginForm() {
       <div className="pt-4" />
 
       <div className="flex h-12 w-full items-center justify-end">
-        <Form.Submit text="로그인" />
-      </div>
-
-      <div className="pt-5" />
-
-      <div className="flex w-full items-center justify-center">
-        <p>
-          계정이 없다면{"\u00A0"}
-          <Link
-            href={"/signup"}
-            className="font-semibold text-brand_dark-secondary underline dark:text-brand-secondary"
-          >
-            가입하기
-          </Link>
-        </p>
+        <Form.Submit text="로그인" disabled={SignInMutation.isPending} />
       </div>
     </Form>
   );

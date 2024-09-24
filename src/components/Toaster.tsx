@@ -1,10 +1,9 @@
 "use client";
 
-import { useShallow } from "zustand/react/shallow";
-
+import { useShallow } from "zustand/shallow";
 import Close from "@/Icons/Close";
 import { Check, Info, Loading } from "@/Icons/Toast";
-import useToastStore from "@/store/ToastStore";
+import useToastStore from "@/stores/ToastStore";
 
 function Toaster() {
   const { toasts, removeToast } = useToastStore(
@@ -66,7 +65,7 @@ function Toaster() {
           type="button"
           key={toast.id}
           onClick={() => removeToast(toast.id)}
-          className={`w-fit cursor-pointer justify-end rounded-lg bg-background-primary p-4 text-lg font-medium text-text-primary shadow-lg transition-all ${animation(toast.type)}`}
+          className={`w-fit cursor-pointer justify-end rounded-lg border border-background-tertiary bg-background-primary p-4 text-lg font-medium text-text-primary shadow-lg transition-all ${animation(toast.type)}`}
         >
           <div className="flex items-center justify-between gap-2">
             {icon(toast.type)}

@@ -39,10 +39,17 @@ type InputProps<T extends FieldValues> = {
   label: Path<T>;
   type?: string;
   placeholder?: string;
+  autoComplete?: React.InputHTMLAttributes<HTMLInputElement>["autoComplete"];
   validation?: object;
 };
 
-function Input<T extends FieldValues>({ label, type = "text", placeholder, validation = {} }: InputProps<T>) {
+function Input<T extends FieldValues>({
+  label,
+  type = "text",
+  placeholder,
+  autoComplete,
+  validation = {},
+}: InputProps<T>) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const { register } = useFormContext<T>();
@@ -52,6 +59,7 @@ function Input<T extends FieldValues>({ label, type = "text", placeholder, valid
       <input
         type={type === "password" ? (isPasswordVisible ? "text" : "password") : type}
         placeholder={placeholder}
+        autoComplete={autoComplete}
         className="size-full rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 pr-10 text-text-primary outline-none focus:border-brand-secondary dark:focus:border-brand_dark-primary"
         {...register(label, { ...validation })}
       />
@@ -62,9 +70,9 @@ function Input<T extends FieldValues>({ label, type = "text", placeholder, valid
           type="button"
         >
           {isPasswordVisible ? (
-            <EyeOpen width={"full"} height={"full"} color="var(--text-primary)" />
+            <EyeOpen width={"100%"} height={"100%"} color="var(--text-primary)" />
           ) : (
-            <EyeClose width={"full"} height={"full"} color="var(--text-primary)" />
+            <EyeClose width={"100%"} height={"100%"} color="var(--text-primary)" />
           )}
         </button>
       )}
@@ -90,7 +98,7 @@ function Textarea<T extends FieldValues>({ label, validation = {} }: TextareaPro
 }
 
 // Button Type Submit 컴포넌트
-function Submit({ text = "입력" }: { text?: string }) {
+function Submit({ text = "입력", disabled }: { text?: string; disabled?: boolean }) {
   const {
     formState: { isValid },
   } = useFormContext();
@@ -99,7 +107,7 @@ function Submit({ text = "입력" }: { text?: string }) {
     <button
       type="submit"
       className="size-full rounded-md bg-brand-tertiary px-3 py-2 text-lg font-semibold text-white hover:bg-brand-secondary active:bg-brand-primary disabled:bg-gray-200 disabled:hover:bg-gray-200 dark:bg-brand_dark-primary dark:hover:bg-brand_dark-secondary dark:active:bg-brand_dark-tertiary"
-      disabled={!isValid}
+      disabled={!isValid || disabled}
     >
       {text}
     </button>
