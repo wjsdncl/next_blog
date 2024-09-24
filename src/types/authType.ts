@@ -1,3 +1,5 @@
+import { Post } from "./blogType";
+
 export interface SignUpForm {
   email: string;
   name: string;
@@ -22,11 +24,17 @@ export interface SignInForm {
 export interface SignInResponse {
   accessToken: string;
   refreshToken: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
-  };
+  user: User;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  password: string;
+  isAdmin: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  posts?: Post[];
+  comments?: Comment[];
 }

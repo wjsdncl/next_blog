@@ -1,13 +1,46 @@
-interface BlogType {
+import { User } from "./authType";
+
+export interface Post {
   id: number;
-  coverImage?: string;
-  category: string;
+  slug: string;
+  coverImg?: string;
+  category?: string;
   title: string;
-  content: string;
+  content?: string;
   tags: string[];
-  createdAt: string;
-  comments: number;
   likes: number;
+  createdAt: Date;
+  updatedAt: Date;
+
+  user: User;
+  userId: string;
+
+  comments?: Comment[];
+
+  _count?: {
+    comments: number;
+  };
 }
 
-export default BlogType;
+export interface CategoryCounts {
+  [category: string]: number;
+}
+
+export interface Comment {
+  id: number;
+  content: string;
+  likes: number;
+  createdAt: Date;
+  updatedAt: Date;
+
+  user: User;
+  userId: string;
+
+  post: Post;
+  postId: number;
+
+  parentComment?: Comment;
+  parentCommentId?: number;
+
+  replies?: Comment[];
+}

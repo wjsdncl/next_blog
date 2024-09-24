@@ -17,7 +17,6 @@ export default function RegisterForm() {
     onSuccess: () => {
       router.push("/login");
     },
-    onError: (error) => alert(error),
   });
 
   const onSubmit: SubmitHandler<SignUpForm> = (data) => {
@@ -97,7 +96,7 @@ export default function RegisterForm() {
             required: { value: true, message: "비밀번호를 입력해주세요." },
             minLength: { value: 6, message: "비밀번호는 6자 이상이어야 합니다." },
             pattern: {
-              value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+              value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\W]{6,}$/,
               message: "비밀번호는 영어와 숫자를 포함해야 합니다.",
             },
           }}

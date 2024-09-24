@@ -12,8 +12,12 @@ import useUserStore from "@/stores/UserStore";
 export default function Header() {
   const queryClient = useQueryClient();
   const { isLoggedIn, setIsLoggedIn } = useUserStore(
-    useShallow((state) => ({ isLoggedIn: state.isLoggedIn, setIsLoggedIn: state.setIsLoggedIn }))
+    useShallow((state) => ({
+      isLoggedIn: state.isLoggedIn,
+      setIsLoggedIn: state.setIsLoggedIn,
+    }))
   );
+
   const router = useRouter();
 
   const { data: user } = useQuery({
