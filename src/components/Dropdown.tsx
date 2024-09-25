@@ -66,7 +66,7 @@ export default function Dropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-2 w-full origin-top-right rounded-md bg-white ring-1 ring-black/5 dark:bg-gray-800">
+        <div className="ring-black/5 absolute right-0 z-50 mt-2 w-full origin-top-right rounded-md bg-white ring-1 dark:bg-gray-800">
           <div className="" role="listbox">
             {options.map((option) => (
               <button

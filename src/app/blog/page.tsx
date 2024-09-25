@@ -3,7 +3,7 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, Suspense } from "react";
 import { useShallow } from "zustand/shallow";
 import Navigation from "./_components/Navigation";
 import SearchInput from "./_components/SearchInput";
@@ -75,7 +75,9 @@ export default function Page() {
     <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 tablet:w-tablet tablet:px-0">
       <Navigation totalPosts={totalPosts} categoryCounts={categoryCounts} />
       <section className="flex items-center justify-end">
-        <SearchInput />
+        <Suspense>
+          <SearchInput />
+        </Suspense>
       </section>
 
       <div className="pt-8" />
