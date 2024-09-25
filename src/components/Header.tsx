@@ -1,42 +1,69 @@
 "use client";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { setCookie } from "cookies-next";
 import Link from "next/link";
-import { useTheme } from "next-themes";
-
-import Dropdown from "./Dropdown";
+import { useRouter } from "next/navigation";
+import { useShallow } from "zustand/shallow";
+import ThemeToggle from "./ThemeToggle";
+import { getUser } from "@/services/user.api";
+import useUserStore from "@/stores/UserStore";
 
 export default function Header() {
-  const { theme, setTheme } = useTheme();
-  const label = theme === "system" ? "◑ System" : theme === "light" ? "○ Light" : "● Dark";
+  const queryClient = useQueryClient();
+  const { isLoggedIn, setIsLoggedIn } = useUserStore(
+    useShallow((state) => ({
+      isLoggedIn: state.isLoggedIn,
+      setIsLoggedIn: state.setIsLoggedIn,
+    }))
+  );
+
+  const router = useRouter();
+
+  const { data: user } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+    enabled: isLoggedIn,
+    retry: 0,
+    gcTime: 0,
+  });
+
+  const Logout = () => {
+    setCookie("accessToken", "", { expires: new Date() });
+    setCookie("refreshToken", "", { expires: new Date() });
+
+    setIsLoggedIn(false);
+    queryClient.clear();
+
+    router.push("/");
+  };
 
   return (
-    <header className="min-h-[220px] bg-_white dark:bg-_black">
-      <div className="z-10 mx-auto gap-6 border-b-2 border-solid border-b-_gray-600 bg-_white pb-6 pt-16 mobile:w-mobile tablet:w-tablet desktop:w-desktop dark:border-b-_gray-300 dark:bg-_black">
-        <div className="flex flex-col gap-10 px-8">
-          <div className="flex flex-row items-center justify-between">
+    <header className="min-h-[220px]">
+      <div className="z-10 mx-auto w-full gap-6 border-b-2 border-solid border-b-gray-600 pb-6 pt-16 tablet:w-tablet desktop:w-desktop">
+        <div className="flex flex-col gap-10 px-4">
+          <section className="flex items-center justify-between">
             <Link href="/" className="z-20">
               <span className="text-6xl">wjsdncl Blog</span>
             </Link>
 
-            <div className="flex flex-row gap-4">
-              <Dropdown
-                options={[
-                  { label: "◑ System", value: "system" },
-                  { label: "○ Light", value: "light" },
-                  { label: "● Dark", value: "dark" },
-                ]}
-                placeholder={label}
-                onSelect={(value) => setTheme(value)}
-                showSelectedLabelAsPlaceholder
-              />
-              {/* <button className='w-20 rounded-lg border-2 border-gray-600 px-4 dark:border-gray-400'>
-									로그인
-								</button> */}
-            </div>
-          </div>
+            <div className="flex items-center gap-4">
+              {user ? (
+                <button onClick={Logout} className="text-lg font-medium text-text-primary">
+                  로그아웃
+                </button>
+              ) : (
+                <Link href="/login" className="text-lg font-medium text-text-primary">
+                  로그인
+                </Link>
+              )}
 
-          <div className="flex size-full items-center">
-            <div className="">
+              <ThemeToggle />
+            </div>
+          </section>
+
+          <section className="flex size-full items-center">
+            <div>
               <nav>
                 <ul className="mx-5 flex gap-4 text-lg font-semibold">
                   <li>
@@ -53,7 +80,7 @@ export default function Header() {
                 </ul>
               </nav>
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </header>

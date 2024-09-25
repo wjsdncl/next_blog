@@ -8,41 +8,72 @@ export default {
   ],
   theme: {
     colors: {
+      white: "var(--color-white)",
+      black: "var(--color-black)",
+      gray: {
+        100: "var(--color-gray-100)",
+        200: "var(--color-gray-200)",
+        300: "var(--color-gray-300)",
+        400: "var(--color-gray-400)",
+        500: "var(--color-gray-500)",
+        600: "var(--color-gray-600)",
+        700: "var(--color-gray-700)",
+        800: "var(--color-gray-800)",
+        900: "var(--color-gray-900)",
+      },
+      background: {
+        primary: "var(--background-primary)",
+        secondary: "var(--background-secondary)",
+        tertiary: "var(--background-tertiary)",
+      },
+      text: {
+        primary: "var(--text-primary)",
+      },
+      brand: {
+        primary: "#656079",
+        secondary: "#888497",
+        tertiary: "#ABA8B5",
+        quaternary: "#CDCCD2",
+      },
+      brand_dark: {
+        primary: "#656079",
+        secondary: "#545063",
+        tertiary: "#43414D",
+        quaternary: "#323137",
+      },
       error: "#EF4444",
     },
     extend: {
       fontFamily: {
         pretendard: ["var(--font-pretendard)"],
       },
-      colors: {
-        _white: {
-          DEFAULT: "hsl(210, 40%, 95%)",
-        },
-        _black: {
-          DEFAULT: "#212121",
-        },
-        _gray: {
-          DEFAULT: "hsl(0, 0%, 50%)",
-          100: "hsl(0, 0%, 90%)",
-          200: "hsl(0, 0%, 80%)",
-          300: "hsl(0, 0%, 70%)",
-          400: "hsl(0, 0%, 60%)",
-          500: "hsl(0, 0%, 50%)",
-          600: "hsl(0, 0%, 40%)",
-          700: "hsl(0, 0%, 30%)",
-          800: "hsl(0, 0%, 20%)",
-          900: "hsl(0, 0%, 10%)",
-        },
-      },
       width: {
-        mobile: "360px",
-        tablet: "760px",
+        tablet: "768px",
         desktop: "1200px",
       },
       screens: {
-        mobile: "375px",
         tablet: "768px",
-        desktop: "1280px",
+        desktop: "1200px",
+      },
+      keyframes: {
+        "scale-up": {
+          "0%": { transform: "scale(0)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        fadeIn: {
+          "0%": { opacity: "0", transform: "translateY(-20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "20%, 60%": { transform: "translateX(-5px)" },
+          "40%, 80%": { transform: "translateX(5px)" },
+        },
+      },
+      animation: {
+        "scale-up": "scale-up 0.3s ease-out 0.1s forwards",
+        "fade-shake": "fadeIn 0.3s ease-in-out forwards, shake 0.3s ease-in-out 0.3s forwards",
+        "fade-in": "fadeIn 0.3s ease-in-out forwards",
       },
     },
   },
