@@ -75,10 +75,56 @@ export default {
         "fade-shake": "fadeIn 0.3s ease-in-out forwards, shake 0.3s ease-in-out 0.3s forwards",
         "fade-in": "fadeIn 0.3s ease-in-out forwards",
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            margin: "2.rem 0",
+            code: {
+              backgroundColor: "var(--color-gray-200)",
+              padding: "0.3rem 0.5rem",
+              borderRadius: "4px",
+              fontSize: "90%",
+              fontWeight: "500",
+              fontFamily: "Consolas",
+            },
+            pre: {
+              backgroundColor: "transparent",
+              padding: "0",
+              border: "none",
+              borderRadius: "0",
+              boxShadow: "none",
+              margin: "0",
+              fontSize: "16px",
+              overflow: "auto",
+              lineHeight: "1.5",
+            },
+            blockquote: {
+              borderLeftColor: "#888497",
+              paddingLeft: "1rem",
+              fontStyle: "normal",
+              quotes: "none",
+              backgroundColor: "#323137",
+              color: "#fff",
+              paddingTop: "10px",
+              paddingBottom: "10px",
+              borderTopRightRadius: "0.25rem",
+              borderBottomRightRadius: "0.25rem",
+              p: {
+                marginTop: 0,
+                marginBottom: 0,
+              },
+            },
+            hr: {
+              margin: "1.5rem 0",
+            },
+          },
+        },
+      },
     },
   },
   darkMode: "selector",
   plugins: [
+    require("@tailwindcss/typography"),
     plugin(({ addUtilities, addVariant }) => {
       // 스크롤바 숨김
       addUtilities({
