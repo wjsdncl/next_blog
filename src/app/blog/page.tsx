@@ -11,15 +11,7 @@ import { getPostList } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useUserStore from "@/stores/UserStore";
 import { Post } from "@/types/blogType";
-
-const formatDate = (dateString: Date) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
+import formatDate from "@/utils/FormatDate";
 
 export default function Page() {
   const { isLoggedIn } = useUserStore(

@@ -1,5 +1,12 @@
 import { User } from "./authType";
 
+export interface PostRequest {
+  title: string;
+  content: string;
+  category?: string;
+  tags: string[];
+}
+
 export interface Post {
   id: number;
   slug: string;
