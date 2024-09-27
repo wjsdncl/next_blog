@@ -1,7 +1,19 @@
-export default function Page({ params }: { params: { title: string } }) {
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import ClientPage from "./_components/ClientPage";
+import { getPost } from "@/services/post.api";
+
+export default async function Page({ params }: { params: { title: string } }) {
+  const queryClient = new QueryClient();
+  const title = params.title as string;
+
+  await queryClient.prefetchQuery({
+    queryKey: ["post", title],
+    queryFn: async () => getPost(title),
+  });
+
   return (
-    <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 tablet:w-tablet tablet:px-0">
-      <h1>Blog Post {params.title}</h1>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ClientPage title={title} />
+    </HydrationBoundary>
   );
 }

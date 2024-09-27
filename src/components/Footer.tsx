@@ -1,6 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const pathname = usePathname();
+
+  if (pathname === "/blog/write") {
+    return <></>;
+  }
+
   return (
     <footer className="flex h-[56px] items-center justify-center bg-gray-200 p-4 text-center">
       <article className="flex items-center justify-between gap-4 tablet:w-tablet desktop:w-desktop">

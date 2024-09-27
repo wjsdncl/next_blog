@@ -3,7 +3,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { setCookie } from "cookies-next";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import ThemeToggle from "./ThemeToggle";
 import { getUser } from "@/services/user.api";
@@ -19,6 +19,7 @@ export default function Header() {
   );
 
   const router = useRouter();
+  const pathname = usePathname();
 
   const { data: user } = useQuery({
     queryKey: ["user"],
@@ -37,6 +38,10 @@ export default function Header() {
 
     router.push("/");
   };
+
+  if (pathname === "/blog/write") {
+    return <></>;
+  }
 
   return (
     <header className="min-h-[220px]">

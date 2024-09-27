@@ -2,9 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+input,
+textarea {
+  background-color: transparent;
+}
+
 input:-webkit-autofill {
   -webkit-background-clip: text;
   -webkit-text-fill-color: var(--text-primary);
+}
+
+.prose code::before,
+.prose code::after {
+  content: none !important;
 }
 
 :root {

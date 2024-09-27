@@ -4,6 +4,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useEffect, Suspense } from "react";
+import removeMarkdown from "remove-markdown";
 import { useShallow } from "zustand/shallow";
 import Navigation from "./_components/Navigation";
 import SearchInput from "./_components/SearchInput";
@@ -11,15 +12,7 @@ import { getPostList } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useUserStore from "@/stores/UserStore";
 import { Post } from "@/types/blogType";
-
-const formatDate = (dateString: Date) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
+import formatDate from "@/utils/FormatDate";
 
 export default function Page() {
   const { isLoggedIn } = useUserStore(
@@ -96,7 +89,7 @@ export default function Page() {
                   <span className="pr-2">[{blog.category}]</span>
                   {blog.title}
                 </h2>
-                <p className="line-clamp-4 text-lg">{blog.content}</p>
+                <p className="line-clamp-4 text-lg">{removeMarkdown(blog.content as string)}</p>
               </Link>
 
               <div className="flex flex-wrap gap-3">
