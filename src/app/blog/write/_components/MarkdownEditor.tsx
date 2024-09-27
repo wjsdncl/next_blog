@@ -1,8 +1,8 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -13,7 +13,9 @@ import TagInput from "./TagInput";
 import { writePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import { PostRequest } from "@/types/blogType";
+import toast from "@/utils/Toast";
 
+// FormValues 타입 정의
 type FormValues = {
   category?: string;
   title: string;
@@ -24,14 +26,19 @@ type FormValues = {
 export default function MarkdownEditor() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const [tempId, setTempId] = useState<string>(searchParams.get("id") ?? crypto.randomUUID());
 
-  const { handleSubmit, control, watch } = useForm<FormValues>({
+  // React Hook Form 초기화
+  const { handleSubmit, control, watch, setValue } = useForm<FormValues>({
     defaultValues: { title: "", category: "", content: "", tags: [] },
   });
 
+  // 폼 필드 값들 감시
   const title = watch("title");
   const markdown = watch("content");
 
+  // 사용자 데이터 가져오기
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
@@ -39,6 +46,7 @@ export default function MarkdownEditor() {
     gcTime: 0,
   });
 
+  // 글 작성 mutation
   const completeWritingMutation = useMutation({
     mutationKey: ["writePost"],
     mutationFn: async (data: PostRequest) => writePost({ postData: data, userId: user?.id as string }),
@@ -49,14 +57,52 @@ export default function MarkdownEditor() {
     },
   });
 
-  const temporarySave = () => {
-    console.log("임시저장");
-  };
+  // 검색 파라미터에 ID 추가
+  const addIdToSearchParams = useCallback(
+    (id: string) => {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set("id", id);
+      router.replace(`/blog/write?${newSearchParams.toString()}`);
+    },
+    [searchParams, router]
+  );
 
+  // 임시 저장 기능
+  const temporarySave = useCallback(() => {
+    try {
+      if (!title || !markdown) throw new Error();
+
+      if (!searchParams.get("id")) {
+        const newId = crypto.randomUUID();
+        setTempId(newId);
+        addIdToSearchParams(newId);
+      }
+
+      localStorage.setItem(tempId, JSON.stringify({ ...watch() }));
+      toast.success("임시저장되었습니다.");
+    } catch {
+      toast.error("제목 또는 내용이 비어있습니다.");
+    }
+  }, [title, markdown, searchParams, tempId, watch, addIdToSearchParams]);
+
+  // 임시 저장된 데이터 불러오기
+  useEffect(() => {
+    const storedTempData = localStorage.getItem(tempId);
+    if (storedTempData) {
+      const parsedData: FormValues = JSON.parse(storedTempData);
+      setValue("title", parsedData.title);
+      setValue("category", parsedData.category || "");
+      setValue("content", parsedData.content);
+      setValue("tags", parsedData.tags || []);
+    }
+  }, [setValue, tempId]);
+
+  // 글 작성 완료
   const completeWriting = (data: FormValues) => {
     completeWritingMutation.mutate(data);
   };
 
+  // Ctrl + S로 임시 저장
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === "s") {
@@ -66,12 +112,10 @@ export default function MarkdownEditor() {
     };
 
     window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [temporarySave]);
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
-
+  // 코드 블록 컴포넌트 설정
   const components = {
     code({
       inline,
@@ -111,11 +155,7 @@ export default function MarkdownEditor() {
                 className="h-min w-full resize-none overflow-hidden text-xl font-bold outline-none"
                 placeholder="카테고리를 입력하세요"
                 onChange={(e) => field.onChange(e)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                  }
-                }}
+                onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
               />
             )}
           />
@@ -129,17 +169,13 @@ export default function MarkdownEditor() {
                 className="min-h-[45px] w-full resize-none overflow-hidden text-5xl font-bold outline-none"
                 placeholder="제목을 입력하세요"
                 rows={1}
-                value={title}
+                required
                 onChange={(e) => {
                   field.onChange(e);
                   e.target.style.height = "auto";
-                  e.target.style.height = e.target.scrollHeight + "px";
+                  e.target.style.height = `${e.target.scrollHeight}px`;
                 }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                  }
-                }}
+                onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
               />
             )}
           />
@@ -164,9 +200,8 @@ export default function MarkdownEditor() {
               <textarea
                 {...field}
                 value={markdown}
-                onChange={(e) => {
-                  field.onChange(e);
-                }}
+                onChange={(e) => field.onChange(e)}
+                required
                 className="size-full resize-none text-lg outline-none scrollbar:w-2 scrollbar:rounded-full scrollbar:bg-gray-200 scrollbar-thumb:rounded-full scrollbar-thumb:bg-gray-300"
                 rows={1}
                 placeholder="글을 작성하세요"
@@ -175,6 +210,7 @@ export default function MarkdownEditor() {
           />
         </div>
 
+        {/* 버튼 부분 */}
         <div className="flex w-full items-center justify-between bg-gray-200 px-4 py-3">
           <button
             onClick={() => router.push("/blog")}
@@ -185,6 +221,7 @@ export default function MarkdownEditor() {
           <div className="flex grow items-center justify-end gap-3">
             <button
               onClick={temporarySave}
+              type="button"
               className="w-max text-nowrap rounded-lg px-2 text-lg font-bold text-text-primary"
             >
               임시저장

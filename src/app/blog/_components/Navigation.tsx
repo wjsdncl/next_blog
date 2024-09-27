@@ -21,16 +21,18 @@ export default function Navigation({ totalPosts, categoryCounts }: NavigationPro
             </p>
           </Link>
         </li>
-        {Object.entries(categoryCounts).map(([category, count]) => (
-          <li key={category}>
-            <Link href={`/blog?category=${category}`}>
-              <p className="flex items-center gap-2 whitespace-nowrap">
-                <span className="grow desktop:overflow-hidden desktop:text-ellipsis">{category}</span>
-                <span className="shrink-0 text-sm text-gray-600">({count})</span>
-              </p>
-            </Link>
-          </li>
-        ))}
+        {Object.entries(categoryCounts)
+          .filter(([category]) => category !== "null" && category.trim() !== "" && category !== null)
+          .map(([category, count]) => (
+            <li key={category}>
+              <Link href={`/blog?category=${category}`}>
+                <p className="flex items-center gap-2 whitespace-nowrap">
+                  <span className="grow desktop:overflow-hidden desktop:text-ellipsis">{category}</span>
+                  <span className="shrink-0 text-sm text-gray-600">({count})</span>
+                </p>
+              </Link>
+            </li>
+          ))}
       </ul>
     </nav>
   );
