@@ -1,4 +1,3 @@
-import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 
 import "@/styles/globals.css";
@@ -31,7 +30,6 @@ export default function RootLayout({ children }: Readonly<React.PropsWithChildre
             <Header />
             <main className="min-h-[calc(100dvh-276px)] w-full">{children}</main>
             <Footer />
-            <Analytics />
             <Toaster />
           </QueryProvider>
         </ThemeProvider>
