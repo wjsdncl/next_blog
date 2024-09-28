@@ -84,6 +84,10 @@ export default function ClientPage({ title }: { title: string }) {
     DeletePostMutation.mutateAsync(post.id);
   };
 
+  const handleEdit = () => {
+    router.push(`/blog/write?title=${post?.slug}`);
+  };
+
   if (!post) {
     return;
   }
@@ -98,7 +102,9 @@ export default function ClientPage({ title }: { title: string }) {
         <p className="grow text-base">{formatDate(post.createdAt)}</p>
         {user && user.isAdmin && (
           <div className="flex items-center gap-2">
-            <button className="text-base text-text-primary hover:underline">수정</button>
+            <button type="button" onClick={handleEdit} className="text-base text-text-primary hover:underline">
+              수정
+            </button>
             <button type="button" onClick={handleDelete} className="text-base text-text-primary hover:underline">
               삭제
             </button>
@@ -122,22 +128,24 @@ export default function ClientPage({ title }: { title: string }) {
       )}
 
       {/* 카테고리 */}
-      <div className="mb-10 flex h-fit max-h-[200px] w-full rounded-xl bg-gray-200 p-8">
-        <div className="grow">
-          <Link
-            href={`/blog?category=${post.category}`}
-            className="text-2xl font-bold text-text-primary hover:underline"
-          >
-            [ {post.category} ]
-          </Link>
-        </div>
+      {post.category && (
+        <div className="mb-10 flex h-fit max-h-[200px] w-full rounded-xl bg-gray-200 p-8">
+          <div className="grow">
+            <Link
+              href={`/blog?category=${post.category}`}
+              className="text-2xl font-bold text-text-primary hover:underline"
+            >
+              [ {post.category} ]
+            </Link>
+          </div>
 
-        <div className="flex h-[60px] items-end gap-2 text-sm font-medium">
-          <span className="font-sans">1/1</span>
-          <Link href={""}>{"<"}</Link>
-          <Link href={""}>{">"}</Link>
+          <div className="flex h-[60px] items-end gap-2 text-sm font-medium">
+            <span className="font-sans">1/1</span>
+            <Link href={""}>{"<"}</Link>
+            <Link href={""}>{">"}</Link>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 본문 */}
       <div className="prose prose-invert text-lg">

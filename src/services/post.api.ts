@@ -5,10 +5,12 @@ export const getPostList = async ({
   pageParam = 0,
   search,
   category,
+  tag,
 }: {
   pageParam?: number;
   search?: string;
   category?: string;
+  tag?: string;
 }): Promise<{
   posts: Post[];
   totalPosts: number;
@@ -16,18 +18,14 @@ export const getPostList = async ({
   isLast: boolean;
   nextPage: number;
 }> => {
-  const params: { offset: number; limit: number; search?: string; category?: string } = {
+  const params: { offset: number; limit: number; search?: string; category?: string; tag?: string } = {
     offset: pageParam,
     limit: 10,
   };
 
-  if (search) {
-    params.search = search;
-  }
-
-  if (category) {
-    params.category = category;
-  }
+  if (search) params.search = search;
+  if (category) params.category = category;
+  if (tag) params.tag = tag;
 
   const response = await instance.get<{
     posts: Post[];
@@ -60,5 +58,20 @@ export const writePost = async ({
   userId: string;
 }) => {
   const response = await instance.post("/posts", { ...postData, coverImg, userId });
+  return response.data;
+};
+
+export const updatePost = async ({
+  id,
+  postData,
+  coverImg = "",
+  userId,
+}: {
+  id: number;
+  postData: PostRequest;
+  coverImg?: string;
+  userId: string;
+}) => {
+  const response = await instance.patch(`/posts/${id}`, { ...postData, coverImg, userId });
   return response.data;
 };

@@ -19,6 +19,7 @@ export default function ClientPage() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("search") ?? undefined; // 검색어 추출
   const categoryQuery = searchParams.get("category") ?? undefined; // 카테고리 추출
+  const tagQuery = searchParams.get("tag") ?? undefined; // 태그 추출
 
   const { isLoggedIn } = useUserStore(
     useShallow((state) => ({
@@ -35,8 +36,9 @@ export default function ClientPage() {
   });
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["posts", searchQuery, categoryQuery],
-    queryFn: ({ pageParam = 0 }) => getPostList({ pageParam, search: searchQuery, category: categoryQuery }),
+    queryKey: ["posts", searchQuery, categoryQuery, tagQuery],
+    queryFn: ({ pageParam = 0 }) =>
+      getPostList({ pageParam, search: searchQuery, category: categoryQuery, tag: tagQuery }),
     getNextPageParam: (lastPage) => (!lastPage.isLast ? lastPage.nextPage : undefined),
     initialPageParam: 0,
   });
