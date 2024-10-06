@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -89,34 +90,42 @@ export default function ClientPage({ title }: { title: string }) {
     router.push(`/blog/write?title=${post?.slug}`);
   };
 
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("링크가 클립보드에 복사되었습니다.");
+    } catch (err) {
+      toast.error("링크 복사에 실패했습니다.");
+    }
+  };
+
   if (!post) {
     return;
   }
 
   return (
     <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
-      <nav className="-left-32 top-28 flex flex-col gap-2 text-text-primary desktop:absolute desktop:w-[110px] desktop:overflow-hidden">
-        <Link href="/blog" className="text-base text-text-primary hover:underline">
-          블로그
-        </Link>
-      </nav>
-
       {/* 제목 */}
       <p className="pb-6 text-[50px] font-bold leading-[52px] text-text-primary">{post.title}</p>
 
       {/* 작성일 */}
       <div className="flex size-full items-center justify-between pb-4">
         <p className="grow text-base">{formatDate(post.createdAt)}</p>
-        {user && user.isAdmin && (
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={handleEdit} className="text-base text-text-primary hover:underline">
-              수정
-            </button>
-            <button type="button" onClick={handleDelete} className="text-base text-text-primary hover:underline">
-              삭제
-            </button>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={handleShare} className="text-base text-text-primary hover:underline">
+            공유
+          </button>
+          {user && user.isAdmin && (
+            <>
+              <button type="button" onClick={handleEdit} className="text-base text-text-primary hover:underline">
+                수정
+              </button>
+              <button type="button" onClick={handleDelete} className="text-base text-text-primary hover:underline">
+                삭제
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* 태그 */}
@@ -146,11 +155,11 @@ export default function ClientPage({ title }: { title: string }) {
             </Link>
           </div>
 
-          <div className="flex h-[60px] items-end gap-2 text-sm font-medium">
+          {/* <div className="flex h-[60px] items-end gap-2 text-sm font-medium">
             <span className="font-sans">1/1</span>
             <Link href={""}>{"<"}</Link>
             <Link href={""}>{">"}</Link>
-          </div>
+          </div> */}
         </div>
       )}
 
