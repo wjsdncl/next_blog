@@ -43,6 +43,7 @@ export default function CommentItem({
   const {
     register: replyRegister,
     handleSubmit: handleReplySubmit,
+    reset: resetReplyForm,
     formState: { isSubmitting: isReplySubmitting },
     watch,
   } = useForm<CommentFormInputs>();
@@ -57,6 +58,7 @@ export default function CommentItem({
     // depth가 10 이상일 때는 부모 댓글의 ID를 사용
     const targetCommentId = depth >= 10 ? (comment.parentCommentId ?? comment.id) : comment.id;
     onSubmitReply(data.content, targetCommentId);
+    resetReplyForm();
   };
 
   const onEditSubmit = (data: CommentFormInputs) => {
@@ -67,7 +69,6 @@ export default function CommentItem({
   const indentationWidth = Math.min(depth, 5) * 8;
 
   const handleReplyClick = () => {
-    // depth가 10 이상일 때는 부모 댓글의 ID로 답글 달기
     const targetCommentId = comment.id;
     onReply(targetCommentId);
   };
@@ -89,7 +90,7 @@ export default function CommentItem({
               답글
             </button>
           )}
-          {currentUser?.id === comment.userId && (
+          {(currentUser?.id === comment.userId || currentUser?.isAdmin) && (
             <>
               <button
                 onClick={() => onEdit(comment.id, comment.content)}
@@ -143,6 +144,7 @@ export default function CommentItem({
           />
           <div className="flex items-center justify-end gap-3">
             <p className="text-sm text-gray-500">{200 - (watch("content")?.length ?? 0)} / 200</p>
+
             <button
               type="submit"
               disabled={isReplySubmitting}
