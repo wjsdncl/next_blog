@@ -9,6 +9,7 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
+import Comments from "./Comments/Comments";
 import { deletePost, getPost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useUserStore from "@/stores/UserStore";
@@ -94,6 +95,12 @@ export default function ClientPage({ title }: { title: string }) {
 
   return (
     <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
+      <nav className="-left-32 top-28 flex flex-col gap-2 text-text-primary desktop:absolute desktop:w-[110px] desktop:overflow-hidden">
+        <Link href="/blog" className="text-base text-text-primary hover:underline">
+          블로그
+        </Link>
+      </nav>
+
       {/* 제목 */}
       <p className="pb-6 text-[50px] font-bold leading-[52px] text-text-primary">{post.title}</p>
 
@@ -148,11 +155,15 @@ export default function ClientPage({ title }: { title: string }) {
       )}
 
       {/* 본문 */}
-      <div className="prose prose-invert text-lg">
+      <div className="prose prose-invert text-lg text-text-primary">
         <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
           {post.content}
         </ReactMarkdown>
       </div>
+
+      <div className="mb-10 mt-20 rounded-full border-b-4 border-gray-300" />
+
+      <Comments post={post} />
     </div>
   );
 }

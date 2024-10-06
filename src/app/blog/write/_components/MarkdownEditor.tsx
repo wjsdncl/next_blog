@@ -85,7 +85,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       newSearchParams.set("id", newId);
       router.replace(`/blog/write?${newSearchParams.toString()}`);
     },
-    [searchParams, router] // 필요한 종속성만 포함하여 최적화
+    [searchParams, router]
   );
 
   // 임시 저장 기능
@@ -132,7 +132,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
 
   // 글 작성 완료
   const completeWriting = (data: FormValues) => {
-    // 요청이 진행 중일 때는 아무 작업도 하지 않음
     if (completeWritingMutation.isPending || updatePostMutation.isPending) return;
 
     const postData = { ...data, coverImg: "", userId: user?.id as string };
@@ -157,7 +156,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [temporarySave]); // 필요한 종속성만 포함
+  }, [temporarySave]);
 
   // 코드 블록 컴포넌트 설정
   const components = {

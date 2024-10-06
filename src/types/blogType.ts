@@ -22,8 +22,6 @@ export interface Post {
   user: User;
   userId: string;
 
-  comments?: Comment[];
-
   _count?: {
     comments: number;
   };
@@ -50,4 +48,11 @@ export interface Comment {
   parentCommentId?: number;
 
   replies?: Comment[];
+}
+
+export interface CommentRequest {
+  content: string;
+  userId?: string;
+  postId: number;
+  parentCommentId?: number;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useShallow } from "zustand/shallow";
-import Close from "@/Icons/Close";
+import { Close } from "@/Icons/Close";
 import { Check, Info, Loading } from "@/Icons/Toast";
 import useToastStore from "@/stores/ToastStore";
 

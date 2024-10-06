@@ -10,6 +10,15 @@ export default {
     colors: {
       white: "var(--color-white)",
       black: "var(--color-black)",
+      black_opacity: {
+        80: "rgb(33,33,33,0.8)",
+        60: "rgb(33,33,33,0.6)",
+        50: "rgb(33,33,33,0.5)",
+        40: "rgb(33,33,33,0.4)",
+        30: "rgb(33,33,33,0.3)",
+        20: "rgb(33,33,33,0.2)",
+        10: "rgb(33,33,33,0.1)",
+      },
       gray: {
         100: "var(--color-gray-100)",
         200: "var(--color-gray-200)",
@@ -78,7 +87,20 @@ export default {
       typography: {
         DEFAULT: {
           css: {
-            margin: "2.rem 0",
+            maxWidth: "100%",
+            margin: "2rem 0",
+            color: "var(--color-text-primary)",
+            h1: {
+              position: "relative",
+              marginTop: "1.5rem",
+              paddingBottom: "0.5rem",
+              borderBottom: "4px solid var(--color-gray-300)",
+            },
+            h2: {
+              position: "relative",
+              paddingBottom: "0.4rem",
+              borderBottom: "3px solid var(--color-gray-300)",
+            },
             code: {
               backgroundColor: "var(--color-gray-200)",
               padding: "0.3rem 0.5rem",
@@ -116,6 +138,32 @@ export default {
             },
             hr: {
               margin: "1.5rem 0",
+              borderColor: "var(--color-gray-300)",
+              borderWidth: "1.5px",
+            },
+            table: {
+              width: "100%",
+              borderCollapse: "collapse",
+              margin: "1.5rem 0",
+              tableLayout: "fixed",
+            },
+            thead: {
+              backgroundColor: "#292929",
+              color: "var(--color-white)",
+            },
+            th: {
+              padding: "0.75rem 1rem",
+              border: "1px solid var(--color-gray-400)",
+              borderBottom: "2px solid var(--color-gray-400)",
+              textAlign: "left",
+              fontWeight: "bold",
+            },
+            td: {
+              padding: "0.75rem 1rem",
+              border: "1px solid var(--color-gray-300)",
+            },
+            "tbody tr:nth-child(even)": {
+              backgroundColor: "#101010", // 투명도 50% 적용
             },
           },
         },

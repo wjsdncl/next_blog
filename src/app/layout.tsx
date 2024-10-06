@@ -5,6 +5,7 @@ import "@/styles/globals.css";
 import localFont from "next/font/local";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import Modal from "@/components/Modal";
 import QueryProvider from "@/components/QueryProvider";
 import ThemeProvider from "@/components/ThemeProvider";
 import Toaster from "@/components/Toaster";
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: Readonly<React.PropsWithChildre
             <Header />
             <main className="min-h-[calc(100dvh-276px)] w-full">{children}</main>
             <Footer />
+            <Modal />
             <Toaster />
           </QueryProvider>
         </ThemeProvider>
