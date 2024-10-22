@@ -24,7 +24,10 @@ export interface Post {
 
   _count?: {
     comments: number;
+    like: number;
   };
+
+  isLiked: boolean;
 }
 
 export interface CategoryCounts {
@@ -48,6 +51,11 @@ export interface Comment {
   parentCommentId?: number;
 
   replies?: Comment[];
+
+  _count: {
+    CommentLike: number;
+  };
+  isLiked: boolean;
 }
 
 export interface CommentRequest {

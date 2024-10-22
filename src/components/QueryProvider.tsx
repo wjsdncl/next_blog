@@ -21,7 +21,6 @@ function getQueryClient() {
     return makeQueryClient();
   }
   // 브라우저: 이미 없는 경우 새로운 query client를 만듭니다.
-  // eslint-disable-next-line no-return-assign
   return (browserQueryClient ??= makeQueryClient());
 }
 

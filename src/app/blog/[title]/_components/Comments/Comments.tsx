@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import React, { Suspense, useState } from "react";
+import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
 import CommentItem from "./CommentItem";
@@ -22,6 +22,10 @@ export default function Comments({ post }: { post?: Post }) {
   const [editCommentId, setEditCommentId] = useState<number | null>(null);
   const [replyCommentId, setReplyCommentId] = useState<number | null>(null);
 
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10); // 한 페이지당 보여줄 댓글 수
+  const offset = (page - 1) * limit; // 현재 페이지에 따라 offset 계산
+
   const { isLoggedIn } = useUserStore(
     useShallow((state) => ({
       isLoggedIn: state.isLoggedIn,
@@ -33,14 +37,19 @@ export default function Comments({ post }: { post?: Post }) {
     queryFn: getUser,
     enabled: isLoggedIn,
     retry: 0,
+    initialData: () => {
+      return queryClient.getQueryData(["user"]);
+    },
   });
 
-  const { data: comments } = useQuery({
-    queryKey: ["comments", post?.title],
-    queryFn: () => getComments(post?.title as string),
+  const { data: comments, isFetching } = useQuery({
+    queryKey: ["comments", post?.title, offset, limit],
+    queryFn: () => getComments(post?.title as string, offset, limit),
     enabled: !!post?._count?.comments,
     retry: 0,
   });
+
+  const totalPages = Math.ceil((comments?.parentComments ?? 0) / limit);
 
   const {
     register,
@@ -185,7 +194,7 @@ export default function Comments({ post }: { post?: Post }) {
           </div>
           <textarea
             {...register("content", { required: true })}
-            disabled={!isLoggedIn}
+            disabled={!isLoggedIn || isSubmitting}
             className="h-32 w-full resize-none rounded-lg border-2 border-gray-300 p-3 text-lg"
             placeholder={isLoggedIn ? "댓글을 입력하세요." : "로그인 후 댓글을 작성할 수 있습니다."}
           />
@@ -209,6 +218,22 @@ export default function Comments({ post }: { post?: Post }) {
             setEditCommentId={setEditCommentId}
           />
         ))}
+      </div>
+
+      <div className="flex items-center justify-center gap-2">
+        {[...Array(totalPages)].map((_, index) => {
+          const pageIndex = index + 1;
+          return (
+            <button
+              key={pageIndex}
+              onClick={() => setPage(pageIndex)}
+              disabled={pageIndex === page || isFetching}
+              className={`${pageIndex === page ? "bg-gray-100" : ""} size-10 rounded-lg bg-gray-200 text-lg font-semibold`}
+            >
+              {pageIndex}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

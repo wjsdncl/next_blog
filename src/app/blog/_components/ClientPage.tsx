@@ -1,6 +1,6 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -20,6 +20,7 @@ export default function ClientPage() {
   const searchQuery = searchParams.get("search") ?? undefined; // 검색어 추출
   const categoryQuery = searchParams.get("category") ?? undefined; // 카테고리 추출
   const tagQuery = searchParams.get("tag") ?? undefined; // 태그 추출
+  const queryClient = useQueryClient();
 
   const { isLoggedIn } = useUserStore(
     useShallow((state) => ({
@@ -33,6 +34,9 @@ export default function ClientPage() {
     enabled: isLoggedIn,
     retry: 0,
     gcTime: 0,
+    initialData: () => {
+      return queryClient.getQueryData(["user"]);
+    },
   });
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({

@@ -1,6 +1,8 @@
-import React from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import CommentContent from "./CommentContent";
+import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
+import { likeComment } from "@/services/comment.api";
 import { User } from "@/types/authType";
 import { Comment } from "@/types/blogType";
 import formatDate from "@/utils/FormatDate";
@@ -40,6 +42,24 @@ export default function CommentItem({
   onSubmitEdit,
   setEditCommentId,
 }: CommentItemProps) {
+  const queryClient = useQueryClient();
+
+  const likeCommentMutation = useMutation({
+    mutationKey: ["likeComment"],
+    mutationFn: async (id: number) => {
+      await likeComment(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments"] });
+    },
+  });
+
+  const handleLike = () => {
+    if (!likeCommentMutation.isPending) {
+      likeCommentMutation.mutateAsync(comment.id);
+    }
+  };
+
   const {
     register: replyRegister,
     handleSubmit: handleReplySubmit,
@@ -83,7 +103,18 @@ export default function CommentItem({
             <p className="text-lg font-bold">익명</p>
           )}
           <p className="text-base text-gray-700">{formatDate(comment.createdAt)}</p>
+          <div className="flex items-center gap-2">
+            <button onClick={handleLike} className="flex items-center gap-1 text-base text-text-primary">
+              {comment.isLiked ? (
+                <FavoriteFilled width={18} height={18} color="#656079" />
+              ) : (
+                <FavoriteEmpty width={18} height={18} color="var(--text-primary)" />
+              )}
+              {comment.likes}
+            </button>
+          </div>
         </div>
+
         <div className="flex h-fit items-center gap-2">
           {isLoggedIn && (
             <button onClick={handleReplyClick} className="text-base text-gray-500 hover:text-gray-700">

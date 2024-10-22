@@ -75,3 +75,8 @@ export const updatePost = async ({
   const response = await instance.patch(`/posts/${id}`, { ...postData, coverImg, userId });
   return response.data;
 };
+
+export const likePost = async (id: number) => {
+  const response = await instance.post(`/posts/${id}/like`);
+  return response.data;
+};

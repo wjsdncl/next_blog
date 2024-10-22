@@ -27,6 +27,9 @@ export default function Header() {
     enabled: isLoggedIn,
     retry: 0,
     gcTime: 0,
+    initialData: () => {
+      return queryClient.getQueryData(["user"]);
+    },
   });
 
   const Logout = () => {
