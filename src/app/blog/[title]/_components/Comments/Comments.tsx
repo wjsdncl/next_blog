@@ -37,6 +37,9 @@ export default function Comments({ post }: { post?: Post }) {
     queryFn: getUser,
     enabled: isLoggedIn,
     retry: 0,
+    initialData: () => {
+      return queryClient.getQueryData(["user"]);
+    },
   });
 
   const { data: comments, isFetching } = useQuery({

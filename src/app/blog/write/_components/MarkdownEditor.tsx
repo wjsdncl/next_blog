@@ -44,6 +44,9 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     queryFn: getUser,
     retry: 0,
     gcTime: 0,
+    initialData: () => {
+      return queryClient.getQueryData(["user"]);
+    },
   });
 
   // 포스트 데이터를 가져오는 쿼리
