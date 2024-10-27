@@ -10,7 +10,7 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import TagInput from "./TagInput";
-import { getPost, updatePost, writePost } from "@/services/post.api";
+import { fetchImage, getPost, updatePost, uploadImage, writePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import { PostRequest } from "@/types/blogType";
 import toast from "@/utils/Toast";
@@ -161,6 +161,50 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [temporarySave]);
 
+  const handleDrop = async (event: React.DragEvent) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+
+    if (file && file.type.startsWith("image/")) {
+      const tempText = `\n![Uploading image...]()`;
+      setValue("content", `${watch("content")}${tempText}`);
+
+      const imageUrls = await uploadImage(file);
+
+      if (imageUrls?.hdUrl) {
+        const imageUrl = imageUrls.hdUrl;
+        const imageText = `\n![image](${process.env.NEXT_PUBLIC_BASE_URL}${imageUrl})`;
+        setValue("content", `${watch("content").replace(tempText, imageText)}`);
+      }
+    }
+  };
+
+  const handlePaste = async (event: React.ClipboardEvent) => {
+    const items = event.clipboardData.items;
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+
+      if (item.type.startsWith("image/")) {
+        const file = item.getAsFile();
+
+        if (file) {
+          const tempText = `\n![Uploading image...]()`;
+          setValue("content", `${watch("content")}${tempText}`);
+
+          const imageUrls = await uploadImage(file);
+
+          if (imageUrls?.hdUrl) {
+            const imageUrl = imageUrls.hdUrl;
+            const imageText = `\n![image](${process.env.NEXT_PUBLIC_BASE_URL}${imageUrl})`;
+            setValue("content", `${watch("content").replace(tempText, imageText)}`);
+          }
+        }
+        break;
+      }
+    }
+  };
+
   // 코드 블록 컴포넌트 설정
   const components = {
     code({
@@ -246,6 +290,8 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
               <textarea
                 {...field}
                 value={markdown}
+                onDrop={handleDrop}
+                onPaste={handlePaste}
                 onChange={(e) => field.onChange(e)}
                 required
                 className="size-full resize-none text-lg outline-none scrollbar:w-2 scrollbar:rounded-full scrollbar:bg-gray-200 scrollbar-thumb:rounded-full scrollbar-thumb:bg-gray-300"

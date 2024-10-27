@@ -6,6 +6,7 @@ import { useShallow } from "zustand/shallow";
 import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import { deletePost, likePost } from "@/services/post.api";
 import useModalStore from "@/stores/ModalStore";
+import useUserStore from "@/stores/UserStore";
 import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
 import formatDate from "@/utils/FormatDate";
@@ -14,6 +15,12 @@ import toast from "@/utils/Toast";
 export default function PostHeader({ post, user }: { post: Post; user?: User }) {
   const queryClient = useQueryClient();
   const router = useRouter();
+
+  const { isLoggedIn } = useUserStore(
+    useShallow((state) => ({
+      isLoggedIn: state.isLoggedIn,
+    }))
+  );
 
   const { openModal, closeModal } = useModalStore(
     useShallow((state) => ({
@@ -38,6 +45,10 @@ export default function PostHeader({ post, user }: { post: Post; user?: User }) 
   const LikePostMutation = useMutation({
     mutationKey: ["likePost"],
     mutationFn: async (id: number) => {
+      if (!isLoggedIn) {
+        toast.error("로그인이 필요한 서비스입니다.");
+        return;
+      }
       await likePost(id);
     },
     onSuccess: () => {
