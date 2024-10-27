@@ -43,8 +43,8 @@ export default function Comments({ post }: { post?: Post }) {
   });
 
   const { data: comments, isFetching } = useQuery({
-    queryKey: ["comments", post?.title, offset, limit],
-    queryFn: () => getComments(post?.title as string, offset, limit),
+    queryKey: ["comments", post?.id, offset, limit],
+    queryFn: () => getComments(post?.id as number, offset, limit),
     enabled: !!post?._count?.comments,
     retry: 0,
   });

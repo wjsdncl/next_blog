@@ -7,8 +7,13 @@ interface CommentResponse {
   parentComments: number;
 }
 
-export const getComments = async (title: string, offset = 0, limit = 10) => {
-  const response = await instance.get<CommentResponse>(`/comments/${title}?offset=${offset}&limit=${limit}`);
+export const getCommentList = async () => {
+  const response = await instance.get<Comment[]>("/comments");
+  return response.data;
+};
+
+export const getComments = async (postID: number, offset = 0, limit = 10) => {
+  const response = await instance.get<CommentResponse>(`/comments/${postID}?offset=${offset}&limit=${limit}`);
   return response.data;
 };
 

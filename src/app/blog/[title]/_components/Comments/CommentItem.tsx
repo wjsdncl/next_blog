@@ -6,6 +6,7 @@ import { likeComment } from "@/services/comment.api";
 import { User } from "@/types/authType";
 import { Comment } from "@/types/blogType";
 import formatDate from "@/utils/FormatDate";
+import toast from "@/utils/Toast";
 
 interface CommentFormInputs {
   content: string;
@@ -47,6 +48,10 @@ export default function CommentItem({
   const likeCommentMutation = useMutation({
     mutationKey: ["likeComment"],
     mutationFn: async (id: number) => {
+      if (!isLoggedIn) {
+        toast.error("로그인이 필요한 서비스입니다.");
+        return;
+      }
       await likeComment(id);
     },
     onSuccess: () => {
