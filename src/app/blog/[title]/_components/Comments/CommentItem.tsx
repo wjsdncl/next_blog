@@ -52,7 +52,6 @@ export default function CommentItem({
         toast.error("로그인이 필요한 서비스입니다.");
         return;
       }
-
       await likeComment(id);
     },
     onSuccess: () => {
