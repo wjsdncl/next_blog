@@ -81,45 +81,18 @@ export const likePost = async (id: number) => {
   return response.data;
 };
 
-export const uploadImage = async (file: File) => {
+export const uploadImage = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append("file", file);
 
   try {
-    const response = await instance.post<{
-      success: boolean;
-      urls: { thumbnail: string; hd: string };
-    }>("/upload", formData, {
+    const response = await instance.post<{ url: string }>("/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-
-    if (response.data.success) {
-      return {
-        thumbnailUrl: response.data.urls.thumbnail,
-        hdUrl: response.data.urls.hd,
-      };
-    }
-    return null;
+    return response.data.url;
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error uploading image:", error);
-    return null;
-  }
-};
-
-export const fetchImage = async (url: string) => {
-  try {
-    const response = await instance.get<Blob>(url, {
-      responseType: "blob",
-    });
-
-    const imageUrl = URL.createObjectURL(response.data);
-    return imageUrl;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error fetching image:", error);
-    return null;
+    throw error;
   }
 };

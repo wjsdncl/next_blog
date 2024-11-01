@@ -10,7 +10,7 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import TagInput from "./TagInput";
-import { fetchImage, getPost, updatePost, uploadImage, writePost } from "@/services/post.api";
+import { getPost, updatePost, uploadImage, writePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import { PostRequest } from "@/types/blogType";
 import toast from "@/utils/Toast";
@@ -169,12 +169,13 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       const tempText = `\n![Uploading image...]()`;
       setValue("content", `${watch("content")}${tempText}`);
 
-      const imageUrls = await uploadImage(file);
-
-      if (imageUrls?.hdUrl) {
-        const imageUrl = imageUrls.hdUrl;
-        const imageText = `\n![image](${process.env.NEXT_PUBLIC_BASE_URL}${imageUrl})`;
+      try {
+        const imageUrl = await uploadImage(file);
+        const imageText = `\n![image](${imageUrl})`;
         setValue("content", `${watch("content").replace(tempText, imageText)}`);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Image upload failed:", error);
       }
     }
   };
@@ -192,12 +193,13 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
           const tempText = `\n![Uploading image...]()`;
           setValue("content", `${watch("content")}${tempText}`);
 
-          const imageUrls = await uploadImage(file);
-
-          if (imageUrls?.hdUrl) {
-            const imageUrl = imageUrls.hdUrl;
-            const imageText = `\n![image](${process.env.NEXT_PUBLIC_BASE_URL}${imageUrl})`;
+          try {
+            const imageUrl = await uploadImage(file);
+            const imageText = `\n![image](${imageUrl})`;
             setValue("content", `${watch("content").replace(tempText, imageText)}`);
+          } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error("Image upload failed:", error);
           }
         }
         break;
