@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import ReactMarkdown from "react-markdown";
@@ -109,6 +110,14 @@ export default function ClientPage({ title }: { title: string }) {
             <Link href={""}>{">"}</Link>
           </div> */}
         </div>
+      )}
+
+      {/* 썸네일 */}
+      {post.coverImg && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={post.coverImg} alt="coverImage" className="mx-8 mb-10 mt-6 object-contain" />
+        </>
       )}
 
       {/* 본문 */}

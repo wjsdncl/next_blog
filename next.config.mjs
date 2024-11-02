@@ -10,7 +10,7 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: ["example.com"],
+    domains: ["example.com", "zrkselfyyqkkqcmxhjlt.supabase.co"],
   },
 };
 
