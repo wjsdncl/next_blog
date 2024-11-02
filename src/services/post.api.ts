@@ -48,23 +48,14 @@ export const deletePost = async (id: number) => {
   return response.data;
 };
 
-export const writePost = async ({
-  postData,
-  coverImg = "",
-  userId,
-}: {
-  postData: PostRequest;
-  coverImg?: string;
-  userId: string;
-}) => {
-  const response = await instance.post("/posts", { ...postData, coverImg, userId });
+export const writePost = async ({ postData, userId }: { postData: PostRequest; userId: string }) => {
+  const response = await instance.post("/posts", { ...postData, userId });
   return response.data;
 };
 
 export const updatePost = async ({
   id,
   postData,
-  coverImg = "",
   userId,
 }: {
   id: number;
@@ -72,7 +63,7 @@ export const updatePost = async ({
   coverImg?: string;
   userId: string;
 }) => {
-  const response = await instance.patch(`/posts/${id}`, { ...postData, coverImg, userId });
+  const response = await instance.patch(`/posts/${id}`, { ...postData, userId });
   return response.data;
 };
 

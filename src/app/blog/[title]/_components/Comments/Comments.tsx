@@ -145,7 +145,6 @@ export default function Comments({ post }: { post?: Post }) {
 
   const handleDeleteModal = (id: number) => {
     const modalId = openModal(
-      "",
       <div className="flex flex-col gap-4">
         <p className="pb-8 pt-6 text-center text-2xl font-semibold">정말로 삭제하시겠습니까?</p>
         <div className="flex gap-4">

@@ -36,7 +36,6 @@ export default function Modal() {
             <button onClick={() => closeModal(modal.id)} className="absolute right-3 top-3 size-6">
               <CloseBold width={"100%"} height={"100%"} />
             </button>
-            {modal.title === "" ? null : <h2 className="mb-4 text-xl font-semibold">{modal.title}</h2>}
             <div>{modal.content}</div>
           </div>
         </div>

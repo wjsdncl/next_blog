@@ -9,9 +9,12 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
+import { useShallow } from "zustand/shallow";
+import PreviewModal from "./PreviewModal";
 import TagInput from "./TagInput";
 import { getPost, updatePost, uploadImage, writePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
+import useModalStore from "@/stores/ModalStore";
 import { PostRequest } from "@/types/blogType";
 import toast from "@/utils/Toast";
 
@@ -29,12 +32,10 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
   const searchParams = useSearchParams();
   const [tempId, setTempId] = useState<string>(searchParams.get("id") ?? crypto.randomUUID());
 
-  // React Hook Form 초기화
   const { handleSubmit, control, watch, setValue } = useForm<FormValues>({
     defaultValues: { title: "", category: "", content: "", tags: [] },
   });
 
-  // 폼 필드 값들 감시
   const title = watch("title");
   const markdown = watch("content");
 
@@ -56,6 +57,10 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     retry: 0,
     enabled: !!slug,
   });
+
+  const { openModal, closeModal } = useModalStore(
+    useShallow((state) => ({ openModal: state.openModal, closeModal: state.closeModal }))
+  );
 
   // 글 작성 mutation
   const completeWritingMutation = useMutation({
@@ -99,7 +104,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       return;
     }
 
-    // 임시 저장 로직
     if (!searchParams.get("id") && !slug) {
       const newId = crypto.randomUUID();
       setTempId(newId);
@@ -118,34 +122,38 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     const storedTempData = localStorage.getItem(tempId);
 
     if (slug && post) {
-      // 수정 모드일 때 기존 포스트 데이터 세팅
       setValue("title", post.title);
       setValue("category", post.category || "");
       setValue("content", post.content as string);
       setValue("tags", post.tags || []);
     } else if (storedTempData) {
-      // 임시 저장된 데이터가 있으면 불러오기
       const parsedData: FormValues = JSON.parse(storedTempData);
       setValue("title", parsedData.title);
       setValue("category", parsedData.category || "");
       setValue("content", parsedData.content);
       setValue("tags", parsedData.tags || []);
     }
-  }, [post, setValue, slug, tempId]); // 필요한 종속성만 포함
+  }, [post, setValue, slug, tempId]);
 
   // 글 작성 완료
   const completeWriting = (data: FormValues) => {
     if (completeWritingMutation.isPending || updatePostMutation.isPending) return;
+    const firstImage = markdown.match(/!\[.*?\]\((.*?)\)/)?.[1] || "";
 
-    const postData = { ...data, coverImg: "", userId: user?.id as string };
-
-    if (slug) {
-      // 글 수정 시
-      updatePostMutation.mutate({ id: Number(post?.id), postData });
-    } else {
-      // 새 글 작성 시
-      completeWritingMutation.mutate(postData);
-    }
+    const modalId = openModal(
+      <PreviewModal
+        title={data.title}
+        content={data.content}
+        initialCoverImg={firstImage}
+        onComplete={(coverImg) => {
+          const postData = { ...data, coverImg, userId: user?.id as string };
+          slug
+            ? updatePostMutation.mutate({ id: Number(post?.id), postData })
+            : completeWritingMutation.mutate(postData);
+          closeModal(modalId);
+        }}
+      />
+    );
   };
 
   // Ctrl + S로 임시 저장
@@ -156,51 +164,37 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
         temporarySave();
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [temporarySave]);
 
-  const handleDrop = async (event: React.DragEvent) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-
-    if (file && file.type.startsWith("image/")) {
-      const tempText = `\n![Uploading image...]()`;
-      setValue("content", `${watch("content")}${tempText}`);
-
-      try {
-        const imageUrl = await uploadImage(file);
-        const imageText = `\n![image](${imageUrl})`;
-        setValue("content", `${watch("content").replace(tempText, imageText)}`);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Image upload failed:", error);
-      }
+  const handleImageUpload = async (file: File, tempText: string) => {
+    setValue("content", `${watch("content")}${tempText}`);
+    try {
+      const imageUrl = await uploadImage(file);
+      setValue("content", `${watch("content").replace(tempText, `\n![image](${imageUrl})`)}`);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Image upload failed:", error);
     }
   };
 
-  const handlePaste = async (event: React.ClipboardEvent) => {
-    const items = event.clipboardData.items;
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      handleImageUpload(file, "\n![Uploading image...]()");
+    }
+  };
 
+  const handlePaste = (event: React.ClipboardEvent) => {
+    const items = event.clipboardData.items;
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-
       if (item.type.startsWith("image/")) {
         const file = item.getAsFile();
-
         if (file) {
-          const tempText = `\n![Uploading image...]()`;
-          setValue("content", `${watch("content")}${tempText}`);
-
-          try {
-            const imageUrl = await uploadImage(file);
-            const imageText = `\n![image](${imageUrl})`;
-            setValue("content", `${watch("content").replace(tempText, imageText)}`);
-          } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error("Image upload failed:", error);
-          }
+          handleImageUpload(file, "\n![Uploading image...]()");
         }
         break;
       }

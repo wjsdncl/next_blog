@@ -52,14 +52,13 @@ export default function PostHeader({ post, user }: { post: Post; user?: User }) 
       await likePost(id);
     },
     onSuccess: () => {
-      const encodedTitle = encodeURIComponent(post?.title ?? "");
+      const encodedTitle = encodeURIComponent(post?.slug ?? "");
       queryClient.invalidateQueries({ queryKey: ["post", encodedTitle] });
     },
   });
 
   const handleDeleteModal = () => {
     const modalId = openModal(
-      "",
       <div className="flex flex-col gap-4">
         <p className="pb-8 pt-6 text-center text-2xl font-semibold">정말로 삭제하시겠습니까?</p>
         <div className="flex gap-4">

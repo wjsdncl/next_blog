@@ -48,7 +48,7 @@ export default function Header() {
 
   return (
     <header className="min-h-[220px]">
-      <div className="z-10 mx-auto w-full gap-6 border-b-2 border-solid border-b-gray-600 pb-6 pt-16 tablet:w-tablet desktop:w-desktop">
+      <div className="z-10 mx-auto w-full gap-6 border-b-2 border-solid border-b-gray-600 pb-6 pt-10 tablet:w-tablet desktop:w-desktop">
         <div className="flex flex-col gap-10 px-4">
           <section className="flex items-center justify-between">
             <Link href="/" className="z-20">
