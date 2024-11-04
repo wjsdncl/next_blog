@@ -25,7 +25,7 @@ export default function Modal() {
       {modals.map((modal, index) => (
         <div
           key={modal.id}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black_opacity-10 backdrop-blur-sm transition-all duration-300 ease-in-out"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black_opacity-10 pb-60 backdrop-blur-sm transition-all duration-300 ease-in-out"
           style={{ zIndex: 1000 + index }}
           onMouseDown={(e) => handleBackgroundClick({ event: e, id: modal.id })}
         >

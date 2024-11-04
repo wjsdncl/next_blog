@@ -1,16 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ["@svgr/webpack"],
-    });
-
-    return config;
-  },
   images: {
-    domains: ["example.com", "zrkselfyyqkkqcmxhjlt.supabase.co"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "example.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "zrkselfyyqkkqcmxhjlt.supabase.co",
+        pathname: "/**",
+      },
+    ],
   },
 };
 
