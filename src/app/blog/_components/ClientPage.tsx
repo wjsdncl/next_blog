@@ -84,10 +84,9 @@ export default function ClientPage() {
   return (
     <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 tablet:w-tablet tablet:px-0">
       <Navigation totalPosts={initialTotalPosts} categoryCounts={initialCategoryCounts} />
+
       <section className="flex items-center justify-end">
-        <Suspense>
-          <SearchInput />
-        </Suspense>
+        <SearchInput />
       </section>
 
       <div className="pt-8" />

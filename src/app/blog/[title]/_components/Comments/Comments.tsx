@@ -64,8 +64,7 @@ export default function Comments({ post }: { post?: Post }) {
       await writeComment(body);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", post?.title] });
-      queryClient.invalidateQueries({ queryKey: ["post", post?.title] });
+      queryClient.invalidateQueries({ queryKey: ["comments", post?.id] });
       toast.success("댓글이 등록되었습니다.");
       reset();
       setReplyCommentId(null);
