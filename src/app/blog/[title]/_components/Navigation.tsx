@@ -9,19 +9,27 @@ import { Post } from "@/types/blogType";
 import toast from "@/utils/Toast";
 
 export default function Navigation({ post }: { post: Post }) {
+  // queryClient 초기화
   const queryClient = useQueryClient();
+
+  // DOM 참조와 위치 저장
   const navRef = useRef<HTMLDivElement | null>(null);
   const targetPosition = useRef(0);
   const currentPosition = useRef(0);
   const [initialPosition, setInitialPosition] = useState<number | null>(null);
-  const startFollowPosition = 200;
 
+  // 스크롤 따라오는 시작 위치 설정
+  const startFollowPosition = 200;
+  const encodedTitle = encodeURIComponent(post.slug);
+
+  // 유저 로그인 여부 가져오기
   const { isLoggedIn } = useUserStore(
     useShallow((state) => ({
       isLoggedIn: state.isLoggedIn,
     }))
   );
 
+  // 좋아요 요청 Mutation 설정
   const LikePostMutation = useMutation({
     mutationKey: ["likePost"],
     mutationFn: async (id: number) => {
@@ -31,12 +39,35 @@ export default function Navigation({ post }: { post: Post }) {
       }
       await likePost(id);
     },
+    onMutate: () => {
+      queryClient.setQueryData(["post", encodedTitle], (oldPost: Post | undefined) =>
+        oldPost
+          ? {
+              ...oldPost,
+              likes: oldPost.likes + (post.isLiked ? -1 : 1),
+              isLiked: !post.isLiked,
+            }
+          : oldPost
+      );
+    },
     onSuccess: () => {
-      const encodedTitle = encodeURIComponent(post?.slug ?? "");
       queryClient.invalidateQueries({ queryKey: ["post", encodedTitle] });
+    },
+    onError: () => {
+      queryClient.setQueryData(["post", encodedTitle], (oldPost: Post | undefined) =>
+        oldPost
+          ? {
+              ...oldPost,
+              likes: oldPost.likes + (post.isLiked ? -1 : 1),
+              isLiked: !post.isLiked,
+            }
+          : oldPost
+      );
+      toast.error("좋아요 요청에 실패했습니다.");
     },
   });
 
+  // 공유 버튼 클릭 핸들러
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(decodeURIComponent(window.location.href));
@@ -46,11 +77,13 @@ export default function Navigation({ post }: { post: Post }) {
     }
   };
 
+  // 좋아요 버튼 클릭 핸들러
   const handleLike = () => {
     if (LikePostMutation.isPending) return;
     LikePostMutation.mutateAsync(post.id);
   };
 
+  // 컴포넌트 마운트 시 초기 위치 저장
   useEffect(() => {
     if (navRef.current) {
       const initialTop = navRef.current.getBoundingClientRect().top + window.scrollY;
@@ -59,6 +92,7 @@ export default function Navigation({ post }: { post: Post }) {
     }
   }, []);
 
+  // 스크롤 이벤트에 따라 위치 업데이트
   useEffect(() => {
     const updatePosition = () => {
       if (navRef.current && initialPosition !== null) {
@@ -86,7 +120,6 @@ export default function Navigation({ post }: { post: Post }) {
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
