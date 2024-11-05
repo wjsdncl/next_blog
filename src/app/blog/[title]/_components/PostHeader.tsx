@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
+import Navigation from "./Navigation";
 import { deletePost } from "@/services/post.api";
 import useModalStore from "@/stores/ModalStore";
 import { User } from "@/types/authType";
@@ -65,10 +66,13 @@ export default function PostHeader({ post, user }: { post: Post; user?: User }) 
 
   return (
     <div>
-      {/* 제목 */}
-      <p className="pb-6 text-[50px] font-bold leading-[52px] text-text-primary">{post.title}</p>
+      <div className="flex items-center justify-between">
+        {/* 제목 */}
+        <p className="pb-6 text-[50px] font-bold leading-[52px] text-text-primary">{post.title}</p>
 
-      {/* 작성일, 좋아요, 공유, 수정, 삭제 */}
+        <Navigation post={post} />
+      </div>
+
       <div className="flex size-full items-center justify-between pb-4">
         <p className="grow text-base">{formatDate(post.createdAt)}</p>
         <div className="flex items-center gap-2">

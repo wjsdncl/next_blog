@@ -12,12 +12,15 @@ import { useShallow } from "zustand/shallow";
 import Comments from "./Comments/Comments";
 import Navigation from "./Navigation";
 import PostHeader from "./PostHeader";
+import useDeviceSize from "@/hooks/useDeviceSize";
 import { getPost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useUserStore from "@/stores/UserStore";
 
 export default function ClientPage({ title }: { title: string }) {
   const queryClient = useQueryClient();
+
+  const deviceWidth = useDeviceSize();
 
   const { data: post } = useQuery({
     queryKey: ["post", title],
@@ -76,8 +79,6 @@ export default function ClientPage({ title }: { title: string }) {
   return (
     <Suspense>
       <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
-        <Navigation post={post} />
-
         <PostHeader post={post} user={user} />
 
         {/* 태그 */}
@@ -130,8 +131,18 @@ export default function ClientPage({ title }: { title: string }) {
           </ReactMarkdown>
         </div>
 
-        <div className="mb-10 mt-20 rounded-full border-b-4 border-gray-300" />
+        <div className="mt-20 hidden rounded-full border-b-4 border-gray-300 desktop:mb-10 desktop:flex" />
 
+        {/* 네비게이션 */}
+        {deviceWidth !== "desktop" && (
+          <div className="mb-10 mt-20 flex w-full items-center justify-end gap-2">
+            <hr className="grow-[5] rounded-l-full border-2 border-gray-300" />
+            <Navigation post={post} />
+            <hr className="w-5 rounded-r-full border-2 border-gray-300" />
+          </div>
+        )}
+
+        {/* 댓글 */}
         <Comments post={post} />
       </div>
     </Suspense>

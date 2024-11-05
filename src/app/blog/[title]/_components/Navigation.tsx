@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/shallow";
+import useDeviceSize from "@/hooks/useDeviceSize";
 import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import Share from "@/Icons/Share";
 import { likePost } from "@/services/post.api";
@@ -20,7 +21,11 @@ export default function Navigation({ post }: { post: Post }) {
 
   // 스크롤 따라오는 시작 위치 설정
   const startFollowPosition = 200;
+
   const encodedTitle = encodeURIComponent(post.slug);
+
+  // 디바이스 사이즈 가져오기
+  const deviceWidth = useDeviceSize();
 
   // 유저 로그인 여부 가져오기
   const { isLoggedIn } = useUserStore(
@@ -41,13 +46,7 @@ export default function Navigation({ post }: { post: Post }) {
     },
     onMutate: () => {
       queryClient.setQueryData(["post", encodedTitle], (oldPost: Post | undefined) =>
-        oldPost
-          ? {
-              ...oldPost,
-              likes: oldPost.likes + (post.isLiked ? -1 : 1),
-              isLiked: !post.isLiked,
-            }
-          : oldPost
+        oldPost ? { ...oldPost, likes: oldPost.likes + (post.isLiked ? -1 : 1), isLiked: !post.isLiked } : oldPost
       );
     },
     onSuccess: () => {
@@ -55,13 +54,7 @@ export default function Navigation({ post }: { post: Post }) {
     },
     onError: () => {
       queryClient.setQueryData(["post", encodedTitle], (oldPost: Post | undefined) =>
-        oldPost
-          ? {
-              ...oldPost,
-              likes: oldPost.likes + (post.isLiked ? -1 : 1),
-              isLiked: !post.isLiked,
-            }
-          : oldPost
+        oldPost ? { ...oldPost, likes: oldPost.likes + (post.isLiked ? -1 : 1), isLiked: !post.isLiked } : oldPost
       );
       toast.error("좋아요 요청에 실패했습니다.");
     },
@@ -94,6 +87,13 @@ export default function Navigation({ post }: { post: Post }) {
 
   // 스크롤 이벤트에 따라 위치 업데이트
   useEffect(() => {
+    if (deviceWidth !== "desktop") {
+      if (navRef.current) {
+        navRef.current.style.transform = "translateY(0)";
+      }
+      return;
+    }
+
     const updatePosition = () => {
       if (navRef.current && initialPosition !== null) {
         const distance = targetPosition.current - currentPosition.current;
@@ -123,27 +123,27 @@ export default function Navigation({ post }: { post: Post }) {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [initialPosition]);
+  }, [deviceWidth, initialPosition]);
 
   return (
     <nav
       ref={navRef}
-      className="-left-32 top-28 flex flex-col items-center gap-2 rounded-full border-2 border-gray-300 px-3 py-4 text-text-primary desktop:absolute desktop:overflow-hidden"
+      className="-left-32 top-28 flex items-center gap-2 rounded-full border-gray-300 text-text-primary desktop:absolute desktop:flex-col desktop:overflow-hidden desktop:border-2 desktop:px-3 desktop:py-4"
     >
       <button type="button" onClick={handleLike}>
-        <div aria-label="like">
+        <div aria-label="like" className="size-5 desktop:size-8">
           {post.isLiked ? (
-            <FavoriteFilled width={36} height={36} color="#656079" />
+            <FavoriteFilled width={"100%"} height={"100%"} color="#656079" />
           ) : (
-            <FavoriteEmpty width={36} height={36} color="var(--text-primary)" />
+            <FavoriteEmpty width={"100%"} height={"100%"} color="var(--text-primary)" />
           )}
         </div>
       </button>
 
       <p className="font-medium">{post.likes}</p>
 
-      <button type="button" onClick={handleShare}>
-        <Share width={32} height={32} color="var(--text-primary)" />
+      <button type="button" onClick={handleShare} className="size-5 desktop:size-8">
+        <Share width={"100%"} height={"100%"} color="var(--text-primary)" />
       </button>
     </nav>
   );

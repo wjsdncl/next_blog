@@ -26,9 +26,12 @@ export default function Navigation({ totalPosts, categoryCounts }: NavigationPro
   }, []);
 
   useEffect(() => {
-    console.log(deviceWidth);
-
-    if (deviceWidth !== "desktop") return;
+    if (deviceWidth !== "desktop") {
+      if (navRef.current) {
+        navRef.current.style.transform = "translateY(0)";
+      }
+      return;
+    }
 
     const updatePosition = () => {
       if (navRef.current && initialPosition !== null) {
