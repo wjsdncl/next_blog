@@ -89,7 +89,7 @@ export default {
           css: {
             maxWidth: "100%",
             margin: "2rem 0",
-            color: "var(--color-text-primary)",
+            color: "var(--text-primary)",
             h1: {
               position: "relative",
               marginTop: "1.5rem",

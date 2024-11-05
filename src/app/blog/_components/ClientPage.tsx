@@ -4,7 +4,7 @@ import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-quer
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useRef, useEffect, Suspense, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import removeMarkdown from "remove-markdown";
 import { useShallow } from "zustand/shallow";
 import Navigation from "./Navigation";
@@ -84,10 +84,9 @@ export default function ClientPage() {
   return (
     <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 tablet:w-tablet tablet:px-0">
       <Navigation totalPosts={initialTotalPosts} categoryCounts={initialCategoryCounts} />
+
       <section className="flex items-center justify-end">
-        <Suspense>
-          <SearchInput />
-        </Suspense>
+        <SearchInput />
       </section>
 
       <div className="pt-8" />

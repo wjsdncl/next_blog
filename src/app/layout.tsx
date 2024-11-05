@@ -57,7 +57,7 @@ export default async function RootLayout({ children }: Readonly<React.PropsWithC
   }
 
   return (
-    <html lang="ko" className={pretendard.variable}>
+    <html lang="ko" className={`${pretendard.variable} dark`}>
       <body className="size-full min-h-dvh bg-background-primary font-pretendard text-text-primary">
         <ThemeProvider>
           <QueryProvider>

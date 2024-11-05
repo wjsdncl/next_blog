@@ -1,9 +1,8 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -11,7 +10,9 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
 import Comments from "./Comments/Comments";
+import Navigation from "./Navigation";
 import PostHeader from "./PostHeader";
+import useDeviceSize from "@/hooks/useDeviceSize";
 import { getPost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useUserStore from "@/stores/UserStore";
@@ -19,11 +20,13 @@ import useUserStore from "@/stores/UserStore";
 export default function ClientPage({ title }: { title: string }) {
   const queryClient = useQueryClient();
 
+  const deviceWidth = useDeviceSize();
+
   const { data: post } = useQuery({
     queryKey: ["post", title],
     queryFn: () => getPost(title),
     initialData: () => {
-      return queryClient.getQueryData(["posts", title]);
+      return queryClient.getQueryData(["post", title]);
     },
     retry: 0,
   });
@@ -74,62 +77,68 @@ export default function ClientPage({ title }: { title: string }) {
   }
 
   return (
-    <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
-      <PostHeader post={post} user={user} />
+    <Suspense>
+      <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
+        <PostHeader post={post} user={user} />
 
-      {/* 태그 */}
-      {post.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 pb-5">
-          {post.tags.map((tag) => (
-            <Link
-              key={tag}
-              href={`/blog?tag=${tag}`}
-              className="rounded-md bg-gray-200 px-2 py-1 text-base font-medium"
-            >
-              {tag}
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {/* 카테고리 */}
-      {post.category && (
-        <div className="mb-10 flex h-fit max-h-[200px] w-full rounded-xl bg-gray-200 p-8">
-          <div className="grow">
-            <Link
-              href={`/blog?category=${post.category}`}
-              className="text-2xl font-bold text-text-primary hover:underline"
-            >
-              [ {post.category} ]
-            </Link>
+        {/* 태그 */}
+        {post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 pb-5">
+            {post.tags.map((tag) => (
+              <Link
+                key={tag}
+                href={`/blog?tag=${tag}`}
+                className="rounded-md bg-gray-200 px-2 py-1 text-base font-medium"
+              >
+                {tag}
+              </Link>
+            ))}
           </div>
+        )}
 
-          {/* <div className="flex h-[60px] items-end gap-2 text-sm font-medium">
-            <span className="font-sans">1/1</span>
-            <Link href={""}>{"<"}</Link>
-            <Link href={""}>{">"}</Link>
-          </div> */}
+        {/* 카테고리 */}
+        {post.category && (
+          <div className="mb-10 flex h-fit max-h-[200px] w-full rounded-xl bg-gray-200 p-8">
+            <div className="grow">
+              <Link
+                href={`/blog?category=${post.category}`}
+                className="text-2xl font-bold text-text-primary hover:underline"
+              >
+                [ {post.category} ]
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* 썸네일 */}
+        {post.coverImg && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={post.coverImg} alt="coverImage" className="mx-5 mb-8 mt-4 object-contain" />
+          </>
+        )}
+
+        {/* 본문 */}
+        <div className="prose text-lg prose-headings:text-text-primary prose-a:text-brand_dark-primary prose-strong:text-text-primary">
+          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
+            {post.content}
+          </ReactMarkdown>
         </div>
-      )}
 
-      {/* 썸네일 */}
-      {post.coverImg && (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={post.coverImg} alt="coverImage" className="mx-8 mb-10 mt-6 object-contain" />
-        </>
-      )}
+        <div className="mt-20 hidden rounded-full border-b-4 border-gray-300 desktop:mb-10 desktop:flex" />
 
-      {/* 본문 */}
-      <div className="prose prose-invert text-lg text-text-primary">
-        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
-          {post.content}
-        </ReactMarkdown>
+        {/* 네비게이션 */}
+        {deviceWidth !== "desktop" && (
+          <div className="mb-10 mt-20 flex w-full items-center justify-end gap-2">
+            <hr className="grow-[5] rounded-l-full border-2 border-gray-300" />
+            <Navigation post={post} />
+            <hr className="w-5 rounded-r-full border-2 border-gray-300" />
+          </div>
+        )}
+
+        {/* 댓글 */}
+        <Comments post={post} />
       </div>
-
-      <div className="mb-10 mt-20 rounded-full border-b-4 border-gray-300" />
-
-      <Comments post={post} />
-    </div>
+    </Suspense>
   );
 }

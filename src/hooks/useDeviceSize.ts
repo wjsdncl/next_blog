@@ -18,7 +18,7 @@ const getDeviceSize = () => {
     const screenWidth = window.innerWidth;
     if (screenWidth < 768) {
       return "mobile";
-    } else if (screenWidth <= 1200) {
+    } else if (screenWidth < 1200) {
       return "tablet";
     } else {
       return "desktop";
