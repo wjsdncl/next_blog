@@ -3,10 +3,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
-import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
-import { deletePost, likePost } from "@/services/post.api";
+import { deletePost } from "@/services/post.api";
 import useModalStore from "@/stores/ModalStore";
-import useUserStore from "@/stores/UserStore";
 import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
 import formatDate from "@/utils/FormatDate";
@@ -15,12 +13,6 @@ import toast from "@/utils/Toast";
 export default function PostHeader({ post, user }: { post: Post; user?: User }) {
   const queryClient = useQueryClient();
   const router = useRouter();
-
-  const { isLoggedIn } = useUserStore(
-    useShallow((state) => ({
-      isLoggedIn: state.isLoggedIn,
-    }))
-  );
 
   const { openModal, closeModal } = useModalStore(
     useShallow((state) => ({
@@ -39,21 +31,6 @@ export default function PostHeader({ post, user }: { post: Post; user?: User }) 
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
       router.push("/blog");
-    },
-  });
-
-  const LikePostMutation = useMutation({
-    mutationKey: ["likePost"],
-    mutationFn: async (id: number) => {
-      if (!isLoggedIn) {
-        toast.error("로그인이 필요한 서비스입니다.");
-        return;
-      }
-      await likePost(id);
-    },
-    onSuccess: () => {
-      const encodedTitle = encodeURIComponent(post?.slug ?? "");
-      queryClient.invalidateQueries({ queryKey: ["post", encodedTitle] });
     },
   });
 
@@ -86,20 +63,6 @@ export default function PostHeader({ post, user }: { post: Post; user?: User }) 
     router.push(`/blog/write?title=${post?.slug}`);
   };
 
-  const handleShare = async () => {
-    try {
-      await navigator.clipboard.writeText(decodeURIComponent(window.location.href));
-      toast.success("링크가 클립보드에 복사되었습니다.");
-    } catch (err) {
-      toast.error("링크 복사에 실패했습니다.");
-    }
-  };
-
-  const handleLike = () => {
-    if (LikePostMutation.isPending) return;
-    LikePostMutation.mutateAsync(post.id);
-  };
-
   return (
     <div>
       {/* 제목 */}
@@ -109,20 +72,6 @@ export default function PostHeader({ post, user }: { post: Post; user?: User }) 
       <div className="flex size-full items-center justify-between pb-4">
         <p className="grow text-base">{formatDate(post.createdAt)}</p>
         <div className="flex items-center gap-2">
-          <button type="button" onClick={handleLike} className="flex items-center gap-1 text-base text-text-primary">
-            <div aria-label="like">
-              {post.isLiked ? (
-                <FavoriteFilled width={18} height={18} color="#656079" />
-              ) : (
-                <FavoriteEmpty width={18} height={18} color="var(--text-primary)" />
-              )}
-            </div>
-            {post.likes}
-          </button>
-
-          <button type="button" onClick={handleShare} className="text-base text-text-primary hover:underline">
-            공유
-          </button>
           {user && user.isAdmin && (
             <>
               <button type="button" onClick={handleEdit} className="text-base text-text-primary hover:underline">

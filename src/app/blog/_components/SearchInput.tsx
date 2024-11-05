@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback } from "react";
 import Category from "@/Icons/Category";
 import SearchIcon from "@/Icons/Search";
 import { debounce } from "@/utils/DelayManager";

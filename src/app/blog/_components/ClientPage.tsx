@@ -4,7 +4,7 @@ import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-quer
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useRef, useEffect, Suspense, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import removeMarkdown from "remove-markdown";
 import { useShallow } from "zustand/shallow";
 import Navigation from "./Navigation";
