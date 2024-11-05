@@ -26,7 +26,7 @@ export default function ClientPage({ title }: { title: string }) {
     queryKey: ["post", title],
     queryFn: () => getPost(title),
     initialData: () => {
-      return queryClient.getQueryData(["posts", title]);
+      return queryClient.getQueryData(["post", title]);
     },
     retry: 0,
   });
@@ -107,12 +107,6 @@ export default function ClientPage({ title }: { title: string }) {
                 [ {post.category} ]
               </Link>
             </div>
-
-            {/* <div className="flex h-[60px] items-end gap-2 text-sm font-medium">
-            <span className="font-sans">1/1</span>
-            <Link href={""}>{"<"}</Link>
-            <Link href={""}>{">"}</Link>
-          </div> */}
           </div>
         )}
 
@@ -120,12 +114,12 @@ export default function ClientPage({ title }: { title: string }) {
         {post.coverImg && (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={post.coverImg} alt="coverImage" className="mx-8 mb-10 mt-6 object-contain" />
+            <img src={post.coverImg} alt="coverImage" className="mx-5 mb-8 mt-4 object-contain" />
           </>
         )}
 
         {/* 본문 */}
-        <div className="prose prose-invert text-lg text-text-primary">
+        <div className="prose text-lg prose-headings:text-text-primary prose-a:text-brand_dark-primary prose-strong:text-text-primary">
           <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
             {post.content}
           </ReactMarkdown>
