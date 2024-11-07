@@ -8,7 +8,7 @@ import { deletePost } from "@/services/post.api";
 import useModalStore from "@/stores/ModalStore";
 import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
-import formatDate from "@/utils/FormatDate";
+import { formatDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
 
 export default function PostHeader({ post, user }: { post: Post; user?: User }) {

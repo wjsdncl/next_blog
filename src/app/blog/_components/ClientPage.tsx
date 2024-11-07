@@ -13,7 +13,7 @@ import { getPostList } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useUserStore from "@/stores/UserStore";
 import { Post } from "@/types/blogType";
-import formatDate from "@/utils/FormatDate";
+import { formatDate } from "@/utils/FormatDate";
 
 export default function ClientPage() {
   const searchParams = useSearchParams();
@@ -42,7 +42,7 @@ export default function ClientPage() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ["posts", searchQuery, categoryQuery, tagQuery],
     queryFn: ({ pageParam = 0 }) =>
-      getPostList({ pageParam, search: searchQuery, category: categoryQuery, tag: tagQuery }),
+      getPostList({ offset: pageParam, search: searchQuery, category: categoryQuery, tag: tagQuery }),
     getNextPageParam: (lastPage) => (!lastPage.isLast ? lastPage.nextPage : undefined),
     initialPageParam: 0,
   });
