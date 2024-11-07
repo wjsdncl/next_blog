@@ -2,12 +2,16 @@ import instance from "./axios";
 import { CategoryCounts, Post, PostRequest } from "@/types/blogType";
 
 export const getPostList = async ({
-  pageParam = 0,
+  offset = 0,
+  limit = 10,
+  order,
   search,
   category,
   tag,
 }: {
-  pageParam?: number;
+  offset?: number;
+  limit?: number;
+  order?: "oldest" | "newest" | "like";
   search?: string;
   category?: string;
   tag?: string;
@@ -18,9 +22,10 @@ export const getPostList = async ({
   isLast: boolean;
   nextPage: number;
 }> => {
-  const params: { offset: number; limit: number; search?: string; category?: string; tag?: string } = {
-    offset: pageParam,
-    limit: 10,
+  const params: { offset: number; limit: number; order?: string; search?: string; category?: string; tag?: string } = {
+    offset,
+    limit: limit,
+    order: order,
   };
 
   if (search) params.search = search;
@@ -35,7 +40,7 @@ export const getPostList = async ({
 
   const { posts, totalPosts, categoryCounts } = response.data;
   const isLast = posts.length < 10;
-  return { posts, totalPosts, isLast, nextPage: pageParam + 10, categoryCounts };
+  return { posts, totalPosts, isLast, nextPage: offset + 10, categoryCounts };
 };
 
 export const getPost = async (title: string) => {

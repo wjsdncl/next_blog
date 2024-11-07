@@ -45,6 +45,8 @@ export default function Navigation({ post }: { post: Post }) {
       await likePost(id);
     },
     onMutate: () => {
+      if (!isLoggedIn) return;
+
       queryClient.setQueryData(["post", encodedTitle], (oldPost: Post | undefined) =>
         oldPost ? { ...oldPost, likes: oldPost.likes + (post.isLiked ? -1 : 1), isLiked: !post.isLiked } : oldPost
       );

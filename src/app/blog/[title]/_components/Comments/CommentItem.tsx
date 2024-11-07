@@ -5,7 +5,7 @@ import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import { likeComment } from "@/services/comment.api";
 import { User } from "@/types/authType";
 import { Comment } from "@/types/blogType";
-import formatDate from "@/utils/FormatDate";
+import { formatDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
 
 interface CommentFormInputs {
