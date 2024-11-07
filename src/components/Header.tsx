@@ -5,7 +5,6 @@ import { setCookie } from "cookies-next";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
-import ThemeToggle from "./ThemeToggle";
 import GitHub from "@/Icons/Github";
 import { Mail } from "@/Icons/Mail";
 import { getUser } from "@/services/user.api";
@@ -114,6 +113,10 @@ export default function Header() {
 
                 <li>
                   <Link href="/blog">Blog</Link>
+                </li>
+
+                <li>
+                  <Link href="/portfolio">Portfolio</Link>
                 </li>
 
                 <li>
