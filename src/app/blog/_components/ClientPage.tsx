@@ -9,11 +9,12 @@ import removeMarkdown from "remove-markdown";
 import { useShallow } from "zustand/shallow";
 import Navigation from "./Navigation";
 import SearchInput from "./SearchInput";
+import { FavoriteEmpty } from "@/Icons/Favorite";
 import { getPostList } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useUserStore from "@/stores/UserStore";
 import { Post } from "@/types/blogType";
-import { formatDate } from "@/utils/FormatDate";
+import { diffDate } from "@/utils/FormatDate";
 
 export default function ClientPage() {
   const searchParams = useSearchParams();
@@ -105,7 +106,7 @@ export default function ClientPage() {
                   {blog.category && <span className="pr-2">[{blog.category}]</span>}
                   {blog.title}
                 </h2>
-                <p className="line-clamp-4 text-lg">{removeMarkdown(blog.content as string)}</p>
+                <p className="line-clamp-4 text-lg">{removeMarkdown(blog.content?.slice(0, 500) as string)}</p>
               </Link>
 
               {blog.tags.length > 0 && (
@@ -118,12 +119,13 @@ export default function ClientPage() {
                 </div>
               )}
 
-              <div className="flex gap-1 text-gray-500">
-                <p>{formatDate(blog.createdAt)}</p>
-                <span>.</span>
+              <div className="flex items-center gap-1 text-gray-500">
+                <p>{diffDate(blog.createdAt)}</p>
+                <span className="font-extrabold">·</span>
                 <p>댓글 {blog._count?.comments || 0}</p>
-                <span>.</span>
-                <p>좋아요 {blog.likes}</p>
+                <span className="font-extrabold">·</span>
+                <FavoriteEmpty width={14} height={14} color="var(--color-gray-500)" />
+                {blog.likes ?? 0}
               </div>
             </article>
           ))
