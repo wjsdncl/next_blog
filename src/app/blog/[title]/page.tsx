@@ -1,5 +1,6 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import axios from "axios";
+import { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 import ClientPage from "./_components/ClientPage";
@@ -40,4 +41,29 @@ export default async function Page({ params }: { params: { title: string } }) {
       </div>
     </HydrationBoundary>
   );
+}
+
+export async function generateMetadata({ params }: { params: { title: string } }): Promise<Metadata> {
+  const decodedTitle = decodeURIComponent(params.title).replace(/-/g, " ");
+
+  try {
+    return {
+      title: `${decodedTitle} | JMJ's Devlog`,
+      description: `${decodedTitle}에 대한 블로그 게시글`,
+      openGraph: {
+        title: `${decodedTitle} | JMJ's Devlog`,
+        description: `${decodedTitle}에 대한 블로그 게시글`,
+        type: "article",
+      },
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
+  } catch (error) {
+    return {
+      title: "블로그 게시글을 찾을 수 없습니다. | JMJ's Devlog",
+      description: "블로그 게시글을 찾을 수 없습니다.",
+    };
+  }
 }

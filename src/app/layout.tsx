@@ -26,8 +26,30 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "개발 블로그",
-  description: "next.js로 만든 개발 블로그입니다.",
+  title: "개발 블로그 | JMJ's Devlog",
+  description: "개발 블로그 및 포트폴리오 사이트입니다.",
+  keywords:
+    "next.js, react, typescript, tailwindcss, prettier, eslint, blog, portfolio, web development, frontend, backend, fullstack, 블로그, 포트폴리오, 웹 개발, 프론트엔드, 백엔드, 풀스택, 개발, 프로그래밍",
+  openGraph: {
+    title: "개발 블로그 | JMJ's Devlog",
+    description: "개발 블로그 및 포트폴리오 사이트입니다.",
+    url: "https://wjsdncl-dev-hub.vercel.app/",
+    type: "website",
+    locale: "ko_KR",
+    siteName: "JMJ's Devlog",
+    images: [
+      {
+        url: "/images/meta.webp",
+        width: 630,
+        height: 630,
+        alt: "개발 블로그 메타 이미지",
+      },
+    ],
+  },
+  robots: "index, follow",
+  alternates: {
+    canonical: "https://wjsdncl-dev-hub.vercel.app/",
+  },
 };
 
 export default async function RootLayout({ children }: Readonly<React.PropsWithChildren>) {
