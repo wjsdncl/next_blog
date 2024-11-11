@@ -130,7 +130,7 @@ export default function Navigation({ post }: { post: Post }) {
   return (
     <nav
       ref={navRef}
-      className="-left-32 top-28 flex items-center gap-2 rounded-full border-gray-300 text-text-primary desktop:absolute desktop:flex-col desktop:overflow-hidden desktop:border-2 desktop:px-3 desktop:py-4"
+      className="-left-28 top-28 flex items-center gap-2 rounded-full border-gray-300 text-text-primary desktop:absolute desktop:flex-col desktop:overflow-hidden desktop:border-2 desktop:px-3 desktop:py-4"
     >
       <button type="button" onClick={handleLike}>
         <div aria-label="like" className="size-5 desktop:size-8">

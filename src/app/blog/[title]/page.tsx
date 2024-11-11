@@ -1,5 +1,6 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import axios from "axios";
+import { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 import ClientPage from "./_components/ClientPage";
@@ -40,4 +41,12 @@ export default async function Page({ params }: { params: { title: string } }) {
       </div>
     </HydrationBoundary>
   );
+}
+
+export async function generateMetadata({ params }: { params: { title: string } }): Promise<Metadata> {
+  const decodedTitle = decodeURIComponent(params.title).replace(/-/g, " ");
+
+  return {
+    title: decodedTitle,
+  };
 }
