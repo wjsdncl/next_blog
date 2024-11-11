@@ -121,7 +121,7 @@ export default {
               lineHeight: "1.5",
             },
             blockquote: {
-              borderLeftColor: "#888497",
+              borderLeftColor: "#656079",
               paddingLeft: "1rem",
               fontStyle: "normal",
               quotes: "none",
@@ -163,7 +163,7 @@ export default {
               border: "1px solid var(--color-gray-300)",
             },
             "tbody tr:nth-child(even)": {
-              backgroundColor: "#101010", // 투명도 50% 적용
+              backgroundColor: "#101010",
             },
           },
         },
