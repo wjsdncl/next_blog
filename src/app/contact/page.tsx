@@ -1,5 +1,6 @@
 "use client";
 
+import { Metadata } from "next";
 import Form from "@/components/Form";
 
 export default function Page() {
@@ -40,4 +41,27 @@ export default function Page() {
       </div>
     </div>
   );
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    return {
+      title: "블로그 게시글 목록 | JMJ's Devlog",
+      description: "JMJ의 개발 블로그 게시글 목록입니다.",
+      openGraph: {
+        title: "블로그 게시글 목록 | JMJ's Devlog",
+        description: "JMJ의 개발 블로그 게시글 목록입니다.",
+        type: "website",
+      },
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
+  } catch (error) {
+    return {
+      title: "블로그 포스트",
+      description: "블로그 포스트를 찾을 수 없습니다.",
+    };
+  }
 }

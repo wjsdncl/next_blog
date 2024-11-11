@@ -46,7 +46,24 @@ export default async function Page({ params }: { params: { title: string } }) {
 export async function generateMetadata({ params }: { params: { title: string } }): Promise<Metadata> {
   const decodedTitle = decodeURIComponent(params.title).replace(/-/g, " ");
 
-  return {
-    title: decodedTitle,
-  };
+  try {
+    return {
+      title: `${decodedTitle} | JMJ's Devlog`,
+      description: `${decodedTitle}에 대한 블로그 게시글`,
+      openGraph: {
+        title: `${decodedTitle} | JMJ's Devlog`,
+        description: `${decodedTitle}에 대한 블로그 게시글`,
+        type: "article",
+      },
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
+  } catch (error) {
+    return {
+      title: "블로그 게시글을 찾을 수 없습니다. | JMJ's Devlog",
+      description: "블로그 게시글을 찾을 수 없습니다.",
+    };
+  }
 }
