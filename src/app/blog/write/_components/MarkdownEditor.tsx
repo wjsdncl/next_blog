@@ -64,7 +64,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
 
   // 글 작성 mutation
   const completeWritingMutation = useMutation({
-    mutationKey: ["writePost"],
     mutationFn: async (data: PostRequest) => writePost({ postData: data, userId: user?.id as string }),
     onSuccess: () => {
       localStorage.removeItem(tempId); // 임시 저장 데이터 제거
@@ -76,7 +75,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
 
   // 글 수정 mutation
   const updatePostMutation = useMutation({
-    mutationKey: ["updatePost"],
     mutationFn: async (data: { id: number; postData: PostRequest }) =>
       updatePost({ id: data.id, postData: data.postData, userId: user?.id as string }),
     onSuccess: () => {
@@ -104,18 +102,14 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       return;
     }
 
-    if (!searchParams.get("id") && !slug) {
-      const newId = crypto.randomUUID();
-      setTempId(newId);
-      addIdToSearchParams(newId);
-      localStorage.setItem(newId, JSON.stringify({ ...watch() }));
-    } else if (slug) {
-      setTempId(slug);
-      localStorage.setItem(slug, JSON.stringify({ ...watch() }));
-    }
+    // 새 데이터로 항상 덮어쓰기
+    const newId = searchParams.get("id") || slug || crypto.randomUUID();
+    setTempId(newId);
+    addIdToSearchParams(newId);
+    localStorage.setItem(newId, JSON.stringify({ ...watch() }));
 
     toast.success("임시저장되었습니다.");
-  }, [slug, title, markdown, searchParams, watch, addIdToSearchParams]); // 필요한 종속성만 포함
+  }, [addIdToSearchParams, markdown, searchParams, slug, title, watch]);
 
   // 임시 저장된 데이터 불러오기
   useEffect(() => {
@@ -168,6 +162,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [temporarySave]);
 
+  // 이미지 업로드
   const handleImageUpload = async (file: File, tempText: string) => {
     setValue("content", `${watch("content")}${tempText}`);
     try {
@@ -179,6 +174,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     }
   };
 
+  // 이미지 드래그 앤 드랍
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
@@ -187,6 +183,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     }
   };
 
+  // 이미지 붙여넣기
   const handlePaste = (event: React.ClipboardEvent) => {
     const items = event.clipboardData.items;
     for (let i = 0; i < items.length; i++) {

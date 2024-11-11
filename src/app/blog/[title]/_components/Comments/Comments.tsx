@@ -26,12 +26,9 @@ export default function Comments({ post }: { post?: Post }) {
   const [limit] = useState(10); // 한 페이지당 보여줄 댓글 수
   const offset = (page - 1) * limit; // 현재 페이지에 따라 offset 계산
 
-  const { isLoggedIn } = useUserStore(
-    useShallow((state) => ({
-      isLoggedIn: state.isLoggedIn,
-    }))
-  );
+  const { isLoggedIn } = useUserStore(useShallow((state) => ({ isLoggedIn: state.isLoggedIn })));
 
+  // 사용자 데이터 가져오기
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
@@ -42,6 +39,7 @@ export default function Comments({ post }: { post?: Post }) {
     },
   });
 
+  // 댓글 데이터 가져오기
   const { data: comments, isFetching } = useQuery({
     queryKey: ["comments", post?.id, offset, limit],
     queryFn: () => getComments(post?.id as number, offset, limit),
@@ -49,8 +47,10 @@ export default function Comments({ post }: { post?: Post }) {
     retry: 0,
   });
 
+  // 총 페이지 수 계산
   const totalPages = Math.ceil((comments?.parentComments ?? 0) / limit);
 
+  // 댓글 작성 폼
   const {
     register,
     handleSubmit,
@@ -58,8 +58,8 @@ export default function Comments({ post }: { post?: Post }) {
     formState: { isSubmitting },
   } = useForm<CommentFormInputs>();
 
+  // 댓글 작성 mutation
   const writeCommentMutation = useMutation({
-    mutationKey: ["writeComment"],
     mutationFn: async (body: CommentRequest) => {
       await writeComment(body);
     },
@@ -74,8 +74,8 @@ export default function Comments({ post }: { post?: Post }) {
     },
   });
 
+  // 댓글 수정 mutation
   const editCommentMutation = useMutation({
-    mutationKey: ["editComment"],
     mutationFn: async ({ id, content }: { id: number; content: string }) => {
       await editComment(id, content);
     },
@@ -89,8 +89,8 @@ export default function Comments({ post }: { post?: Post }) {
     },
   });
 
+  // 댓글 삭제 mutation
   const deleteCommentMutation = useMutation({
-    mutationKey: ["deleteComment"],
     mutationFn: async (id: number) => {
       await deleteComment(id);
     },
@@ -110,6 +110,7 @@ export default function Comments({ post }: { post?: Post }) {
     }))
   );
 
+  // 댓글 작성 함수
   const onSubmit = (data: CommentFormInputs) => {
     if (writeCommentMutation.isPending || !post) return;
     writeCommentMutation.mutate({
@@ -120,14 +121,17 @@ export default function Comments({ post }: { post?: Post }) {
     });
   };
 
+  // 답글 작성 함수
   const handleReply = (commentId: number) => {
     setReplyCommentId(replyCommentId === commentId ? null : commentId);
   };
 
+  // 댓글 수정 함수
   const handleEdit = (commentId: number) => {
     setEditCommentId(commentId);
   };
 
+  // 답글 작성 함수
   const handleSubmitReply = (content: string, parentCommentId: number) => {
     if (writeCommentMutation.isPending || !post) return;
     writeCommentMutation.mutate({
@@ -138,10 +142,12 @@ export default function Comments({ post }: { post?: Post }) {
     });
   };
 
+  // 수정한 댓글 등록 함수
   const handleSubmitEdit = (content: string, commentId: number) => {
     editCommentMutation.mutate({ id: commentId, content });
   };
 
+  // 댓글 삭제 모달
   const handleDeleteModal = (id: number) => {
     const modalId = openModal(
       <div className="flex flex-col gap-4">

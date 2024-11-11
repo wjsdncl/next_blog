@@ -1,6 +1,7 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import axios from "axios";
 import { cookies } from "next/headers";
+import { Suspense } from "react";
 import ClientPage from "./_components/ClientPage";
 import getQueryClient from "@/components/QueryClient";
 
@@ -32,7 +33,11 @@ export default async function Page({ params }: { params: { title: string } }) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ClientPage title={title} />
+      <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
+        <Suspense>
+          <ClientPage title={title} />
+        </Suspense>
+      </div>
     </HydrationBoundary>
   );
 }
