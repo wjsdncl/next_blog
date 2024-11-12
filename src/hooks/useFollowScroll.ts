@@ -1,7 +1,7 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import useDeviceSize from "./useDeviceSize";
 
-export default function useFollowScroll<T extends HTMLElement>(startFollowPosition: number = 200) {
+export default function useFollowScroll<T extends HTMLElement>(startFollowPosition = 200, damping = 0.5) {
   const elementRef = useRef<T | null>(null);
   const targetPosition = useRef(0);
   const currentPosition = useRef(0);
@@ -18,6 +18,19 @@ export default function useFollowScroll<T extends HTMLElement>(startFollowPositi
     }
   }, [deviceSize]);
 
+  const updatePosition = useCallback(() => {
+    if (elementRef.current && initialPosition !== null) {
+      const distance = targetPosition.current - currentPosition.current;
+
+      currentPosition.current += distance * damping;
+      elementRef.current.style.transform = `translateY(${currentPosition.current - initialPosition}px)`;
+
+      if (Math.abs(distance) > 0.5) {
+        requestAnimationFrame(updatePosition);
+      }
+    }
+  }, [damping, initialPosition]);
+
   useEffect(() => {
     if (deviceSize !== "desktop") {
       if (elementRef.current) {
@@ -25,20 +38,6 @@ export default function useFollowScroll<T extends HTMLElement>(startFollowPositi
       }
       return;
     }
-
-    const updatePosition = () => {
-      if (elementRef.current && initialPosition !== null) {
-        const distance = targetPosition.current - currentPosition.current;
-        const damping = 0.05;
-
-        currentPosition.current += distance * damping;
-        elementRef.current.style.transform = `translateY(${currentPosition.current - initialPosition}px)`;
-
-        if (Math.abs(distance) > 0.5) {
-          requestAnimationFrame(updatePosition);
-        }
-      }
-    };
 
     const handleScroll = () => {
       if (initialPosition !== null) {
@@ -56,7 +55,7 @@ export default function useFollowScroll<T extends HTMLElement>(startFollowPositi
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [deviceSize, initialPosition, startFollowPosition]);
+  }, [deviceSize, initialPosition, startFollowPosition, updatePosition]);
 
   return elementRef;
 }

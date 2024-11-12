@@ -8,12 +8,14 @@ import useUserStore from "@/stores/UserStore";
 import { Post } from "@/types/blogType";
 import toast from "@/utils/Toast";
 
+const SCROLL_THRESHOLD = 200;
+
 export default function Navigation({ post }: { post: Post }) {
   // queryClient 초기화
   const queryClient = useQueryClient();
 
   // DOM 참조와 위치 저장
-  const navRef = useFollowScroll<HTMLDivElement>(200);
+  const navRef = useFollowScroll<HTMLDivElement>(SCROLL_THRESHOLD);
 
   const encodedTitle = encodeURIComponent(post.slug);
 

@@ -1,33 +1,40 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import useFollowScroll from "@/hooks/useFollowScroll";
 
 interface GenerateTOCProps {
   content: string;
 }
+const SCROLL_THRESHOLD = 200;
+const OBSERVER_OPTIONS = {
+  rootMargin: "0px 0px -80% 0px",
+  threshold: 1.0,
+} as const;
 
+/**
+ * 목차를 생성하는 컴포넌트
+ *
+ * @param {string} content - 마크다운 내용
+ * @returns {JSX.Element} 목차 컴포넌트
+ */
 export default function GenerateTOC({ content }: GenerateTOCProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const tocRef = useFollowScroll<HTMLUListElement>(200);
-  const headings = content.match(/^#{1,3} .+/gm);
+  const tocRef = useFollowScroll<HTMLUListElement>(SCROLL_THRESHOLD);
+  const headings = content.match(/^#{1,3}\s+(.+)$/gm);
   const headingElementsRef = useRef<(HTMLHeadingElement | null)[]>([]);
 
   useEffect(() => {
     if (!headings) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const index = headingElementsRef.current.findIndex((el) => el === entry.target);
-          if (entry.isIntersecting && index !== -1) {
-            setSelectedIndex(index);
-          }
-        });
-      },
-      {
-        rootMargin: "0px 0px -80% 0px",
-        threshold: 1.0,
-      }
-    );
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const index = headingElementsRef.current.findIndex((el) => el === entry.target);
+        if (entry.isIntersecting && index !== -1) {
+          setSelectedIndex(index);
+        }
+      });
+    }, OBSERVER_OPTIONS);
 
     headingElementsRef.current.forEach((el) => {
       if (el) observer.observe(el);
@@ -51,10 +58,10 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
         const text = heading.replace(/^#+ /, "").trim();
         const id = text.toLowerCase().replace(/\s+/g, "-").replace(/[()]/g, "");
 
-        let liClass = "ml-0";
+        let liClass = "ml-1";
         switch (level) {
           case 1:
-            liClass = "ml-0";
+            liClass = "ml-1";
             break;
           case 2:
             liClass = "ml-2";
@@ -72,6 +79,7 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
           <li
             key={index}
             className={`${liClass} leading-tight`}
+            role="menuitem"
             onClick={() => {
               setSelectedIndex(index);
               document.getElementById(id)?.scrollIntoView({

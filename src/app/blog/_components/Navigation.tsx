@@ -8,8 +8,10 @@ interface NavigationProps {
   categoryCounts: Record<string, number>;
 }
 
+const SCROLL_THRESHOLD = 200;
+
 export default function Navigation({ totalPosts, categoryCounts }: NavigationProps) {
-  const navRef = useFollowScroll<HTMLDivElement>(200);
+  const navRef = useFollowScroll<HTMLDivElement>(SCROLL_THRESHOLD);
 
   return (
     <nav

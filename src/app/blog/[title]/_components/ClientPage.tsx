@@ -128,7 +128,17 @@ export default function ClientPage({ title }: { title: string }) {
       <div className="prose text-lg prose-headings:text-text-primary prose-a:text-brand-tertiary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
         <ReactMarkdown
           remarkPlugins={[remarkGfm, remarkBreaks]}
-          rehypePlugins={[rehypeSlug, rehypeAutolinkHeadings]}
+          rehypePlugins={[
+            rehypeSlug,
+            [
+              rehypeAutolinkHeadings,
+              {
+                properties: {
+                  "aria-label": "바로가기",
+                },
+              },
+            ],
+          ]}
           components={components}
         >
           {post.content}
