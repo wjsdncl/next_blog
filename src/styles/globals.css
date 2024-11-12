@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.prose :where(ol > li)::marker {
+  color: var(--text-primary);
+}
+
 input,
 textarea {
   background-color: transparent;

@@ -41,8 +41,8 @@ export default {
       brand: {
         primary: "#656079",
         secondary: "#888497",
-        tertiary: "#ABA8B5",
-        quaternary: "#CDCCD2",
+        tertiary: "#8f83ed",
+        quaternary: "#a89bff",
       },
       brand_dark: {
         primary: "#656079",
@@ -103,6 +103,7 @@ export default {
             },
             code: {
               backgroundColor: "var(--color-gray-200)",
+              color: "var(--text-primary)",
               padding: "0.3rem 0.5rem",
               borderRadius: "4px",
               fontSize: "90%",

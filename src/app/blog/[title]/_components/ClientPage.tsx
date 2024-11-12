@@ -6,9 +6,12 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
+import GenerateTOC from "./GenerateTOC";
 import PostHeader from "./PostHeader";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import { getPost } from "@/services/post.api";
@@ -81,6 +84,9 @@ export default function ClientPage({ title }: { title: string }) {
     <>
       <PostHeader post={post} user={user} />
 
+      {/* 목차 */}
+      <GenerateTOC content={post.content as string} />
+
       {/* 태그 */}
       {post.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 pb-5">
@@ -119,8 +125,12 @@ export default function ClientPage({ title }: { title: string }) {
       )}
 
       {/* 본문 */}
-      <div className="prose text-lg prose-headings:text-text-primary prose-a:text-brand-tertiary prose-strong:text-text-primary">
-        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
+      <div className="prose text-lg prose-headings:text-text-primary prose-a:text-brand-tertiary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm, remarkBreaks]}
+          rehypePlugins={[rehypeSlug, rehypeAutolinkHeadings]}
+          components={components}
+        >
           {post.content}
         </ReactMarkdown>
       </div>

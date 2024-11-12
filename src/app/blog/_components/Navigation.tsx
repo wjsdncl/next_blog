@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import useDeviceSize from "@/hooks/useDeviceSize";
+import useFollowScroll from "@/hooks/useFollowScroll";
 
 interface NavigationProps {
   totalPosts: number;
@@ -10,60 +9,7 @@ interface NavigationProps {
 }
 
 export default function Navigation({ totalPosts, categoryCounts }: NavigationProps) {
-  const navRef = useRef<HTMLDivElement | null>(null);
-  const targetPosition = useRef(0);
-  const currentPosition = useRef(0);
-  const [initialPosition, setInitialPosition] = useState<number | null>(null);
-  const startFollowPosition = 200;
-  const deviceWidth = useDeviceSize();
-
-  useEffect(() => {
-    if (navRef.current) {
-      const initialTop = navRef.current.getBoundingClientRect().top + window.scrollY;
-      setInitialPosition(initialTop);
-      currentPosition.current = initialTop;
-    }
-  }, []);
-
-  useEffect(() => {
-    if (deviceWidth !== "desktop") {
-      if (navRef.current) {
-        navRef.current.style.transform = "translateY(0)";
-      }
-      return;
-    }
-
-    const updatePosition = () => {
-      if (navRef.current && initialPosition !== null) {
-        const distance = targetPosition.current - currentPosition.current;
-        const damping = 0.05;
-
-        currentPosition.current += distance * damping;
-        navRef.current.style.transform = `translateY(${currentPosition.current - initialPosition}px)`;
-
-        if (Math.abs(distance) > 0.5) {
-          requestAnimationFrame(updatePosition);
-        }
-      }
-    };
-
-    const handleScroll = () => {
-      if (initialPosition !== null) {
-        if (window.scrollY >= startFollowPosition) {
-          targetPosition.current = window.scrollY - startFollowPosition + initialPosition;
-        } else {
-          targetPosition.current = initialPosition;
-        }
-        requestAnimationFrame(updatePosition);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [deviceWidth, initialPosition]);
+  const navRef = useFollowScroll<HTMLDivElement>(200);
 
   return (
     <nav
