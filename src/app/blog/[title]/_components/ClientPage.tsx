@@ -124,7 +124,7 @@ export default function ClientPage({ title }: { title: string }) {
       )}
 
       {/* 본문 */}
-      <div className="prose text-lg prose-headings:text-text-primary prose-a:text-brand-tertiary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
+      <div className="prose text-lg prose-headings:text-text-primary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
         <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeSlug]} components={components}>
           {post.content}
         </ReactMarkdown>

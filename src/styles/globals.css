@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.prose :where(ol > li)::marker {
-  color: var(--text-primary);
-}
-
 input,
 textarea {
   background-color: transparent;
@@ -19,6 +15,28 @@ input:-webkit-autofill {
 .prose code::before,
 .prose code::after {
   content: none !important;
+}
+
+.prose :where(ol > li)::marker {
+  color: var(--text-primary);
+}
+
+.prose a {
+  color: #8f83ed;
+  text-decoration: none;
+
+  &:hover {
+    color: #a89bff;
+  }
+}
+
+.prose hr {
+  border-top-color: var(--color-gray-400);
+  border-top-width: 2px;
+}
+
+.prose img {
+  margin: 2rem auto 0;
 }
 
 :root {
