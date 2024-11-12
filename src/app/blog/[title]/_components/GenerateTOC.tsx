@@ -20,6 +20,20 @@ const INDENT_CLASSES: { [key: string]: string } = {
 };
 
 /**
+ * 주어진 텍스트에서 특수문자를 제거하고 ID를 생성합니다.
+ *
+ * @param {string} text - ID를 생성할 텍스트
+ * @returns {string} 생성된 ID
+ */
+const generateId = (text: string): string =>
+  text
+    .replace(/^#+ /, "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9ㄱ-ㅎㅏ-ㅣ가-힣\s-]/g, "") // 특수문자 제거
+    .replace(/\s+/g, "-"); // 공백을 하이픈으로 변환
+
+/**
  * 목차를 생성하는 컴포넌트
  *
  * @param {string} content - 마크다운 내용 (# ## ### 형식의 제목들을 포함)
@@ -35,7 +49,7 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
 
   useEffect(() => {
     headingElementsRef.current = headings.map((heading) => {
-      const id = heading.replace(/^#+ /, "").trim().toLowerCase().replace(/\s+/g, "-").replace(/[()]/g, "");
+      const id = generateId(heading);
       return document.getElementById(id) as HTMLHeadingElement | null;
     });
   }, [headings]);
@@ -69,7 +83,8 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
         const levelMatch = heading.match(/^#+/);
         const level = levelMatch ? levelMatch[0].length : 0;
         const text = heading.replace(/^#+ /, "").trim();
-        const id = text.toLowerCase().replace(/\s+/g, "-").replace(/[()]/g, "");
+        const id = generateId(heading);
+
         const liClass = INDENT_CLASSES[level] || "ml-1";
         const aClass = `block pb-1 hover:underline transition-transform duration-200 ${
           selectedIndex === index ? "scale-105 text-text-primary font-normal" : ""
@@ -83,6 +98,7 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
             onClick={(e) => {
               e.preventDefault();
               setSelectedIndex(index);
+
               const targetElement = document.getElementById(id);
               if (targetElement) {
                 const yOffset = window.innerHeight * 0.2;
