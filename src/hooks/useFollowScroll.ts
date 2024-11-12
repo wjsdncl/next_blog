@@ -9,30 +9,26 @@ export default function useFollowScroll<T extends HTMLElement>(startFollowPositi
   const deviceSize = useDeviceSize();
 
   useEffect(() => {
-    if (deviceSize !== "desktop") return;
+    elementRef.current && (elementRef.current.style.willChange = "transform");
+  }, []);
+
+  useEffect(() => {
+    if (deviceSize !== "desktop" || initialPosition !== null) return;
 
     if (elementRef.current) {
-      try {
-        const initialTop = elementRef.current.getBoundingClientRect().top + window.scrollY;
-        if (isNaN(initialTop)) return;
-
+      const initialTop = elementRef.current.getBoundingClientRect().top + window.scrollY;
+      if (!Number.isNaN(initialTop)) {
         setInitialPosition(initialTop);
         currentPosition.current = initialTop;
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Failed to calculate initial position:", error);
       }
     }
-  }, [deviceSize]);
+  }, [deviceSize, initialPosition]);
 
   const updatePosition = useCallback(() => {
     if (elementRef.current && initialPosition !== null) {
       const distance = targetPosition.current - currentPosition.current;
-
       currentPosition.current += distance * damping;
-      const transform = `translateY(${currentPosition.current - initialPosition}px)`;
-      elementRef.current.style.transform = transform;
-      elementRef.current.style.willChange = "transform";
+      elementRef.current.style.transform = `translateY(${currentPosition.current - initialPosition}px)`;
 
       if (Math.abs(distance) > 0.5) {
         requestAnimationFrame(updatePosition);
@@ -42,27 +38,27 @@ export default function useFollowScroll<T extends HTMLElement>(startFollowPositi
 
   useEffect(() => {
     if (deviceSize !== "desktop") {
-      if (elementRef.current) {
-        elementRef.current.style.transform = "translateY(0)";
-      }
+      elementRef.current && (elementRef.current.style.transform = "translateY(0)");
       return;
     }
 
     const handleScroll = () => {
       if (initialPosition !== null) {
-        if (window.scrollY >= startFollowPosition) {
-          targetPosition.current = window.scrollY - startFollowPosition + initialPosition;
-        } else {
-          targetPosition.current = initialPosition;
-        }
+        targetPosition.current =
+          window.scrollY >= startFollowPosition
+            ? window.scrollY - startFollowPosition + initialPosition
+            : initialPosition;
+
         requestAnimationFrame(updatePosition);
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    const optimizedHandleScroll = () => requestAnimationFrame(handleScroll);
+
+    window.addEventListener("scroll", optimizedHandleScroll);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", optimizedHandleScroll);
     };
   }, [deviceSize, initialPosition, startFollowPosition, updatePosition]);
 

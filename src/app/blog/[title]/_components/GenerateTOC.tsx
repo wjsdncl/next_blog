@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import useFollowScroll from "@/hooks/useFollowScroll";
 
 interface GenerateTOCProps {
@@ -9,8 +9,8 @@ interface GenerateTOCProps {
 const SCROLL_THRESHOLD = 200;
 
 const OBSERVER_OPTIONS = {
-  rootMargin: "0px 0px -80% 0px",
-  threshold: 1.0,
+  rootMargin: "0px 0px -70% 0px",
+  threshold: 1,
 } as const;
 
 const INDENT_CLASSES: { [key: string]: string } = {
@@ -24,39 +24,41 @@ const INDENT_CLASSES: { [key: string]: string } = {
  *
  * @param {string} content - 마크다운 내용 (# ## ### 형식의 제목들을 포함)
  * @returns {JSX.Element} 목차 컴포넌트
- * @description
- * - 마크다운 내용에서 H1-H3 제목을 추출하여 목차를 생성합니다
- * - 스크롤 시 현재 보고 있는 섹션이 하이라이트됩니다
- * - 목차 항목 클릭 시 해당 섹션으로 스무스 스크롤됩니다
  */
 export default function GenerateTOC({ content }: GenerateTOCProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const tocRef = useFollowScroll<HTMLUListElement>(SCROLL_THRESHOLD);
-  const headings = content.match(/^#{1,3}\s+([^#\n]+)$/gm);
+
+  const headings = useMemo(() => content.match(/^#{1,3}\s+([^#\n]+)$/gm) || [], [content]);
+
   const headingElementsRef = useRef<(HTMLHeadingElement | null)[]>([]);
 
   useEffect(() => {
-    if (!headings) return;
+    headingElementsRef.current = headings.map((heading) => {
+      const id = heading.replace(/^#+ /, "").trim().toLowerCase().replace(/\s+/g, "-").replace(/[()]/g, "");
+      return document.getElementById(id) as HTMLHeadingElement | null;
+    });
+  }, [headings]);
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        const index = headingElementsRef.current.findIndex((el) => el === entry.target);
-        if (entry.isIntersecting && index !== -1) {
-          setSelectedIndex(index);
-        }
-      });
-    }, OBSERVER_OPTIONS);
+  const handleIntersect = useCallback((entries: IntersectionObserverEntry[]) => {
+    entries.forEach((entry) => {
+      const index = headingElementsRef.current.findIndex((el) => el === entry.target);
+      if (entry.isIntersecting && index !== -1) {
+        setSelectedIndex(index);
+      }
+    });
+  }, []);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleIntersect, OBSERVER_OPTIONS);
     headingElementsRef.current.forEach((el) => {
       if (el) observer.observe(el);
     });
 
-    return () => {
-      observer.disconnect();
-    };
-  }, [headings]);
+    return () => observer.disconnect();
+  }, [headings, handleIntersect]);
 
-  if (!headings) return null;
+  if (!headings.length) return null;
 
   return (
     <ul
@@ -68,25 +70,33 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
         const level = levelMatch ? levelMatch[0].length : 0;
         const text = heading.replace(/^#+ /, "").trim();
         const id = text.toLowerCase().replace(/\s+/g, "-").replace(/[()]/g, "");
-
         const liClass = INDENT_CLASSES[level] || "ml-1";
-
-        const aClass = `block pb-1 hover:underline transform transition-transform duration-200 ${selectedIndex === index ? "scale-105 text-gray-900" : ""}`;
+        const aClass = `block pb-1 hover:underline transition-transform duration-200 ${
+          selectedIndex === index ? "scale-105 text-text-primary font-normal" : ""
+        }`;
 
         return (
           <li
             key={index}
             className={`${liClass} leading-tight`}
             role="menuitem"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               setSelectedIndex(index);
-              document.getElementById(id)?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
+              const targetElement = document.getElementById(id);
+              if (targetElement) {
+                const yOffset = window.innerHeight * 0.2;
+                const y = targetElement.getBoundingClientRect().top + window.scrollY - yOffset;
+                window.scrollTo({ top: y, behavior: "smooth" });
+              }
             }}
           >
-            <a href={`#${id}`} className={aClass}>
+            <a
+              href={`#${id}`}
+              className={aClass}
+              aria-current={selectedIndex === index ? "true" : undefined}
+              aria-label={`목차 항목: ${text}`}
+            >
               {text}
             </a>
           </li>
