@@ -10,7 +10,6 @@ import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
-import GenerateTOC from "./GenerateTOC";
 import PostHeader from "./PostHeader";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import { getPost } from "@/services/post.api";
@@ -19,6 +18,7 @@ import useUserStore from "@/stores/UserStore";
 
 const Comments = dynamic(() => import("./Comments/Comments"), { ssr: false });
 const Navigation = dynamic(() => import("./Navigation"), { ssr: false });
+const GenerateTOC = dynamic(() => import("./GenerateTOC"), { ssr: false });
 
 export default function ClientPage({ title }: { title: string }) {
   const queryClient = useQueryClient();
