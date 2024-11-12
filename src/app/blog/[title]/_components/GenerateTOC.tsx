@@ -7,21 +7,32 @@ interface GenerateTOCProps {
   content: string;
 }
 const SCROLL_THRESHOLD = 200;
+
 const OBSERVER_OPTIONS = {
   rootMargin: "0px 0px -80% 0px",
   threshold: 1.0,
 } as const;
 
+const INDENT_CLASSES: { [key: string]: string } = {
+  1: "ml-1",
+  2: "ml-2",
+  3: "ml-4",
+};
+
 /**
  * 목차를 생성하는 컴포넌트
  *
- * @param {string} content - 마크다운 내용
+ * @param {string} content - 마크다운 내용 (# ## ### 형식의 제목들을 포함)
  * @returns {JSX.Element} 목차 컴포넌트
+ * @description
+ * - 마크다운 내용에서 H1-H3 제목을 추출하여 목차를 생성합니다
+ * - 스크롤 시 현재 보고 있는 섹션이 하이라이트됩니다
+ * - 목차 항목 클릭 시 해당 섹션으로 스무스 스크롤됩니다
  */
 export default function GenerateTOC({ content }: GenerateTOCProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const tocRef = useFollowScroll<HTMLUListElement>(SCROLL_THRESHOLD);
-  const headings = content.match(/^#{1,3}\s+(.+)$/gm);
+  const headings = content.match(/^#{1,3}\s+([^#\n]+)$/gm);
   const headingElementsRef = useRef<(HTMLHeadingElement | null)[]>([]);
 
   useEffect(() => {
@@ -58,20 +69,7 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
         const text = heading.replace(/^#+ /, "").trim();
         const id = text.toLowerCase().replace(/\s+/g, "-").replace(/[()]/g, "");
 
-        let liClass = "ml-1";
-        switch (level) {
-          case 1:
-            liClass = "ml-1";
-            break;
-          case 2:
-            liClass = "ml-2";
-            break;
-          case 3:
-            liClass = "ml-4";
-            break;
-          default:
-            break;
-        }
+        const liClass = INDENT_CLASSES[level] || "ml-1";
 
         const aClass = `block pb-1 hover:underline transform transition-transform duration-200 ${selectedIndex === index ? "scale-105 text-gray-900" : ""}`;
 

@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import useDeviceSize from "./useDeviceSize";
 
-export default function useFollowScroll<T extends HTMLElement>(startFollowPosition = 200, damping = 0.5) {
+export default function useFollowScroll<T extends HTMLElement>(startFollowPosition = 200, damping = 0.1) {
   const elementRef = useRef<T | null>(null);
   const targetPosition = useRef(0);
   const currentPosition = useRef(0);
@@ -12,9 +12,16 @@ export default function useFollowScroll<T extends HTMLElement>(startFollowPositi
     if (deviceSize !== "desktop") return;
 
     if (elementRef.current) {
-      const initialTop = elementRef.current.getBoundingClientRect().top + window.scrollY;
-      setInitialPosition(initialTop);
-      currentPosition.current = initialTop;
+      try {
+        const initialTop = elementRef.current.getBoundingClientRect().top + window.scrollY;
+        if (isNaN(initialTop)) return;
+
+        setInitialPosition(initialTop);
+        currentPosition.current = initialTop;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Failed to calculate initial position:", error);
+      }
     }
   }, [deviceSize]);
 
@@ -23,7 +30,9 @@ export default function useFollowScroll<T extends HTMLElement>(startFollowPositi
       const distance = targetPosition.current - currentPosition.current;
 
       currentPosition.current += distance * damping;
-      elementRef.current.style.transform = `translateY(${currentPosition.current - initialPosition}px)`;
+      const transform = `translateY(${currentPosition.current - initialPosition}px)`;
+      elementRef.current.style.transform = transform;
+      elementRef.current.style.willChange = "transform";
 
       if (Math.abs(distance) > 0.5) {
         requestAnimationFrame(updatePosition);

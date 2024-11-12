@@ -85,7 +85,7 @@ export default function ClientPage({ title }: { title: string }) {
       <PostHeader post={post} user={user} />
 
       {/* 목차 */}
-      <GenerateTOC content={post.content as string} />
+      {post.content && post.content.trim() && <GenerateTOC content={post.content} />}
 
       {/* 태그 */}
       {post.tags.length > 0 && (

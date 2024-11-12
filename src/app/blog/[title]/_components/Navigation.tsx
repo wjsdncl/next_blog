@@ -15,7 +15,7 @@ export default function Navigation({ post }: { post: Post }) {
   const queryClient = useQueryClient();
 
   // DOM 참조와 위치 저장
-  const navRef = useFollowScroll<HTMLDivElement>(SCROLL_THRESHOLD);
+  const navRef = useFollowScroll<HTMLElement>(SCROLL_THRESHOLD);
 
   const encodedTitle = encodeURIComponent(post.slug);
 
