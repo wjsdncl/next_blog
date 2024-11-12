@@ -138,7 +138,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       <PreviewModal
         title={data.title}
         content={data.content}
-        initialCoverImg={firstImage}
+        initialCoverImg={post?.coverImg || firstImage}
         onComplete={(coverImg) => {
           const postData = { ...data, coverImg, userId: user?.id as string };
           slug
