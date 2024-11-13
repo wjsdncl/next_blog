@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
+import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import rehypeSlug from "rehype-slug";
@@ -16,40 +17,11 @@ import getQueryClient from "@/components/QueryClient";
 import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
 
-const ReactMarkdown = dynamic(() => import("react-markdown"));
 const Navigation = dynamic(() => import("./_components/Navigation"));
 const GenerateTOC = dynamic(() => import("./_components/GenerateTOC"));
 const Comments = dynamic(() => import("./_components/Comments/Comments"));
 
-export default async function Page({ params }: { params: { title: string } }) {
-  const queryClient = getQueryClient({ staleTime: 60 * 1000 });
-  const title = params.title as string;
-
-  const accessToken = cookies().get("accessToken")?.value ?? "";
-
-  await queryClient.prefetchQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ["post", title],
-    queryFn: async () => {
-      try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/posts/${title}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        return response.data;
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching post:", error);
-        throw new Error("Failed to fetch post");
-      }
-    },
-  });
-
-  const post = queryClient.getQueryData<Post>(["post", title]);
-  const user = queryClient.getQueryData<User>(["user"]);
-
+function markdownContent({ post }: { post: Post }) {
   const components = {
     code({
       inline,
@@ -86,6 +58,42 @@ export default async function Page({ params }: { params: { title: string } }) {
       </span>
     ),
   };
+
+  return (
+    <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeSlug]} components={components}>
+      {post.content}
+    </ReactMarkdown>
+  );
+}
+
+export default async function Page({ params }: { params: { title: string } }) {
+  const queryClient = getQueryClient({ staleTime: 60 * 1000 });
+  const title = params.title as string;
+
+  const accessToken = cookies().get("accessToken")?.value ?? "";
+
+  await queryClient.prefetchQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: ["post", title],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/posts/${title}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        return response.data;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error fetching post:", error);
+        throw new Error("Failed to fetch post");
+      }
+    },
+  });
+
+  const post = queryClient.getQueryData<Post>(["post", title]);
+  const user = queryClient.getQueryData<User>(["user"]);
 
   if (!post) {
     return (
@@ -149,15 +157,7 @@ export default async function Page({ params }: { params: { title: string } }) {
 
         {/* 본문 */}
         <div className="prose text-lg prose-headings:text-text-primary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
-          <Suspense>
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm, remarkBreaks]}
-              rehypePlugins={[rehypeSlug]}
-              components={components}
-            >
-              {post.content}
-            </ReactMarkdown>
-          </Suspense>
+          <Suspense>{markdownContent({ post })}</Suspense>
         </div>
 
         <div className="mt-20 hidden rounded-full border-b-4 border-gray-300 desktop:mb-10 desktop:flex" />
