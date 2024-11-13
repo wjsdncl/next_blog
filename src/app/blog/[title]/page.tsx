@@ -1,6 +1,7 @@
-import { dehydrate, HydrationBoundary, useQuery } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import axios from "axios";
 import { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,14 +11,14 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
-import Comments from "./_components/Comments/Comments";
-import GenerateTOC from "./_components/GenerateTOC";
-import Navigation from "./_components/Navigation";
 import PostHeader from "./_components/PostHeader";
 import getQueryClient from "@/components/QueryClient";
-import { getPost } from "@/services/post.api";
 import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
+
+const Navigation = dynamic(() => import("./_components/Navigation"));
+const GenerateTOC = dynamic(() => import("./_components/GenerateTOC"));
+const Comments = dynamic(() => import("./_components/Comments/Comments"));
 
 export default async function Page({ params }: { params: { title: string } }) {
   const queryClient = getQueryClient({ staleTime: 60 * 1000 });
@@ -48,7 +49,6 @@ export default async function Page({ params }: { params: { title: string } }) {
   const post = queryClient.getQueryData<Post>(["post", title]);
   const user = queryClient.getQueryData<User>(["user"]);
 
-  // 코드 블록 렌더링 설정
   const components = {
     code({
       inline,
@@ -71,9 +71,28 @@ export default async function Page({ params }: { params: { title: string } }) {
         </code>
       );
     },
+    img: ({ src = "", alt, ...props }: { src?: string; alt?: string }) => (
+      <span style={{ display: "block", position: "relative", width: "100%", height: "auto", aspectRatio: "3 / 2" }}>
+        <Image
+          src={src ?? ""}
+          alt={alt ?? ""}
+          fill
+          sizes="50vw"
+          loading="lazy"
+          style={{ objectFit: "contain" }}
+          {...props}
+        />
+      </span>
+    ),
   };
 
-  if (!post) return;
+  if (!post) {
+    return (
+      <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
+        <h1 className="text-4xl font-bold">게시글을 찾을 수 없습니다.</h1>
+      </div>
+    );
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
@@ -81,7 +100,7 @@ export default async function Page({ params }: { params: { title: string } }) {
         <PostHeader post={post} user={user} />
 
         {/* 목차 */}
-        {post.content && post.content.trim() && <GenerateTOC content={post.content} />}
+        {post.content.trim() && <GenerateTOC content={post.content} />}
 
         {/* 태그 */}
         {post.tags.length > 0 && (
@@ -116,7 +135,14 @@ export default async function Page({ params }: { params: { title: string } }) {
         {post.coverImg && (
           <div className="relative h-[400px] w-full max-w-screen-tablet">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <Image src={post.coverImg} alt="coverImage" className="object-contain px-6" fill />
+            <Image
+              src={post.coverImg}
+              alt="coverImage"
+              className="object-contain px-6"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
+            />
           </div>
         )}
 
@@ -132,12 +158,12 @@ export default async function Page({ params }: { params: { title: string } }) {
         {/* 네비게이션 */}
         <div className="mb-10 mt-20 flex w-full items-center justify-end gap-2 desktop:hidden">
           <hr className="grow-[5] rounded-l-full border-2 border-gray-300" />
-          <Navigation post={post} />
+          <Navigation title={title} />
           <hr className="w-5 rounded-r-full border-2 border-gray-300" />
         </div>
 
         {/* 댓글 */}
-        <Comments post={post} />
+        <Comments title={title} />
       </div>
     </HydrationBoundary>
   );

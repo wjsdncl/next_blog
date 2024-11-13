@@ -1,25 +1,23 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useShallow } from "zustand/shallow";
 import useFollowScroll from "@/hooks/useFollowScroll";
 import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import Share from "@/Icons/Share";
-import { likePost } from "@/services/post.api";
+import { getPost, likePost } from "@/services/post.api";
 import useUserStore from "@/stores/UserStore";
 import { Post } from "@/types/blogType";
 import toast from "@/utils/Toast";
 
 const SCROLL_THRESHOLD = 200;
 
-export default function Navigation({ post }: { post: Post }) {
+export default function Navigation({ title }: { title: string }) {
   // queryClient 초기화
   const queryClient = useQueryClient();
 
   // DOM 참조와 위치 저장
   const navRef = useFollowScroll<HTMLElement>(SCROLL_THRESHOLD);
-
-  const encodedTitle = encodeURIComponent(post.slug);
 
   // 유저 로그인 여부 가져오기
   const { isLoggedIn } = useUserStore(
@@ -27,6 +25,16 @@ export default function Navigation({ post }: { post: Post }) {
       isLoggedIn: state.isLoggedIn,
     }))
   );
+
+  // 게시물 데이터 가져오기
+  const { data: post } = useQuery({
+    queryKey: ["post", title],
+    queryFn: () => getPost(title),
+    initialData: () => {
+      return queryClient.getQueryData(["post", title]);
+    },
+    retry: 0,
+  });
 
   // 좋아요 요청 Mutation 설정
   const LikePostMutation = useMutation({
@@ -40,17 +48,16 @@ export default function Navigation({ post }: { post: Post }) {
     },
     onMutate: () => {
       if (!isLoggedIn) return;
-
-      queryClient.setQueryData(["post", encodedTitle], (oldPost: Post | undefined) =>
-        oldPost ? { ...oldPost, likes: oldPost.likes + (post.isLiked ? -1 : 1), isLiked: !post.isLiked } : oldPost
+      queryClient.setQueryData(["post", title], (oldPost: Post | undefined) =>
+        oldPost ? { ...oldPost, likes: oldPost.likes + (post?.isLiked ? -1 : 1), isLiked: !post?.isLiked } : oldPost
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["post", encodedTitle] });
+      queryClient.invalidateQueries({ queryKey: ["post", title] });
     },
     onError: () => {
-      queryClient.setQueryData(["post", encodedTitle], (oldPost: Post | undefined) =>
-        oldPost ? { ...oldPost, likes: oldPost.likes + (post.isLiked ? -1 : 1), isLiked: !post.isLiked } : oldPost
+      queryClient.setQueryData(["post", title], (oldPost: Post | undefined) =>
+        oldPost ? { ...oldPost, likes: oldPost.likes + (post?.isLiked ? -1 : 1), isLiked: !post?.isLiked } : oldPost
       );
       toast.error("좋아요 요청에 실패했습니다.");
     },
@@ -69,7 +76,7 @@ export default function Navigation({ post }: { post: Post }) {
   // 좋아요 버튼 클릭 핸들러
   const handleLike = () => {
     if (LikePostMutation.isPending) return;
-    LikePostMutation.mutateAsync(post.id);
+    LikePostMutation.mutateAsync(post?.id as number);
   };
 
   return (
@@ -79,7 +86,7 @@ export default function Navigation({ post }: { post: Post }) {
     >
       <button type="button" onClick={handleLike}>
         <div aria-label="like" className="size-5 desktop:size-8">
-          {post.isLiked ? (
+          {post?.isLiked ? (
             <FavoriteFilled width={"100%"} height={"100%"} color="#656079" />
           ) : (
             <FavoriteEmpty width={"100%"} height={"100%"} color="var(--text-primary)" />
@@ -87,7 +94,7 @@ export default function Navigation({ post }: { post: Post }) {
         </div>
       </button>
 
-      <p className="font-medium">{post.likes}</p>
+      <p className="font-medium">{post?.likes}</p>
 
       <button type="button" onClick={handleShare} className="size-5 desktop:size-8">
         <Share width={"100%"} height={"100%"} color="var(--text-primary)" />

@@ -7,17 +7,18 @@ import { useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
 import CommentItem from "./CommentItem";
 import { deleteComment, editComment, getComments, writeComment } from "@/services/comment.api";
+import { getPost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import useUserStore from "@/stores/UserStore";
-import { CommentRequest, Post } from "@/types/blogType";
+import { CommentRequest } from "@/types/blogType";
 import toast from "@/utils/Toast";
 
 interface CommentFormInputs {
   content: string;
 }
 
-export default function Comments({ post }: { post?: Post }) {
+export default function Comments({ title }: { title: string }) {
   const queryClient = useQueryClient();
   const [editCommentId, setEditCommentId] = useState<number | null>(null);
   const [replyCommentId, setReplyCommentId] = useState<number | null>(null);
@@ -37,6 +38,15 @@ export default function Comments({ post }: { post?: Post }) {
     initialData: () => {
       return queryClient.getQueryData(["user"]);
     },
+  });
+
+  const { data: post } = useQuery({
+    queryKey: ["post", title],
+    queryFn: () => getPost(title),
+    initialData: () => {
+      return queryClient.getQueryData(["post", title]);
+    },
+    retry: 0,
   });
 
   // 댓글 데이터 가져오기
@@ -65,6 +75,7 @@ export default function Comments({ post }: { post?: Post }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comments", post?.id] });
+      queryClient.invalidateQueries({ queryKey: ["post", title] });
       toast.success("댓글이 등록되었습니다.");
       reset();
       setReplyCommentId(null);
