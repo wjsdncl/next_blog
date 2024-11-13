@@ -8,7 +8,7 @@ import { deletePost } from "@/services/post.api";
 import useModalStore from "@/stores/ModalStore";
 import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
-import { formatDate } from "@/utils/FormatDate";
+import { diffDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
 
 const Navigation = dynamic(() => import("./Navigation"), { ssr: false });
@@ -76,7 +76,7 @@ export default function PostHeader({ post, user }: { post: Post; user?: User }) 
       </div>
 
       <div className="flex size-full items-center justify-between pb-4">
-        <p className="grow text-base">{formatDate(post.createdAt)}</p>
+        <p className="grow text-base">{diffDate(post.createdAt)}</p>
         <div className="flex items-center gap-2">
           {user && user.isAdmin && (
             <>

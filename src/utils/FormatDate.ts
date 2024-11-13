@@ -4,6 +4,7 @@ export const formatDate = (dateString: Date) => {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "Asia/Seoul",
   });
 };
 
