@@ -1,10 +1,11 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import { deletePost } from "@/services/post.api";
+import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
@@ -13,7 +14,7 @@ import toast from "@/utils/Toast";
 
 const Navigation = dynamic(() => import("./Navigation"), { ssr: false });
 
-export default function PostHeader({ post, user }: { post: Post; user?: User }) {
+export default function PostHeader({ post }: { post: Post }) {
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -23,6 +24,15 @@ export default function PostHeader({ post, user }: { post: Post; user?: User }) 
       closeModal: state.closeModal,
     }))
   );
+
+  const { data: user } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+    retry: 0,
+    initialData: () => {
+      return queryClient.getQueryData<User>(["user"]);
+    },
+  });
 
   const DeletePostMutation = useMutation({
     mutationKey: ["deletePost"],

@@ -47,7 +47,6 @@ export default async function Page({ params }: { params: { title: string } }) {
   });
 
   const post = queryClient.getQueryData<Post>(["post", title]);
-  const user = queryClient.getQueryData<User>(["user"]);
 
   const components = {
     code({
@@ -97,7 +96,7 @@ export default async function Page({ params }: { params: { title: string } }) {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
-        <PostHeader post={post} user={user} />
+        <PostHeader post={post} />
 
         {/* 목차 */}
         {post.content.trim() && <GenerateTOC content={post.content} />}
