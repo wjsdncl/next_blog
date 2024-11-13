@@ -13,7 +13,6 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import PostHeader from "./_components/PostHeader";
 import getQueryClient from "@/components/QueryClient";
-import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
 
 const Navigation = dynamic(() => import("./_components/Navigation"));

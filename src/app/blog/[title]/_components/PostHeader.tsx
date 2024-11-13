@@ -7,6 +7,7 @@ import { useShallow } from "zustand/shallow";
 import { deletePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
+import useUserStore from "@/stores/UserStore";
 import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
 import { diffDate } from "@/utils/FormatDate";
@@ -19,15 +20,15 @@ export default function PostHeader({ post }: { post: Post }) {
   const router = useRouter();
 
   const { openModal, closeModal } = useModalStore(
-    useShallow((state) => ({
-      openModal: state.openModal,
-      closeModal: state.closeModal,
-    }))
+    useShallow((state) => ({ openModal: state.openModal, closeModal: state.closeModal }))
   );
+
+  const { isLoggedIn } = useUserStore(useShallow((state) => ({ isLoggedIn: state.isLoggedIn })));
 
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
+    enabled: isLoggedIn,
     retry: 0,
     initialData: () => {
       return queryClient.getQueryData<User>(["user"]);
