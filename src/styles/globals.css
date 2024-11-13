@@ -43,14 +43,23 @@ input:-webkit-autofill {
   --color-white: #f0f0f0;
   --color-black: #212121;
 
+  --color-gray-50: hsl(0, 0%, 95%);
   --color-gray-100: hsl(0, 0%, 90%);
+  --color-gray-150: hsl(0, 0%, 85%);
   --color-gray-200: hsl(0, 0%, 80%);
+  --color-gray-250: hsl(0, 0%, 75%);
   --color-gray-300: hsl(0, 0%, 70%);
+  --color-gray-350: hsl(0, 0%, 65%);
   --color-gray-400: hsl(0, 0%, 60%);
+  --color-gray-450: hsl(0, 0%, 55%);
   --color-gray-500: hsl(0, 0%, 50%);
+  --color-gray-550: hsl(0, 0%, 45%);
   --color-gray-600: hsl(0, 0%, 40%);
+  --color-gray-650: hsl(0, 0%, 35%);
   --color-gray-700: hsl(0, 0%, 30%);
+  --color-gray-750: hsl(0, 0%, 25%);
   --color-gray-800: hsl(0, 0%, 20%);
+  --color-gray-850: hsl(0, 0%, 15%);
   --color-gray-900: hsl(0, 0%, 10%);
 
   --text-primary: #212121;
@@ -61,14 +70,23 @@ input:-webkit-autofill {
 
 .dark {
   --color-gray-900: hsl(0, 0%, 90%);
+  --color-gray-850: hsl(0, 0%, 85%);
   --color-gray-800: hsl(0, 0%, 80%);
+  --color-gray-750: hsl(0, 0%, 75%);
   --color-gray-700: hsl(0, 0%, 70%);
+  --color-gray-650: hsl(0, 0%, 65%);
   --color-gray-600: hsl(0, 0%, 60%);
+  --color-gray-550: hsl(0, 0%, 55%);
   --color-gray-500: hsl(0, 0%, 50%);
+  --color-gray-450: hsl(0, 0%, 45%);
   --color-gray-400: hsl(0, 0%, 40%);
+  --color-gray-350: hsl(0, 0%, 35%);
   --color-gray-300: hsl(0, 0%, 30%);
+  --color-gray-250: hsl(0, 0%, 25%);
   --color-gray-200: hsl(0, 0%, 20%);
+  --color-gray-150: hsl(0, 0%, 15%);
   --color-gray-100: hsl(0, 0%, 10%);
+  --color-gray-50: hsl(0, 0%, 5%);
 
   --text-primary: hsl(210, 40%, 95%);
   --background-primary: var(--color-black);

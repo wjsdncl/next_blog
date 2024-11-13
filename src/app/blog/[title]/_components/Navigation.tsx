@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useShallow } from "zustand/shallow";
 import useFollowScroll from "@/hooks/useFollowScroll";
