@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import rehypeSlug from "rehype-slug";
@@ -16,6 +15,7 @@ import getQueryClient from "@/components/QueryClient";
 import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
 
+const ReactMarkdown = dynamic(() => import("react-markdown"));
 const Navigation = dynamic(() => import("./_components/Navigation"));
 const GenerateTOC = dynamic(() => import("./_components/GenerateTOC"));
 const Comments = dynamic(() => import("./_components/Comments/Comments"));
@@ -179,11 +179,15 @@ export async function generateMetadata({ params }: { params: { title: string } }
       openGraph: {
         title: `${decodedTitle} | JMJ's Devlog`,
         description: `${decodedTitle}에 대한 블로그 게시글`,
+        url: `https://wjsdncl-dev-hub.vercel.app/blog/${params.title}`,
         type: "article",
       },
       robots: {
         index: true,
         follow: true,
+      },
+      alternates: {
+        canonical: `https://wjsdncl-dev-hub.vercel.app/blog/${params.title}`,
       },
     };
   } catch (error) {

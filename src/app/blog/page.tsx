@@ -20,11 +20,15 @@ export async function generateMetadata(): Promise<Metadata> {
       openGraph: {
         title: "블로그 게시글 목록 | JMJ's Devlog",
         description: "JMJ의 개발 블로그 게시글 목록입니다.",
+        url: `https://wjsdncl-dev-hub.vercel.app/blog/`,
         type: "website",
       },
       robots: {
         index: true,
         follow: true,
+      },
+      alternates: {
+        canonical: "https://wjsdncl-dev-hub.vercel.app/blog/",
       },
     };
   } catch (error) {
