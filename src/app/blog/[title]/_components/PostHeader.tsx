@@ -72,7 +72,7 @@ export default function PostHeader({ post, user }: { post: Post; user?: User }) 
         {/* 제목 */}
         <p className="pb-6 text-[50px] font-bold leading-[52px] text-text-primary">{post.title}</p>
 
-        <Navigation post={post} />
+        <Navigation title={encodeURIComponent(post.slug)} />
       </div>
 
       <div className="flex size-full items-center justify-between pb-4">

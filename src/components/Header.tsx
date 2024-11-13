@@ -86,7 +86,7 @@ export default function Header() {
         <div className="flex flex-col gap-10 px-4">
           <section className="flex items-end justify-between">
             <Link href="/" className="z-20">
-              <span className="text-6xl">JMJ&apos;s Devlog</span>
+              <span className="text-6xl font-medium">JMJ&apos;s Devlog</span>
             </Link>
 
             <div className="flex items-center gap-4">

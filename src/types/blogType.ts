@@ -13,7 +13,7 @@ export interface Post {
   coverImg?: string;
   category?: string;
   title: string;
-  content?: string;
+  content: string;
   tags: string[];
   likes: number;
   createdAt: Date;
