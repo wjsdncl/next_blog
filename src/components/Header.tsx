@@ -51,7 +51,10 @@ export default function Header() {
         <div className="mt-8 flex items-center gap-4">
           <button
             className="flex-1 rounded-md bg-brand-primary py-2 text-center text-lg font-semibold text-text-primary"
-            onClick={Logout}
+            onClick={() => {
+              Logout();
+              closeModal(modalId);
+            }}
           >
             로그아웃
           </button>

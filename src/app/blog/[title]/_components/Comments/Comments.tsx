@@ -11,6 +11,7 @@ import { getPost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import useUserStore from "@/stores/UserStore";
+import { User } from "@/types/authType";
 import { CommentRequest } from "@/types/blogType";
 import toast from "@/utils/Toast";
 
@@ -24,8 +25,8 @@ export default function Comments({ title }: { title: string }) {
   const [replyCommentId, setReplyCommentId] = useState<number | null>(null);
 
   const [page, setPage] = useState(1);
-  const [limit] = useState(10); // 한 페이지당 보여줄 댓글 수
-  const offset = (page - 1) * limit; // 현재 페이지에 따라 offset 계산
+  const [limit] = useState(10);
+  const offset = (page - 1) * limit;
 
   const { isLoggedIn } = useUserStore(useShallow((state) => ({ isLoggedIn: state.isLoggedIn })));
 
@@ -36,7 +37,7 @@ export default function Comments({ title }: { title: string }) {
     enabled: isLoggedIn,
     retry: 0,
     initialData: () => {
-      return queryClient.getQueryData(["user"]);
+      return queryClient.getQueryData<User>(["user"]);
     },
   });
 
@@ -190,7 +191,7 @@ export default function Comments({ title }: { title: string }) {
         <form onSubmit={handleSubmit(onSubmit)} className="flex w-full flex-col gap-4">
           <div className="flex w-full grow items-center justify-between">
             <p className="text-2xl font-bold">{comments?.totalComments ?? 0}개의 댓글</p>
-            {isLoggedIn ? (
+            {user ? (
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -209,9 +210,9 @@ export default function Comments({ title }: { title: string }) {
           </div>
           <textarea
             {...register("content", { required: true })}
-            disabled={!isLoggedIn || isSubmitting}
+            disabled={!user || isSubmitting}
             className="h-32 w-full resize-none rounded-lg border-2 border-gray-300 p-3 text-lg"
-            placeholder={isLoggedIn ? "댓글을 입력하세요." : "로그인 후 댓글을 작성할 수 있습니다."}
+            placeholder={user ? "댓글을 입력하세요." : "로그인 후 댓글을 작성할 수 있습니다."}
           />
         </form>
       </Suspense>
@@ -222,7 +223,7 @@ export default function Comments({ title }: { title: string }) {
             key={comment.id}
             comment={comment}
             currentUser={user}
-            isLoggedIn={isLoggedIn}
+            isLoggedIn={!!user}
             replyCommentId={replyCommentId}
             editCommentId={editCommentId}
             onReply={handleReply}

@@ -95,66 +95,66 @@ export default async function Page({ params }: { params: { title: string } }) {
   }
 
   return (
-    <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
-      <PostHeader post={post} user={user} />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
+        <PostHeader post={post} user={user} />
 
-      {/* 목차 */}
-      {post.content.trim() && <GenerateTOC content={post.content} />}
+        {/* 목차 */}
+        {post.content.trim() && <GenerateTOC content={post.content} />}
 
-      {/* 태그 */}
-      {post.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 pb-5">
-          {post.tags.map((tag) => (
-            <Link
-              key={tag}
-              href={`/blog?tag=${tag}`}
-              className="rounded-md bg-gray-200 px-2 py-1 text-base font-medium"
-            >
-              {tag}
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {/* 카테고리 */}
-      {post.category && (
-        <div className="mb-10 flex h-fit max-h-[200px] w-full rounded-lg bg-gray-200 p-8">
-          <div className="grow">
-            <Link
-              href={`/blog?category=${post.category}`}
-              className="text-2xl font-bold text-text-primary hover:underline"
-            >
-              [ {post.category} ]
-            </Link>
+        {/* 태그 */}
+        {post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 pb-5">
+            {post.tags.map((tag) => (
+              <Link
+                key={tag}
+                href={`/blog?tag=${tag}`}
+                className="rounded-md bg-gray-200 px-2 py-1 text-base font-medium"
+              >
+                {tag}
+              </Link>
+            ))}
           </div>
+        )}
+
+        {/* 카테고리 */}
+        {post.category && (
+          <div className="mb-10 flex h-fit max-h-[200px] w-full rounded-lg bg-gray-200 p-8">
+            <div className="grow">
+              <Link
+                href={`/blog?category=${post.category}`}
+                className="text-2xl font-bold text-text-primary hover:underline"
+              >
+                [ {post.category} ]
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* 썸네일 */}
+        {post.coverImg && (
+          <div className="relative h-[400px] w-full max-w-screen-tablet">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <Image
+              src={post.coverImg}
+              alt="coverImage"
+              className="object-contain px-6"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
+            />
+          </div>
+        )}
+
+        {/* 본문 */}
+        <div className="prose text-lg prose-headings:text-text-primary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
+          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeSlug]} components={components}>
+            {post.content}
+          </ReactMarkdown>
         </div>
-      )}
 
-      {/* 썸네일 */}
-      {post.coverImg && (
-        <div className="relative h-[400px] w-full max-w-screen-tablet">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <Image
-            src={post.coverImg}
-            alt="coverImage"
-            className="object-contain px-6"
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            priority
-          />
-        </div>
-      )}
+        <div className="mt-20 hidden rounded-full border-b-4 border-gray-300 desktop:mb-10 desktop:flex" />
 
-      {/* 본문 */}
-      <div className="prose text-lg prose-headings:text-text-primary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
-        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeSlug]} components={components}>
-          {post.content}
-        </ReactMarkdown>
-      </div>
-
-      <div className="mt-20 hidden rounded-full border-b-4 border-gray-300 desktop:mb-10 desktop:flex" />
-
-      <HydrationBoundary state={dehydrate(queryClient)}>
         {/* 네비게이션 */}
         <div className="mb-10 mt-20 flex w-full items-center justify-end gap-2 desktop:hidden">
           <hr className="grow-[5] rounded-l-full border-2 border-gray-300" />
@@ -164,8 +164,8 @@ export default async function Page({ params }: { params: { title: string } }) {
 
         {/* 댓글 */}
         <Comments title={title} />
-      </HydrationBoundary>
-    </div>
+      </div>
+    </HydrationBoundary>
   );
 }
 
