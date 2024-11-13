@@ -1,22 +1,71 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import axios from "axios";
 import { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
+import { Suspense } from "react";
+import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
-import Comments from "./_components/Comments/Comments";
-import GenerateTOC from "./_components/GenerateTOC";
-import Navigation from "./_components/Navigation";
 import PostHeader from "./_components/PostHeader";
 import getQueryClient from "@/components/QueryClient";
 import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
+
+const ReactMarkdown = dynamic(() => import("react-markdown"));
+const Navigation = dynamic(() => import("./_components/Navigation"));
+const GenerateTOC = dynamic(() => import("./_components/GenerateTOC"));
+const Comments = dynamic(() => import("./_components/Comments/Comments"));
+
+const components = {
+  code({
+    inline,
+    className,
+    children,
+    ...props
+  }: {
+    inline?: boolean;
+    className?: string;
+    children?: React.ReactNode;
+  }) {
+    const match = /language-(\w+)/.exec(className || "");
+    return !inline && match ? (
+      <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" {...props}>
+        {String(children).replace(/\n$/, "")}
+      </SyntaxHighlighter>
+    ) : (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    );
+  },
+  img: ({ src = "", alt, ...props }: { src?: string; alt?: string }) => (
+    <span style={{ display: "block", position: "relative", width: "100%", height: "auto", aspectRatio: "3 / 2" }}>
+      <Image
+        src={src ?? ""}
+        alt={alt ?? ""}
+        fill
+        sizes="50vw"
+        loading="lazy"
+        style={{ objectFit: "contain" }}
+        {...props}
+      />
+    </span>
+  ),
+};
+
+function markdown(content: string) {
+  return (
+    <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeSlug]} components={components}>
+      {content}
+    </ReactMarkdown>
+  );
+}
 
 export default async function Page({ params }: { params: { title: string } }) {
   const queryClient = getQueryClient({ staleTime: 60 * 1000 });
@@ -46,43 +95,6 @@ export default async function Page({ params }: { params: { title: string } }) {
 
   const post = queryClient.getQueryData<Post>(["post", title]);
   const user = queryClient.getQueryData<User>(["user"]);
-
-  const components = {
-    code({
-      inline,
-      className,
-      children,
-      ...props
-    }: {
-      inline?: boolean;
-      className?: string;
-      children?: React.ReactNode;
-    }) {
-      const match = /language-(\w+)/.exec(className || "");
-      return !inline && match ? (
-        <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" {...props}>
-          {String(children).replace(/\n$/, "")}
-        </SyntaxHighlighter>
-      ) : (
-        <code className={className} {...props}>
-          {children}
-        </code>
-      );
-    },
-    img: ({ src = "", alt, ...props }: { src?: string; alt?: string }) => (
-      <span style={{ display: "block", position: "relative", width: "100%", height: "auto", aspectRatio: "3 / 2" }}>
-        <Image
-          src={src ?? ""}
-          alt={alt ?? ""}
-          fill
-          sizes="50vw"
-          loading="lazy"
-          style={{ objectFit: "contain" }}
-          {...props}
-        />
-      </span>
-    ),
-  };
 
   if (!post) {
     return (
@@ -143,13 +155,6 @@ export default async function Page({ params }: { params: { title: string } }) {
             />
           </div>
         )}
-
-        {/* 본문 */}
-        <div className="prose text-lg prose-headings:text-text-primary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
-          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeSlug]} components={components}>
-            {post.content}
-          </ReactMarkdown>
-        </div>
 
         <div className="mt-20 hidden rounded-full border-b-4 border-gray-300 desktop:mb-10 desktop:flex" />
 
