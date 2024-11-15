@@ -4,16 +4,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
+import Navigation from "./Navigation";
 import { deletePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import useUserStore from "@/stores/UserStore";
 import { User } from "@/types/authType";
 import { Post } from "@/types/blogType";
-import { diffDate } from "@/utils/FormatDate";
+import { formatDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
-
-const Navigation = dynamic(() => import("./Navigation"), { ssr: false });
 
 export default function PostHeader({ post }: { post: Post }) {
   const queryClient = useQueryClient();
@@ -87,7 +86,7 @@ export default function PostHeader({ post }: { post: Post }) {
       </div>
 
       <div className="flex size-full items-center justify-between pb-4">
-        <p className="grow text-base">{diffDate(post.createdAt)}</p>
+        <p className="grow text-base">{formatDate(post.createdAt)}</p>
         <div className="flex items-center gap-2">
           {user && user.isAdmin && (
             <>

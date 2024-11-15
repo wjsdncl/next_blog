@@ -5,13 +5,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
 import PreviewModal from "./PreviewModal";
 import TagInput from "./TagInput";
+import components from "@/components/MarrdownComponents";
 import { getPost, updatePost, uploadImage, writePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
@@ -196,31 +195,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
         break;
       }
     }
-  };
-
-  // 코드 블록 컴포넌트 설정
-  const components = {
-    code({
-      inline,
-      className,
-      children,
-      ...props
-    }: {
-      inline?: boolean;
-      className?: string;
-      children?: React.ReactNode;
-    }) {
-      const match = /language-(\w+)/.exec(className || "");
-      return !inline && match ? (
-        <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" {...props}>
-          {String(children).replace(/\n$/, "")}
-        </SyntaxHighlighter>
-      ) : (
-        <code className={className} {...props}>
-          {children}
-        </code>
-      );
-    },
   };
 
   return (
