@@ -37,7 +37,7 @@ function Error<T extends FieldValues>({ name }: ErrorProps<T>) {
 // Input 컴포넌트
 type InputProps<T extends FieldValues> = {
   label: Path<T>;
-  type?: string;
+  type?: "text" | "password" | "number" | "email";
   placeholder?: string;
   autoComplete?: React.InputHTMLAttributes<HTMLInputElement>["autoComplete"];
   validation?: object;

@@ -64,7 +64,7 @@ const PostSection = ({ posts }: { posts: Post[] | undefined }) => (
             )}
             <div className={`flex max-h-full grow flex-col px-4 pb-4 ${post.coverImg ? "pt-3" : "pt-4"}`}>
               <div className="size-full max-h-full grow border-b border-gray-400">
-                <h3 className="text-2xl font-semibold">{post.title}</h3>
+                <h3 className="line-clamp-1 text-2xl font-semibold">{post.title}</h3>
                 {post.content && (
                   <p className={`mt-2 text-sm text-gray-500 ${post.coverImg ? "line-clamp-2" : "line-clamp-[9]"}`}>
                     {removeMarkdown(post.content.slice(0, 500))}
