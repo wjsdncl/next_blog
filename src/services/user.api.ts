@@ -1,5 +1,5 @@
 import instance from "./axios";
-import { User } from "@/types/authType";
+import { User } from "@/types/AuthType";
 
 export const getUser = async (): Promise<User> => {
   const response = await instance.get<User>("/users/me");

@@ -7,7 +7,7 @@ import { SubmitHandler } from "react-hook-form";
 import Form from "@/components/Form";
 import { SignIn } from "@/services/auth.api";
 import useUserStore from "@/stores/UserStore";
-import { SignInForm, SignInResponse } from "@/types/authType";
+import { SignInForm, SignInResponse } from "@/types/AuthType";
 import toast from "@/utils/Toast";
 
 export default function LoginForm() {

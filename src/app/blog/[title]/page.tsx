@@ -10,9 +10,9 @@ import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import PostHeader from "./_components/PostHeader";
-import components from "@/components/MarrdownComponents";
+import components from "@/components/MarkdownComponents";
 import getQueryClient from "@/components/QueryClient";
-import { Post } from "@/types/blogType";
+import { Post } from "@/types/BlogType";
 
 const Navigation = dynamic(() => import("./_components/Navigation"));
 const GenerateTOC = dynamic(() => import("./_components/GenerateTOC"));

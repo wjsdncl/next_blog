@@ -2,7 +2,7 @@ import axios from "axios";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import MarkdownEditor from "./_components/MarkdownEditor";
-import { User } from "@/types/authType";
+import { User } from "@/types/AuthType";
 
 export default async function Page({ searchParams }: { searchParams: { title: string } }) {
   const slug = searchParams.title;

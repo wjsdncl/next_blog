@@ -7,7 +7,7 @@ import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import Share from "@/Icons/Share";
 import { getPost, likePost } from "@/services/post.api";
 import useUserStore from "@/stores/UserStore";
-import { Post } from "@/types/blogType";
+import { Post } from "@/types/BlogType";
 import toast from "@/utils/Toast";
 
 const SCROLL_THRESHOLD = 200;

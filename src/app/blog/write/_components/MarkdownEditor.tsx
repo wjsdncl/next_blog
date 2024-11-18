@@ -9,12 +9,12 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
 import PreviewModal from "./PreviewModal";
-import TagInput from "./TagInput";
-import components from "@/components/MarrdownComponents";
+import components from "@/components/MarkdownComponents";
+import TagInput from "@/components/TagInput";
 import { getPost, updatePost, uploadImage, writePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
-import { PostRequest } from "@/types/blogType";
+import { PostRequest } from "@/types/BlogType";
 import toast from "@/utils/Toast";
 
 // FormValues 타입 정의

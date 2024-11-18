@@ -9,8 +9,8 @@ import { deletePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import useUserStore from "@/stores/UserStore";
-import { User } from "@/types/authType";
-import { Post } from "@/types/blogType";
+import { User } from "@/types/AuthType";
+import { Post } from "@/types/BlogType";
 import { formatDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
 

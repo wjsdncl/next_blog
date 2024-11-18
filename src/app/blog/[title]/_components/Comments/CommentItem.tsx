@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import CommentContent from "./CommentContent";
 import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import { likeComment } from "@/services/comment.api";
-import { User } from "@/types/authType";
-import { Comment } from "@/types/blogType";
+import { User } from "@/types/AuthType";
+import { Comment } from "@/types/BlogType";
 import { formatDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
 

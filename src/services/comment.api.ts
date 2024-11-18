@@ -1,5 +1,5 @@
 import instance from "./axios";
-import { Comment, CommentRequest } from "@/types/blogType";
+import { Comment, CommentRequest } from "@/types/BlogType";
 
 interface CommentResponse {
   comments: Comment[];
