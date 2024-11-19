@@ -13,7 +13,7 @@ import { FavoriteEmpty } from "@/Icons/Favorite";
 import { getPostList } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useUserStore from "@/stores/UserStore";
-import { Post } from "@/types/blogType";
+import { Post } from "@/types/BlogType";
 import { diffDate } from "@/utils/FormatDate";
 
 export default function ClientPage() {

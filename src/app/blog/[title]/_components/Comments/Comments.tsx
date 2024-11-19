@@ -11,8 +11,8 @@ import { getPost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import useUserStore from "@/stores/UserStore";
-import { User } from "@/types/authType";
-import { CommentRequest } from "@/types/blogType";
+import { User } from "@/types/AuthType";
+import { CommentRequest } from "@/types/BlogType";
 import toast from "@/utils/Toast";
 
 interface CommentFormInputs {

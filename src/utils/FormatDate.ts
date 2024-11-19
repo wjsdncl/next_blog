@@ -1,4 +1,22 @@
+/**
+ * 날짜를 YYYY-MM-DD 형식의 문자열로 변환합니다
+ * @param dateString - 변환할 날짜
+ * @returns YYYY-MM-DD 형식의 날짜 문자열 (예: "2024-01-01")
+ */
 export const formatDate = (dateString: Date) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+/**
+ * 날짜를 한국어 형식으로 변환합니다
+ * @param dateString - 변환할 날짜
+ * @returns 한국어 형식의 날짜 문자열 (예: "2024년 1월 1일")
+ */
+export const formatKoreanDate = (dateString: Date) => {
   const date = new Date(dateString);
   return date.toLocaleDateString("ko-KR", {
     year: "numeric",
@@ -8,6 +26,12 @@ export const formatDate = (dateString: Date) => {
   });
 };
 
+/**
+ * 현재 시간과 주어진 날짜 사이의 시간 차이를 계산합니다
+ * @param dateString - 비교할 날짜
+ * @returns 한국어로 표현된 시간 차이 문자열 (예: "3일 전", "2시간 전")
+ *          7일 이상 차이나는 경우 한국어 날짜 형식으로 반환 (예: "2024년 1월 1일")
+ */
 export const diffDate = (dateString: Date) => {
   const date = new Date(dateString);
   const now = new Date();
@@ -19,7 +43,7 @@ export const diffDate = (dateString: Date) => {
   const day = Math.floor(hour / 24);
 
   if (day >= 7) {
-    return formatDate(dateString);
+    return formatKoreanDate(dateString);
   } else if (day > 0) {
     return `${day}일 전`;
   } else if (hour > 0) {

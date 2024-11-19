@@ -6,15 +6,13 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import PostHeader from "./_components/PostHeader";
+import components from "@/components/MarkdownComponents";
 import getQueryClient from "@/components/QueryClient";
-import { User } from "@/types/authType";
-import { Post } from "@/types/blogType";
+import { Post } from "@/types/BlogType";
 
 const Navigation = dynamic(() => import("./_components/Navigation"));
 const GenerateTOC = dynamic(() => import("./_components/GenerateTOC"));
@@ -47,43 +45,6 @@ export default async function Page({ params }: { params: { title: string } }) {
   });
 
   const post = queryClient.getQueryData<Post>(["post", title]);
-
-  const components = {
-    code({
-      inline,
-      className,
-      children,
-      ...props
-    }: {
-      inline?: boolean;
-      className?: string;
-      children?: React.ReactNode;
-    }) {
-      const match = /language-(\w+)/.exec(className || "");
-      return !inline && match ? (
-        <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" {...props}>
-          {String(children).replace(/\n$/, "")}
-        </SyntaxHighlighter>
-      ) : (
-        <code className={className} {...props}>
-          {children}
-        </code>
-      );
-    },
-    img: ({ src = "", alt, ...props }: { src?: string; alt?: string }) => (
-      <span style={{ display: "block", position: "relative", width: "100%", height: "auto", aspectRatio: "3 / 2" }}>
-        <Image
-          src={src ?? ""}
-          alt={alt ?? ""}
-          fill
-          sizes="50vw"
-          loading="lazy"
-          style={{ objectFit: "contain" }}
-          {...props}
-        />
-      </span>
-    ),
-  };
 
   if (!post) {
     return (

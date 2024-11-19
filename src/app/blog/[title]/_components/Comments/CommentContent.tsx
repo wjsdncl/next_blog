@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Comment } from "@/types/blogType";
+import { Comment } from "@/types/BlogType";
 
 export default function CommentContent({ comment }: { comment: Comment }) {
   const [isExpanded, setIsExpanded] = useState(false);

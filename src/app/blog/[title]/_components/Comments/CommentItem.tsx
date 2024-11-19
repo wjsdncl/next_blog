@@ -3,9 +3,9 @@ import { useForm } from "react-hook-form";
 import CommentContent from "./CommentContent";
 import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import { likeComment } from "@/services/comment.api";
-import { User } from "@/types/authType";
-import { Comment } from "@/types/blogType";
-import { formatDate } from "@/utils/FormatDate";
+import { User } from "@/types/AuthType";
+import { Comment } from "@/types/BlogType";
+import { formatKoreanDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
 
 interface CommentFormInputs {
@@ -107,7 +107,7 @@ export default function CommentItem({
           ) : (
             <p className="text-lg font-bold">익명</p>
           )}
-          <p className="text-base text-gray-700">{formatDate(comment.createdAt)}</p>
+          <p className="text-base text-gray-700">{formatKoreanDate(comment.createdAt)}</p>
           <div className="flex items-center gap-2">
             <button onClick={handleLike} className="flex items-center gap-1 text-base text-text-primary">
               {comment.isLiked ? (

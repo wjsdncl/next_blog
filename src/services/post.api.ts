@@ -1,5 +1,5 @@
 import instance from "./axios";
-import { CategoryCounts, Post, PostRequest } from "@/types/blogType";
+import { CategoryCounts, Post, PostRequest } from "@/types/BlogType";
 
 export const getPostList = async ({
   offset = 0,
