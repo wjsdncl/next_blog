@@ -28,20 +28,19 @@ const components = {
       </code>
     );
   },
-  img: ({ src, alt, ...props }: { src?: string; alt?: string }) =>
-    src ? (
-      <span className="relative block max-w-full">
-        <Image
-          src={src}
-          alt={alt ?? "이미지"}
-          width={0}
-          height={0}
-          sizes="100vw"
-          className="size-auto max-w-full object-contain"
-          {...props}
-        />
-      </span>
-    ) : null,
+  img: ({ src = "", alt, ...props }: { src?: string; alt?: string }) => (
+    <span className="relative block max-w-full">
+      <Image
+        src={src}
+        alt={alt ?? "이미지"}
+        width={0}
+        height={0}
+        sizes="100vw"
+        className="size-auto max-w-full object-contain"
+        {...props}
+      />
+    </span>
+  ),
 };
 
 export default components;

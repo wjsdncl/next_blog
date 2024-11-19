@@ -224,7 +224,15 @@ function Checkbox<T extends FieldValues>({ label, isChecked }: CheckboxProps<T>)
       control={control}
       render={({ field }) => (
         <div className="flex size-full min-h-8 items-center justify-center">
-          <input type="checkbox" className="size-5" {...field} id={label} defaultChecked={isChecked} />
+          <input
+            type="checkbox"
+            className="size-5"
+            {...field}
+            id={label}
+            defaultChecked={isChecked}
+            value={field.value}
+            checked={field.value}
+          />
         </div>
       )}
     />
