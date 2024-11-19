@@ -1,4 +1,4 @@
-import { Post } from "./BlogType";
+import { Post } from "@/types/BlogType";
 
 export interface SignUpForm {
   email: string;

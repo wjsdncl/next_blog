@@ -11,11 +11,15 @@ const components = {
   }: {
     inline?: boolean;
     className?: string;
-    children?: React.ReactNode;
+    children?: string | string[];
   }) {
     const match = /language-(\w+)/.exec(className || "");
-    return !inline && match ? (
-      <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" {...props}>
+    const language = match ? match[1] : "";
+
+    const isValidLanguage = Boolean(language && SyntaxHighlighter.supportedLanguages.includes(language));
+
+    return !inline && language ? (
+      <SyntaxHighlighter style={oneDark} language={isValidLanguage ? language : "text"} PreTag="div" {...props}>
         {String(children).replace(/\n$/, "")}
       </SyntaxHighlighter>
     ) : (
@@ -24,11 +28,20 @@ const components = {
       </code>
     );
   },
-  img: ({ src = "", alt, ...props }: { src?: string; alt?: string }) => (
-    <span className="relative block aspect-[3/2] h-auto w-full">
-      <Image src={src ?? ""} alt={alt ?? ""} fill sizes="50vw" className="object-contain" {...props} />
-    </span>
-  ),
+  img: ({ src, alt, ...props }: { src?: string; alt?: string }) =>
+    src ? (
+      <span className="relative block max-w-full">
+        <Image
+          src={src}
+          alt={alt ?? "이미지"}
+          width={0}
+          height={0}
+          sizes="100vw"
+          className="size-auto max-w-full object-contain"
+          {...props}
+        />
+      </span>
+    ) : null,
 };
 
 export default components;

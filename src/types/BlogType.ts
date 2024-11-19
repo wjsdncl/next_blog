@@ -1,4 +1,4 @@
-import { User } from "./AuthType";
+import { User } from "@/types/AuthType";
 
 export interface PostRequest {
   title: string;

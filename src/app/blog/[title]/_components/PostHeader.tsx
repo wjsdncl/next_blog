@@ -1,7 +1,6 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import Navigation from "./Navigation";
@@ -11,7 +10,7 @@ import useModalStore from "@/stores/ModalStore";
 import useUserStore from "@/stores/UserStore";
 import { User } from "@/types/AuthType";
 import { Post } from "@/types/BlogType";
-import { formatDate } from "@/utils/FormatDate";
+import { formatKoreanDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
 
 export default function PostHeader({ post }: { post: Post }) {
@@ -86,7 +85,7 @@ export default function PostHeader({ post }: { post: Post }) {
       </div>
 
       <div className="flex size-full items-center justify-between pb-4">
-        <p className="grow text-base">{formatDate(post.createdAt)}</p>
+        <p className="grow text-base">{formatKoreanDate(post.createdAt)}</p>
         <div className="flex items-center gap-2">
           {user && user.isAdmin && (
             <>

@@ -34,6 +34,16 @@ interface TagInputProps<T extends FieldValues> {
   style?: "default" | "outline";
 }
 
+interface SelectProps<T extends FieldValues> {
+  label: Path<T>;
+  options: string[];
+}
+
+interface CheckboxProps<T extends FieldValues> {
+  label: Path<T>;
+  isChecked?: boolean;
+}
+
 interface SubmitProps {
   text?: string;
   disabled?: boolean;
@@ -181,6 +191,46 @@ function TagInput<T extends FieldValues>({ label, style = "default" }: TagInputP
   );
 }
 
+function Select<T extends FieldValues>({ label, options }: SelectProps<T>) {
+  const { control } = useFormContext<T>();
+
+  return (
+    <Controller
+      name={label}
+      control={control}
+      render={({ field }) => (
+        <select
+          {...field}
+          id={label}
+          className="size-full rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 outline-none focus:border-brand-secondary dark:focus:border-brand_dark-primary"
+        >
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      )}
+    />
+  );
+}
+
+function Checkbox<T extends FieldValues>({ label, isChecked }: CheckboxProps<T>) {
+  const { control } = useFormContext<T>();
+
+  return (
+    <Controller
+      name={label}
+      control={control}
+      render={({ field }) => (
+        <div className="flex size-full min-h-8 items-center justify-center">
+          <input type="checkbox" className="size-5" {...field} id={label} defaultChecked={isChecked} />
+        </div>
+      )}
+    />
+  );
+}
+
 function Submit({ text = "입력", disabled }: SubmitProps) {
   const {
     formState: { isValid },
@@ -202,6 +252,8 @@ Form.Error = Error;
 Form.Input = Input;
 Form.Textarea = Textarea;
 Form.TagInput = TagInput;
+Form.Select = Select;
+Form.Checkbox = Checkbox;
 Form.Submit = Submit;
 
 export default Form;
