@@ -11,7 +11,7 @@ const components = {
   }: {
     inline?: boolean;
     className?: string;
-    children?: string | string[];
+    children?: React.ReactNode;
   }) {
     const match = /language-(\w+)/.exec(className || "");
     const language = match ? match[1] : "";

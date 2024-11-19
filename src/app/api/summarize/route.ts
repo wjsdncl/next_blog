@@ -2,8 +2,8 @@ import axios from "axios";
 import { NextResponse } from "next/server";
 
 const CLOVA_SUMMARY_URL = "https://naveropenapi.apigw.ntruss.com/text-summary/v1/summarize";
-const CLOVA_CLIENT_ID = process.env.NEXT_PUBLIC_NCP_CLIENT_ID; // 네이버 클라우드 플랫폼 Client ID
-const CLOVA_CLIENT_SECRET = process.env.NEXT_PUBLIC_NCP_CLIENT_SECRET; // 네이버 클라우드 플랫폼 Client Secret
+const CLOVA_CLIENT_ID = process.env.NCP_CLIENT_ID; // 네이버 클라우드 플랫폼 Client ID
+const CLOVA_CLIENT_SECRET = process.env.NCP_CLIENT_SECRET; // 네이버 클라우드 플랫폼 Client Secret
 
 export async function POST(req: Request) {
   try {
@@ -39,11 +39,11 @@ export async function POST(req: Request) {
     if (error instanceof Error) {
       // eslint-disable-next-line no-console
       console.error("Error calling CLOVA Summary API:", error.message);
+      return NextResponse.json({ error: error.message });
     } else {
       // eslint-disable-next-line no-console
       console.error("Error calling CLOVA Summary API:", error);
+      return NextResponse.json({ error: "Failed to summarize text" }, { status: 500 });
     }
-
-    return NextResponse.json({ error: "Failed to summarize text" }, { status: 500 });
   }
 }
