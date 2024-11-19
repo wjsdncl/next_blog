@@ -3,6 +3,7 @@ import { ReactNode, useState } from "react";
 import { FormProvider, useForm, useFormContext, SubmitHandler, Path, FieldValues, Controller } from "react-hook-form";
 import { default as Tag } from "@/components/TagInput";
 import { EyeClose, EyeOpen } from "@/Icons/Eyes";
+import cn from "@/utils/cn";
 
 // Types
 interface FormProps<T extends FieldValues> {
@@ -161,7 +162,10 @@ function Textarea<T extends FieldValues>({ label, placeholder, rows = 2, validat
           value={field.value || ""}
           rows={rows}
           placeholder={placeholder}
-          className="size-full h-auto max-h-[200px] resize-none rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 outline-none focus:border-brand-secondary scrollbar:w-2 scrollbar:rounded-full scrollbar:bg-gray-200 scrollbar-thumb:rounded-full scrollbar-thumb:bg-gray-300 dark:focus:border-brand_dark-primary"
+          style={{ maxHeight: `${rows * 2}rem` }}
+          className={cn(
+            "size-full resize-none rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 outline-none focus:border-brand-secondary scrollbar:w-2 scrollbar:rounded-full scrollbar:bg-gray-200 scrollbar-thumb:rounded-full scrollbar-thumb:bg-gray-300 dark:focus:border-brand_dark-primary"
+          )}
           onChange={(e) => handleResize(e, field.onChange)}
         />
       )}

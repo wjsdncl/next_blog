@@ -1,5 +1,4 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import axios from "axios";
 
 import type { Metadata } from "next";
 
@@ -13,6 +12,7 @@ import Header from "@/components/Header";
 import getQueryClient from "@/components/QueryClient";
 import QueryProvider from "@/components/QueryProvider";
 import ThemeProvider from "@/components/ThemeProvider";
+import { getUser } from "@/services/user.api";
 
 const Footer = dynamic(() => import("@/components/Footer"));
 const Modal = dynamic(() => import("@/components/Modal"));
@@ -60,21 +60,7 @@ export default async function RootLayout({ children }: Readonly<React.PropsWithC
   if (accessToken) {
     await queryClient.prefetchQuery({
       queryKey: ["user"],
-      queryFn: async () => {
-        try {
-          const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/users/me`, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          });
-
-          return res.data;
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error("Error fetching user:", error);
-          throw new Error("Failed to fetch user");
-        }
-      },
+      queryFn: getUser,
     });
   }
 

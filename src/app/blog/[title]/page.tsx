@@ -1,8 +1,6 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import axios from "axios";
 import { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -12,6 +10,7 @@ import remarkGfm from "remark-gfm";
 import PostHeader from "./_components/PostHeader";
 import components from "@/components/MarkdownComponents";
 import getQueryClient from "@/components/QueryClient";
+import { getPost } from "@/services/post.api";
 import { Post } from "@/types/BlogType";
 
 const Navigation = dynamic(() => import("./_components/Navigation"));
@@ -22,26 +21,10 @@ export default async function Page({ params }: { params: { title: string } }) {
   const queryClient = getQueryClient({ staleTime: 60 * 1000 });
   const title = params.title as string;
 
-  const accessToken = cookies().get("accessToken")?.value ?? "";
-
   await queryClient.prefetchQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ["post", title],
-    queryFn: async () => {
-      try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/posts/${title}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        return response.data;
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching post:", error);
-        throw new Error("Failed to fetch post");
-      }
-    },
+    queryFn: () => getPost(title),
   });
 
   const post = queryClient.getQueryData<Post>(["post", title]);
