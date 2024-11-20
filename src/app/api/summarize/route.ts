@@ -22,7 +22,7 @@ export async function POST(req: Request) {
         option: {
           language: "ko", // 한국어 요약
           model: "general", // 일반 모델
-          tone: 0, // 원문 그대로
+          tone: 3, // 명사형 종결체
           summaryCount: 3, // 요약 문장 수
         },
       },
