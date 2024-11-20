@@ -40,13 +40,35 @@ export default function ProjectList({ isOwner }: { isOwner: boolean }) {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const SkeletonItem = () => (
-    <div className="flex animate-pulse flex-col gap-4 rounded-lg border p-6">
-      <div className="h-8 w-3/4 rounded-md bg-gray-200" />
-      <div className="h-4 w-1/4 rounded-md bg-gray-200" />
-      <div className="h-20 w-full rounded-md bg-gray-200" />
-      <div className="flex gap-2">
+    <div className="flex flex-col gap-4 rounded-lg border-2 border-gray-300 bg-gray-100 p-5">
+      <div className="animate-pulse">
+        <div className="flex items-center pb-2">
+          <div className="h-9 grow rounded-md bg-gray-200" />
+          <div className="ml-2 h-8 w-20 rounded-md bg-gray-200" />
+        </div>
+        <div className="h-6 w-1/3 rounded-md bg-gray-200" />
+        <hr className="mt-3 border-t-2 border-gray-400" />
+      </div>
+
+      <div className="animate-pulse">
+        <div className="mb-3 h-[68px] rounded-md bg-gray-200" />
+        <div className="space-y-2">
+          <div className="h-6 w-32 rounded-md bg-gray-200" />
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <div key={idx} className="ml-5 h-5 w-3/4 rounded-md bg-gray-200" />
+          ))}
+        </div>
+      </div>
+
+      <div className="flex animate-pulse gap-2 border-l-4 border-brand_dark-secondary px-3 py-2">
         {Array.from({ length: 3 }).map((_, idx) => (
-          <div key={idx} className="h-8 w-20 rounded-md bg-gray-200" />
+          <div key={idx} className="h-6 w-16 rounded-md bg-gray-200" />
+        ))}
+      </div>
+
+      <div className="flex animate-pulse flex-row-reverse gap-4">
+        {Array.from({ length: 2 }).map((_, idx) => (
+          <div key={idx} className="h-10 w-32 rounded-md bg-gray-200" />
         ))}
       </div>
     </div>

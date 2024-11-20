@@ -36,7 +36,7 @@ export default async function Page() {
   return (
     <div
       id="main-content"
-      className="mx-auto flex size-full flex-col justify-between py-2 tablet:w-tablet desktop:w-desktop"
+      className="mx-auto mt-6 flex size-full flex-col justify-between py-2 tablet:w-tablet desktop:w-desktop"
     >
       <h1 className="mx-auto w-full max-w-screen-tablet text-center text-4xl font-bold">Projects</h1>
       <div className="pt-8" />
