@@ -97,18 +97,21 @@ export default {
         DEFAULT: {
           css: {
             maxWidth: "100%",
-            margin: "2rem 0",
+            margin: "1rem 0",
             color: "var(--text-primary)",
             h1: {
               position: "relative",
-              marginTop: "1.5rem",
-              paddingBottom: "0.5rem",
-              borderBottom: "4px solid var(--color-gray-300)",
+              marginTop: "0",
+              marginBottom: "1rem",
+              paddingBottom: "0",
+              // borderBottom: "4px solid var(--color-gray-300)",
             },
             h2: {
               position: "relative",
-              paddingBottom: "0.4rem",
-              borderBottom: "3px solid var(--color-gray-300)",
+              marginTop: "0",
+              marginBottom: "1rem",
+              paddingBottom: "0",
+              // borderBottom: "3px solid var(--color-gray-300)",
             },
             code: {
               backgroundColor: "var(--color-gray-200)",
@@ -118,6 +121,9 @@ export default {
               fontSize: "90%",
               fontWeight: "500",
               fontFamily: "Consolas",
+            },
+            p: {
+              margin: "0",
             },
             pre: {
               backgroundColor: "transparent",
@@ -150,6 +156,12 @@ export default {
               margin: "1.5rem 0",
               borderColor: "var(--color-gray-300)",
               borderWidth: "1.5px",
+            },
+            li: {
+              margin: "5px 0",
+              p: {
+                margin: "0",
+              },
             },
             table: {
               width: "100%",

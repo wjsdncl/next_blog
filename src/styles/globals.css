@@ -21,6 +21,11 @@ input:-webkit-autofill {
   color: var(--text-primary);
 }
 
+.prose ol,
+.prose ul {
+  margin: 0;
+}
+
 .prose a {
   color: #8f83ed;
   text-decoration: none;
@@ -92,4 +97,46 @@ input:-webkit-autofill {
   --background-primary: var(--color-black);
   --background-secondary: #292929;
   --background-tertiary: #414141;
+}
+
+@keyframes expandCard {
+  0% {
+    width: var(--card-width);
+    height: var(--card-height);
+    margin-top: var(--card-top);
+  }
+  100% {
+    width: min(90vw, 1000px);
+    height: auto;
+    margin-top: 0;
+  }
+}
+
+@keyframes expandHorizontal {
+  to {
+    width: min(90vw, 1000px);
+  }
+}
+
+@keyframes expandVertical {
+  from {
+    height: var(--card-height);
+  }
+  to {
+    height: auto;
+    margin-top: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease forwards;
 }

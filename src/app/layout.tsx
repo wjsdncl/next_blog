@@ -71,7 +71,7 @@ export default async function RootLayout({ children }: Readonly<React.PropsWithC
           <QueryProvider>
             <HydrationBoundary state={dehydrate(queryClient)}>
               <Header />
-              <main className="min-h-[calc(100dvh-276px)] w-full">{children}</main>
+              <main className="min-h-[calc(100dvh-256px)] w-full">{children}</main>
               <Footer />
               <Modal />
               <Toaster />
