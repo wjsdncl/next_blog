@@ -15,7 +15,7 @@ import cn from "@/utils/cn";
 import toast from "@/utils/Toast";
 
 // 헤더의 기본 높이와 스크롤 임계값 설정
-const HEADER_HEIGHT = 220;
+const HEADER_HEIGHT = 200;
 const SCROLL_THRESHOLD = 0.9;
 
 export default function Header() {
@@ -169,7 +169,7 @@ export default function Header() {
           `transition-all duration-300 ${
             isSticky
               ? "fixed inset-x-0 top-0 z-50 translate-y-0 border-b-2 border-solid border-b-gray-600 bg-black"
-              : `min-h-[${HEADER_HEIGHT}px]`
+              : `max-h-[${HEADER_HEIGHT}px]`
           } ${isSticky && !isVisible ? "-translate-y-full" : "translate-y-0"}`
         )}
       >
