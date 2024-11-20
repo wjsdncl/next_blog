@@ -10,21 +10,28 @@ import { formatDate } from "@/utils/FormatDate";
 export default async function Page() {
   const queryClient = getQueryClient({ staleTime: 60 * 1000 });
 
-  await queryClient.prefetchQuery({
-    queryKey: ["projectList"],
-    queryFn: getProjectList,
-  });
-
-  await queryClient.prefetchQuery({
-    queryKey: ["user"],
-    queryFn: getUser,
-  });
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["projectList"],
+      queryFn: getProjectList,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["user"],
+      queryFn: getUser,
+    }),
+  ]);
 
   const projectList = queryClient.getQueryData<Project[]>(["projectList"]);
   const user = queryClient.getQueryData<User>(["user"]);
 
   if (!projectList) {
-    return <div>Loading...</div>;
+    return (
+      <div className="mx-auto flex size-full flex-col justify-between py-2 tablet:w-tablet desktop:w-desktop">
+        <h1 className="mx-auto w-full max-w-screen-tablet text-center text-4xl font-bold">Projects</h1>
+        <div className="pt-8" />
+        <p className="text-center text-lg font-medium">프로젝트가 없습니다.</p>
+      </div>
+    );
   }
 
   return (
@@ -49,7 +56,7 @@ export default async function Page() {
             techStack={project.techStack}
             githubLink={project.githubLink}
             projectLink={project.projectLink}
-            isOwner={user?.isAdmin}
+            isOwner={user?.isAdmin ?? false}
           />
         ))}
       </section>
