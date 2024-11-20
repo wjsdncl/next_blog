@@ -41,8 +41,8 @@ export const getPostList = async ({
   }>("/posts", { params });
 
   const { posts, totalPosts, categoryCounts } = response.data;
-  const isLast = posts.length < 10;
-  return { posts, totalPosts, isLast, nextPage: offset + 10, categoryCounts };
+  const isLast = posts.length < limit;
+  return { posts, totalPosts, isLast, nextPage: offset + limit, categoryCounts };
 };
 
 export const getPost = async (title: string) => {

@@ -99,12 +99,13 @@ export default function ProjectCard({
 
           <div className="mb-6">
             <div className="mb-4">
-              <h3 className="mb-2 text-xl font-semibold">프로젝트 설명</h3>
+              <h3 className="mb-2 text-xl font-semibold"># 프로젝트 설명</h3>
               <p className="text-lg font-medium">{description}</p>
             </div>
 
             <div className="mb-4">
-              <h3 className="mb-2 text-xl font-semibold">상세 내용</h3>
+              <h3 className="mb-2 text-xl font-semibold"># 상세 내용</h3>
+
               <div className="prose text-lg prose-headings:text-text-primary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm, remarkBreaks]}
@@ -119,7 +120,7 @@ export default function ProjectCard({
             <hr className="my-4 border-t-2 border-gray-400" />
 
             <div>
-              <h3 className="mb-2 text-xl font-semibold">AI 기반 핵심 요약</h3>
+              <h3 className="mb-2 text-xl font-semibold"># AI 기반 핵심 요약</h3>
               <ul className="ml-5 list-disc">
                 {summary.map((item, index) => (
                   <li key={index} className="ml-5">

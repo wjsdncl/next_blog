@@ -5,9 +5,31 @@ import { Project, ProjectRequest } from "@/types/PortfolioType";
 
 const instance = getInstance();
 
-export const getProjectList = async (): Promise<Project[]> => {
-  const response = await instance.get<Project[]>("/projects");
-  return response.data;
+export const getProjectList = async ({
+  offset = 0,
+  limit = 10,
+}: {
+  offset?: number;
+  limit?: number;
+}): Promise<{
+  projects: Project[];
+  isLast: boolean;
+  nextPage: number;
+}> => {
+  const params = {
+    offset,
+    limit,
+  };
+
+  const response = await instance.get<Project[]>("/projects", { params });
+  const projects = response.data;
+  const isLast = projects.length < limit;
+
+  return {
+    projects,
+    isLast,
+    nextPage: offset + limit,
+  };
 };
 
 export const getProject = async (id: number): Promise<Project> => {
