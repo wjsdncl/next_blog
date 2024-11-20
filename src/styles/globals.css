@@ -21,6 +21,11 @@ input:-webkit-autofill {
   color: var(--text-primary);
 }
 
+.prose ol,
+.prose ul {
+  margin: 0;
+}
+
 .prose a {
   color: #8f83ed;
   text-decoration: none;
@@ -92,4 +97,20 @@ input:-webkit-autofill {
   --background-primary: var(--color-black);
   --background-secondary: #292929;
   --background-tertiary: #414141;
+}
+
+@keyframes expandHorizontal {
+  to {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+  }
+}
+
+@keyframes expandVertical {
+  to {
+    top: 0;
+    min-height: 80vh;
+    margin: 3rem 0;
+  }
 }

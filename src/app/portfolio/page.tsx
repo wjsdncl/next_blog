@@ -28,8 +28,11 @@ export default async function Page() {
   }
 
   return (
-    <div className="mx-auto flex size-full flex-col justify-between py-2 tablet:w-tablet desktop:w-desktop">
-      <h1 className="mx-auto w-full max-w-screen-tablet text-4xl font-bold">Portfolio</h1>
+    <div
+      id="main-content"
+      className="mx-auto flex size-full flex-col justify-between py-2 tablet:w-tablet desktop:w-desktop"
+    >
+      <h1 className="mx-auto w-full max-w-screen-tablet text-center text-4xl font-bold">Projects</h1>
 
       <div className="pt-8" />
 
