@@ -96,7 +96,10 @@ export default function PortfolioWritePage() {
                 <Form.Input
                   type="date"
                   label="startDate"
-                  validation={{ required: "프로젝트 시작일을 입력해주세요." }}
+                  validation={{
+                    required: "프로젝트 시작일을 입력해주세요.",
+                    max: { value: new Date(), message: "오늘 이후의 날짜를 입력해주세요." },
+                  }}
                 />
               </div>
             </div>
@@ -105,7 +108,13 @@ export default function PortfolioWritePage() {
                 프로젝트 종료일
               </label>
               <div className="h-10">
-                <Form.Input type="date" label="endDate" />
+                <Form.Input
+                  type="date"
+                  label="endDate"
+                  validation={{
+                    min: { value: new Date(), message: "시작일 이후의 날짜를 입력해주세요." },
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -139,7 +148,10 @@ export default function PortfolioWritePage() {
               label="content"
               placeholder="프로젝트 내용을 입력해주세요. (Markdown 형식으로 작성해주세요.)"
               rows={16}
-              validation={{ required: "프로젝트 내용을 입력해주세요." }}
+              validation={{
+                required: "프로젝트 내용을 입력해주세요.",
+                maxLength: { value: 2000, message: "최대 2000자까지 입력할 수 있습니다." },
+              }}
             />
           </div>
           <Form.Error name="content" />
@@ -169,7 +181,7 @@ export default function PortfolioWritePage() {
                 placeholder="Github 링크를 입력해주세요."
                 validation={{
                   pattern: {
-                    value: /^(https?:\/\/)?(www\.)?github\.com\/.*/,
+                    value: /^(https?:\/\/)?(www\.)?github\.com\/[\w-]+\/[\w.-]+$/,
                     message: "올바른 깃허브 주소를 입력해주세요.",
                   },
                 }}

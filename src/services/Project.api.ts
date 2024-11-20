@@ -38,6 +38,8 @@ export const getProject = async (id: number): Promise<Project> => {
 };
 
 export const TextSummarizer = async (text: string) => {
+  if (!text || text.length > 2000) return [];
+
   const content = removeMarkdown(text);
 
   const response = await axios.post<{ summary: string }>("/api/summarize", { text: content });
@@ -61,7 +63,15 @@ export const updateProject = async ({
   projectData: ProjectRequest;
   userId: string;
 }) => {
-  const response = await instance.patch(`/projects/${id}`, { ...projectData, userId });
+  let summaries = undefined;
+  if (projectData.content) {
+    summaries = await TextSummarizer(projectData.content);
+  }
+  const response = await instance.patch(`/projects/${id}`, {
+    ...projectData,
+    userId,
+    ...(summaries && { summary: summaries }),
+  });
   return response.data;
 };
 

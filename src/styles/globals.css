@@ -99,18 +99,44 @@ input:-webkit-autofill {
   --background-tertiary: #414141;
 }
 
+@keyframes expandCard {
+  0% {
+    width: var(--card-width);
+    height: var(--card-height);
+    margin-top: var(--card-top);
+  }
+  100% {
+    width: min(90vw, 1000px);
+    height: auto;
+    margin-top: 0;
+  }
+}
+
 @keyframes expandHorizontal {
   to {
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
+    width: min(90vw, 1000px);
   }
 }
 
 @keyframes expandVertical {
-  to {
-    top: 0;
-    min-height: 80vh;
-    margin: 3rem 0;
+  from {
+    height: var(--card-height);
   }
+  to {
+    height: auto;
+    margin-top: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease forwards;
 }
