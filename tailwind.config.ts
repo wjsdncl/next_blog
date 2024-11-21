@@ -122,9 +122,6 @@ export default {
               fontWeight: "500",
               fontFamily: "Consolas",
             },
-            p: {
-              margin: "0",
-            },
             pre: {
               backgroundColor: "transparent",
               padding: "0",

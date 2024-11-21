@@ -100,11 +100,6 @@ input:-webkit-autofill {
 }
 
 @keyframes expandCard {
-  0% {
-    width: var(--card-width);
-    height: var(--card-height);
-    margin-top: var(--card-top);
-  }
   100% {
     width: min(90vw, 1000px);
     height: auto;
