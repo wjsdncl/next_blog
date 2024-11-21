@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
@@ -197,6 +197,23 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     }
   };
 
+  // 스크롤 동기화를 위한 ref 추가
+  const editorRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+
+  // 스크롤 동기화 함수
+  const handleEditorScroll = useCallback(() => {
+    if (!editorRef.current || !previewRef.current) return;
+
+    const editorElement = editorRef.current;
+    const previewElement = previewRef.current;
+
+    const percentage = editorElement.scrollTop / (editorElement.scrollHeight - editorElement.clientHeight);
+    const previewScrollTop = percentage * (previewElement.scrollHeight - previewElement.clientHeight);
+
+    previewElement.scrollTop = previewScrollTop;
+  }, []);
+
   return (
     <form onSubmit={handleSubmit(completeWriting)} className="flex h-dvh w-full">
       {/* 작성 부분 */}
@@ -256,12 +273,14 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
             render={({ field }) => (
               <textarea
                 {...field}
+                ref={editorRef}
                 value={markdown}
                 onDrop={handleDrop}
                 onPaste={handlePaste}
                 onChange={(e) => field.onChange(e)}
+                onScroll={handleEditorScroll}
                 required
-                className="size-full resize-none text-lg outline-none scrollbar:w-2 scrollbar:rounded-full scrollbar:bg-gray-200 scrollbar-thumb:rounded-full scrollbar-thumb:bg-gray-300"
+                className="size-full resize-none text-lg outline-none scrollbar-hide"
                 rows={1}
                 placeholder="글을 작성하세요"
               />
@@ -296,7 +315,10 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       </div>
 
       {/* 프리뷰 부분 */}
-      <div className="flex max-w-[50%] basis-1/2 flex-col gap-4 overflow-y-auto bg-gray-100 p-[64px_40px_40px] scrollbar:w-2 scrollbar:rounded-full scrollbar:bg-gray-200 scrollbar-thumb:rounded-full scrollbar-thumb:bg-gray-300">
+      <div
+        ref={previewRef}
+        className="flex max-w-[50%] basis-1/2 flex-col gap-4 overflow-y-auto bg-gray-100 p-[64px_40px_40px] scrollbar:w-2 scrollbar:rounded-full scrollbar:bg-gray-200 scrollbar-thumb:rounded-full scrollbar-thumb:bg-gray-300"
+      >
         <h1 className="min-h-[58px] text-5xl font-bold">{title}</h1>
 
         <div className="prose w-full max-w-none text-lg dark:prose-invert">
