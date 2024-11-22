@@ -1,16 +1,21 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
+
 import ReactMarkdown from "react-markdown";
 import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import removeMarkdown from "remove-markdown";
+
 import { useShallow } from "zustand/shallow";
+
 import components from "@/components/MarkdownComponents";
+
 import GitHub from "@/Icons/Github";
 import LinkIcon from "@/Icons/Link";
 import { deleteProject } from "@/services/Project.api";

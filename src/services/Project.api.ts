@@ -43,22 +43,13 @@ export const createProject = async ({ projectData, userId }: { projectData: Proj
   return response.data;
 };
 
-export const updateProject = async ({
-  id,
-  projectData,
-  userId,
-}: {
-  id: number;
-  projectData: ProjectRequest;
-  userId: string;
-}) => {
+export const updateProject = async ({ id, projectData }: { id: number; projectData: ProjectRequest }) => {
   let summaries = undefined;
   if (projectData.content) {
     summaries = await TextSummarizer(projectData.content);
   }
   const response = await instance.patch(`/projects/${id}`, {
     ...projectData,
-    userId,
     ...(summaries && { summary: summaries }),
   });
   return response.data;

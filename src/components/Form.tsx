@@ -53,7 +53,6 @@ interface SelectProps<T extends FieldValues> {
 
 interface CheckboxProps<T extends FieldValues> {
   label: Path<T>;
-  isChecked?: boolean;
 }
 
 interface SubmitProps {
@@ -78,15 +77,12 @@ function Form<T extends FieldValues>({ onSubmit, children, defaultValues }: Form
 
   const modifiedOnSubmit: SubmitHandler<T> = (data) => {
     const dirtyFields = methods.formState.dirtyFields as Partial<Record<keyof T, boolean>>;
-
-    // `dirtyFields`로 수정된 데이터만 추출
-    const modifiedData = Object.keys(dirtyFields).reduce((acc, key) => {
-      if (dirtyFields[key as keyof T]) {
+    const modifiedData = Object.entries(dirtyFields).reduce((acc, [key, isDirty]) => {
+      if (isDirty) {
         acc[key as keyof T] = data[key as keyof T];
       }
       return acc;
     }, {} as Partial<T>);
-
     onSubmit(modifiedData as T); // 수정된 데이터만 전달
   };
 
@@ -248,7 +244,7 @@ function Select<T extends FieldValues>({ label, options }: SelectProps<T>) {
   );
 }
 
-function Checkbox<T extends FieldValues>({ label, isChecked }: CheckboxProps<T>) {
+function Checkbox<T extends FieldValues>({ label }: CheckboxProps<T>) {
   const { control } = useFormContext<T>();
 
   return (
@@ -262,7 +258,7 @@ function Checkbox<T extends FieldValues>({ label, isChecked }: CheckboxProps<T>)
             className="size-5"
             {...field}
             id={label}
-            checked={field.value ?? isChecked}
+            checked={field.value}
             onChange={(e) => field.onChange(e.target.checked)}
           />
         </div>

@@ -45,7 +45,7 @@ export default function ProjectForm({ id }: { id?: number }) {
   // 프로젝트 수정 뮤테이션
   const updateProjectMutation = useMutation({
     mutationFn: async (data: { id: number; projectData: ProjectRequest }) =>
-      updateProject({ id: data.id, projectData: data.projectData, userId: user?.id as string }),
+      updateProject({ id: data.id, projectData: data.projectData }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projectList"] });
       router.push("/portfolio");
@@ -96,7 +96,7 @@ export default function ProjectForm({ id }: { id?: number }) {
             개인
           </label>
           <div className="h-10">
-            <Form.Checkbox label="isPersonal" isChecked={true} />
+            <Form.Checkbox label="isPersonal" />
           </div>
         </div>
 
