@@ -1,6 +1,5 @@
-import axios from "axios";
-import removeMarkdown from "remove-markdown";
 import getInstance from "./axios";
+import TextSummarizer from "./TextSummarizer";
 import { Project, ProjectRequest } from "@/types/PortfolioType";
 
 const instance = getInstance();
@@ -35,16 +34,6 @@ export const getProjectList = async ({
 export const getProject = async (id: number): Promise<Project> => {
   const response = await instance.get<Project>(`/projects/${id}`);
   return response.data;
-};
-
-export const TextSummarizer = async (text: string) => {
-  if (!text || text.length > 2000) return [];
-
-  const content = removeMarkdown(text);
-
-  const response = await axios.post<{ summary: string }>("/api/summarize", { text: content });
-  const summaries = response.data.summary.split("\n");
-  return summaries;
 };
 
 export const createProject = async ({ projectData, userId }: { projectData: ProjectRequest; userId: string }) => {

@@ -1,6 +1,15 @@
 // Form.tsx
 import { ReactNode, useState } from "react";
-import { FormProvider, useForm, useFormContext, SubmitHandler, Path, FieldValues, Controller } from "react-hook-form";
+import {
+  FormProvider,
+  useForm,
+  useFormContext,
+  SubmitHandler,
+  Path,
+  FieldValues,
+  Controller,
+  DefaultValues,
+} from "react-hook-form";
 import { default as Tag } from "@/components/TagInput";
 import { EyeClose, EyeOpen } from "@/Icons/Eyes";
 import cn from "@/utils/cn";
@@ -9,6 +18,7 @@ import cn from "@/utils/cn";
 interface FormProps<T extends FieldValues> {
   onSubmit: SubmitHandler<T>;
   children: ReactNode;
+  defaultValues?: DefaultValues<T>;
 }
 
 interface ErrorProps<T extends FieldValues> {
@@ -52,11 +62,12 @@ interface SubmitProps {
 }
 
 // Components
-function Form<T extends FieldValues>({ onSubmit, children }: FormProps<T>) {
+function Form<T extends FieldValues>({ onSubmit, children, defaultValues }: FormProps<T>) {
   const methods = useForm<T>({
     mode: "onChange",
     criteriaMode: "all",
     shouldFocusError: true,
+    defaultValues,
   });
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -65,9 +76,23 @@ function Form<T extends FieldValues>({ onSubmit, children }: FormProps<T>) {
     }
   };
 
+  const modifiedOnSubmit: SubmitHandler<T> = (data) => {
+    const dirtyFields = methods.formState.dirtyFields as Partial<Record<keyof T, boolean>>;
+
+    // `dirtyFields`로 수정된 데이터만 추출
+    const modifiedData = Object.keys(dirtyFields).reduce((acc, key) => {
+      if (dirtyFields[key as keyof T]) {
+        acc[key as keyof T] = data[key as keyof T];
+      }
+      return acc;
+    }, {} as Partial<T>);
+
+    onSubmit(modifiedData as T); // 수정된 데이터만 전달
+  };
+
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} onKeyDown={handleKeyDown}>
+      <form onSubmit={methods.handleSubmit(modifiedOnSubmit)} onKeyDown={handleKeyDown}>
         {children}
       </form>
     </FormProvider>
@@ -126,7 +151,9 @@ function Input<T extends FieldValues>({
           <input
             {...field}
             id={label}
-            value={field.value || ""}
+            value={
+              type === "date" && field.value ? new Date(field.value).toISOString().split("T")[0] : field.value || ""
+            }
             type={inputType}
             placeholder={placeholder}
             autoComplete={autoComplete}
@@ -235,9 +262,8 @@ function Checkbox<T extends FieldValues>({ label, isChecked }: CheckboxProps<T>)
             className="size-5"
             {...field}
             id={label}
-            defaultChecked={isChecked}
-            value={field.value}
-            checked={field.value}
+            checked={field.value ?? isChecked}
+            onChange={(e) => field.onChange(e.target.checked)}
           />
         </div>
       )}
