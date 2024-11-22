@@ -38,7 +38,7 @@ export default function ProjectForm({ id }: { id?: number }) {
     mutationFn: createProject,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projectList"] });
-      // router.push("/portfolio");
+      router.push("/portfolio");
     },
   });
 

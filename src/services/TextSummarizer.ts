@@ -1,7 +1,9 @@
+"use server";
+
 import { CohereClientV2 } from "cohere-ai";
 
 const cohere = new CohereClientV2({
-  token: process.env.NEXT_PUBLIC_COHERE_API_KEY, // 환경 변수에 API 키 저장
+  token: process.env.COHERE_API_KEY, // 환경 변수에 API 키 저장
 });
 
 const TextSummarizer = async (description: string): Promise<string[] | undefined> => {
