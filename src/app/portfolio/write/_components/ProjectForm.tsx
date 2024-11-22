@@ -101,7 +101,7 @@ export default function ProjectForm({ id }: { id?: number }) {
         </div>
 
         <div className="flex gap-4">
-          <div className="flex flex-col gap-2">
+          <div className="relative flex flex-col gap-2">
             <label className="text-lg font-medium" htmlFor="startDate">
               프로젝트 시작일
             </label>
@@ -111,9 +111,17 @@ export default function ProjectForm({ id }: { id?: number }) {
                 label="startDate"
                 validation={{
                   required: "프로젝트 시작일을 입력해주세요.",
-                  max: { value: new Date(), message: "오늘 이후의 날짜를 입력해주세요." },
+                  validate: {
+                    notFuture: (value: string) => {
+                      const today = new Date().toISOString().split("T")[0];
+                      return value <= today || "오늘 이후의 날짜를 입력할 수 없습니다.";
+                    },
+                  },
                 }}
               />
+            </div>
+            <div className="absolute -bottom-8 left-0 text-nowrap">
+              <Form.Error name="startDate" />
             </div>
           </div>
           <div className="flex flex-col gap-2">
@@ -121,13 +129,7 @@ export default function ProjectForm({ id }: { id?: number }) {
               프로젝트 종료일
             </label>
             <div className="h-10">
-              <Form.Input
-                type="date"
-                label="endDate"
-                validation={{
-                  min: { value: new Date(), message: "시작일 이후의 날짜를 입력해주세요." },
-                }}
-              />
+              <Form.Input type="date" label="endDate" />
             </div>
           </div>
         </div>
