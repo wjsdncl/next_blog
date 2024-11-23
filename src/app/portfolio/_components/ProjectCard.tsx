@@ -1,17 +1,29 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
+
 import ReactMarkdown from "react-markdown";
 import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import removeMarkdown from "remove-markdown";
+
+import { useShallow } from "zustand/shallow";
+
 import components from "@/components/MarkdownComponents";
+
 import GitHub from "@/Icons/Github";
 import LinkIcon from "@/Icons/Link";
+import { deleteProject } from "@/services/Project.api";
+import useModalStore from "@/stores/ModalStore";
+import toast from "@/utils/Toast";
 
 interface ProjectCardProps {
+  id: number;
   title: string;
   isPersonal?: boolean;
   date: string;
@@ -25,6 +37,7 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({
+  id,
   title,
   isPersonal,
   date,
@@ -36,9 +49,15 @@ export default function ProjectCard({
   projectLink,
   isOwner,
 }: ProjectCardProps) {
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
   const articleRef = useRef<HTMLElement>(null);
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+
+  const { openModal, closeModal } = useModalStore(
+    useShallow((state) => ({ openModal: state.openModal, closeModal: state.closeModal }))
+  );
 
   useEffect(() => {
     document.body.style.overflow = isExpanded ? "hidden" : "unset";
@@ -46,6 +65,17 @@ export default function ProjectCard({
       document.body.style.overflow = "unset";
     };
   }, [isExpanded]);
+
+  const DeleteProjectMutation = useMutation({
+    mutationFn: deleteProject,
+    onSuccess: () => {
+      toast.success("프로젝트가 삭제되었습니다.");
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+    onError: () => {
+      toast.error("프로젝트 삭제에 실패하였습니다.");
+    },
+  });
 
   const handleExpand = () => {
     if (!isExpanded && articleRef.current) {
@@ -57,6 +87,35 @@ export default function ProjectCard({
       });
     }
     setIsExpanded(!isExpanded);
+  };
+
+  const handleDeleteModal = () => {
+    const modalId = openModal(
+      <div className="flex flex-col gap-4">
+        <p className="pb-8 pt-6 text-center text-2xl font-semibold">정말로 삭제하시겠습니까?</p>
+        <div className="flex gap-4">
+          <button
+            onClick={() => {
+              DeleteProjectMutation.mutateAsync(id);
+              modalId && closeModal(modalId);
+            }}
+            className="grow rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand-secondary dark:hover:bg-brand_dark-secondary"
+          >
+            삭제
+          </button>
+          <button
+            onClick={() => modalId && closeModal(modalId)}
+            className="grow rounded bg-gray-300 px-4 py-2 text-text-primary hover:bg-gray-400"
+          >
+            취소
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const handleEdit = () => {
+    router.push(`/portfolio/write?id=${id}`);
   };
 
   const renderExpandedContent = () => (
@@ -167,8 +226,12 @@ export default function ProjectCard({
           <h2 className="grow text-3xl font-semibold">{title}</h2>
           {isOwner && (
             <div className="flex items-center gap-1">
-              <button className="p-1 font-semibold text-brand-tertiary">수정</button>
-              <button className="p-1 font-semibold text-brand-tertiary">삭제</button>
+              <button onClick={handleEdit} className="p-1 font-semibold text-brand-tertiary">
+                수정
+              </button>
+              <button onClick={handleDeleteModal} className="p-1 font-semibold text-brand-tertiary">
+                삭제
+              </button>
             </div>
           )}
           <button onClick={handleExpand} className="px-3 py-1 font-semibold text-brand-tertiary">

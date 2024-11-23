@@ -83,7 +83,9 @@ export default function ProjectList({ isOwner }: { isOwner: boolean }) {
               page.projects.map((project: Project) => (
                 <ProjectCard
                   key={`${pageIndex}-${project.id}`}
+                  id={project.id}
                   title={project.title}
+                  isPersonal={project.isPersonal}
                   date={`${formatDate(project.startDate)} ~ ${project.endDate ? formatDate(project.endDate) : "진행중"}`}
                   description={project.description}
                   content={project.content}
