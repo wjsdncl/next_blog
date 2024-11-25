@@ -36,7 +36,7 @@ const components = {
         width={0}
         height={0}
         sizes="100vw"
-        className="size-auto max-w-full object-contain"
+        className="size-auto max-h-[720px] max-w-full object-contain"
         {...props}
       />
     </span>

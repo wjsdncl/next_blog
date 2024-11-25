@@ -1,8 +1,8 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
@@ -15,7 +15,6 @@ import { getPost, updatePost, uploadImage, writePost } from "@/services/post.api
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import { PostRequest } from "@/types/BlogType";
-import toast from "@/utils/Toast";
 
 // FormValues 타입 정의
 type FormValues = {
@@ -28,8 +27,6 @@ type FormValues = {
 export default function MarkdownEditor({ slug }: { slug?: string }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const searchParams = useSearchParams();
-  const [tempId, setTempId] = useState<string>(searchParams.get("id") ?? crypto.randomUUID());
 
   const { handleSubmit, control, watch, setValue } = useForm<FormValues>({
     defaultValues: { title: "", category: "", content: "", tags: [] },
@@ -65,7 +62,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
   const completeWritingMutation = useMutation({
     mutationFn: async (data: PostRequest) => writePost({ postData: data, userId: user?.id as string }),
     onSuccess: () => {
-      localStorage.removeItem(tempId); // 임시 저장 데이터 제거
       queryClient.invalidateQueries({ queryKey: ["posts"] }); // 포스트 목록 갱신
       queryClient.invalidateQueries({ queryKey: ["user"] }); // 사용자 데이터 갱신
       router.push("/blog"); // 블로그 목록 페이지로 이동
@@ -83,50 +79,15 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     },
   });
 
-  // 검색 파라미터에 ID 추가
-  const addIdToSearchParams = useCallback(
-    (newId: string) => {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set("id", newId);
-      router.replace(`/blog/write?${newSearchParams.toString()}`);
-    },
-    [searchParams, router]
-  );
-
-  // 임시 저장 기능
-  const temporarySave = useCallback(() => {
-    // 제목이나 내용이 비어있으면 저장하지 않음
-    if (!title || !markdown) {
-      toast.error("제목 또는 내용이 비어있습니다.");
-      return;
-    }
-
-    // 새 데이터로 항상 덮어쓰기
-    const newId = searchParams.get("id") || slug || crypto.randomUUID();
-    setTempId(newId);
-    addIdToSearchParams(newId);
-    localStorage.setItem(newId, JSON.stringify({ ...watch() }));
-
-    toast.success("임시저장되었습니다.");
-  }, [addIdToSearchParams, markdown, searchParams, slug, title, watch]);
-
-  // 임시 저장된 데이터 불러오기
+  // 기존 포스트 데이터 불러오기
   useEffect(() => {
-    const storedTempData = localStorage.getItem(tempId);
-
     if (slug && post) {
       setValue("title", post.title);
       setValue("category", post.category || "");
       setValue("content", post.content as string);
       setValue("tags", post.tags || []);
-    } else if (storedTempData) {
-      const parsedData: FormValues = JSON.parse(storedTempData);
-      setValue("title", parsedData.title);
-      setValue("category", parsedData.category || "");
-      setValue("content", parsedData.content);
-      setValue("tags", parsedData.tags || []);
     }
-  }, [post, setValue, slug, tempId]);
+  }, [post, setValue, slug]);
 
   // 글 작성 완료
   const completeWriting = (data: FormValues) => {
@@ -148,18 +109,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       />
     );
   };
-
-  // Ctrl + S로 임시 저장
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === "s") {
-        e.preventDefault();
-        temporarySave();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [temporarySave]);
 
   // 이미지 업로드
   const handleImageUpload = async (file: File, tempText: string) => {
@@ -296,21 +245,12 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
           >
             나가기
           </button>
-          <div className="flex grow items-center justify-end gap-3">
-            <button
-              onClick={temporarySave}
-              type="button"
-              className="w-max text-nowrap rounded-lg px-2 text-lg font-bold text-text-primary"
-            >
-              임시저장
-            </button>
-            <button
-              type="submit"
-              className="w-max text-nowrap rounded-lg bg-brand-primary px-4 py-2 text-lg font-bold text-white"
-            >
-              작성완료
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-max text-nowrap rounded-lg bg-brand-primary px-4 py-2 text-lg font-bold text-white"
+          >
+            작성완료
+          </button>
         </div>
       </div>
 
