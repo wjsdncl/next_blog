@@ -4,8 +4,8 @@ import WriteLink from "./_components/WriteLink";
 import getQueryClient from "@/components/QueryClient";
 import { getProjectList } from "@/services/Project.api";
 import { getUser } from "@/services/user.api";
-import { User } from "@/types/AuthType";
-import { Project } from "@/types/PortfolioType";
+import { type User } from "@/types/AuthType";
+import { type Project } from "@/types/PortfolioType";
 
 interface ProjectList {
   pages: {

@@ -7,8 +7,8 @@ import Form from "@/components/Form";
 import { createProject, getProject, updateProject } from "@/services/Project.api";
 import { getUser } from "@/services/user.api";
 import useUserStore from "@/stores/UserStore";
-import { User } from "@/types/AuthType";
-import { Project, ProjectRequest } from "@/types/PortfolioType";
+import { type User } from "@/types/AuthType";
+import { type Project, type ProjectRequest } from "@/types/PortfolioType";
 import toast from "@/utils/Toast";
 
 export default function ProjectForm({ id }: { id?: number }) {
@@ -165,7 +165,7 @@ export default function ProjectForm({ id }: { id?: number }) {
             rows={16}
             validation={{
               required: "프로젝트 내용을 입력해주세요.",
-              maxLength: { value: 2000, message: "최대 2000자까지 입력할 수 있습니다." },
+              maxLength: { value: 5000, message: "최대 5000자까지 입력할 수 있습니다." },
             }}
           />
         </div>

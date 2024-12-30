@@ -1,96 +1,127 @@
 {
   "env": {
-    "browser": true,
-    "node": true,
-    "es2021": true,
+    // 환경 설정
+    "browser": true, // 브라우저 전역 변수를 사용 가능
+    "node": true, // Node.js 전역 변수를 사용 가능
+    "es2021": true, // 최신 ECMAScript 2021 문법 지원
   },
-  "parser": "@typescript-eslint/parser",
+  "parser": "@typescript-eslint/parser", // TypeScript 구문 분석기 지정
   "parserOptions": {
+    // 파서 옵션
     "ecmaFeatures": {
-      "jsx": true,
-      "modules": true,
+      "jsx": true, // JSX 문법 지원
+      "modules": true, // ES6 모듈 문법 지원
     },
     "babelOptions": {
-      "presets": ["@babel/preset-react"],
+      "presets": ["@babel/preset-react"], // Babel을 사용해 React 지원
     },
-    "project": "./tsconfig.json",
-    "sourceType": "module",
+    "project": "./tsconfig.json", // TypeScript 프로젝트 설정 파일 경로
+    "sourceType": "module", // 모듈 타입 설정
   },
   "extends": [
-    "prettier",
-    "plugin:import/recommended",
-    "plugin:import/typescript",
-    "plugin:react/recommended",
-    "plugin:react/jsx-runtime",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:@next/next/recommended",
-    "plugin:tailwindcss/recommended",
-    "plugin:@tanstack/eslint-plugin-query/recommended",
+    // 확장 설정 (다양한 플러그인 및 프리셋 적용)
+    "prettier", // Prettier와 호환
+    "plugin:import/recommended", // import 관련 권장 규칙
+    "plugin:import/typescript", // TypeScript import 지원
+    "plugin:react/recommended", // React 권장 규칙
+    "plugin:react/jsx-runtime", // React 17+ JSX runtime 지원
+    "plugin:@typescript-eslint/recommended", // TypeScript ESLint 권장 규칙
+    "plugin:@next/next/recommended", // Next.js 권장 규칙
+    "plugin:tailwindcss/recommended", // Tailwind CSS 권장 규칙
+    "plugin:@tanstack/eslint-plugin-query/recommended", // React Query 권장 규칙
   ],
   "globals": {
-    "_": true,
+    // 전역 변수 설정
+    "_": true, // lodash 라이브러리를 전역에서 사용 가능
   },
-  "plugins": ["import", "react", "@typescript-eslint", "tailwindcss", "prettier", "react-hooks"],
+  "plugins": [
+    // 사용 플러그인
+    "import", // import 관련 규칙 플러그인
+    "react", // React 관련 규칙 플러그인
+    "@typescript-eslint", // TypeScript 관련 규칙 플러그인
+    "tailwindcss", // Tailwind CSS 관련 규칙 플러그인
+    "prettier", // Prettier 관련 규칙 플러그인
+    "react-hooks", // React Hooks 관련 규칙 플러그인
+  ],
   "rules": {
-    "import/no-unresolved": 0,
-    "no-console": "warn",
+    // 커스텀 규칙
+    "react/jsx-key": "warn", // JSX 요소에 key 속성 추가 권장
+    "import/no-unresolved": 0, // import 경로 오류 무시
+    "no-console": "warn", // console.log 사용 시 경고
     "no-unused-expressions": [
+      // 불필요한 표현식 금지
       "error",
       {
-        "allowTernary": true,
-        "allowShortCircuit": true,
-        "allowTaggedTemplates": true,
+        "allowTernary": true, // 삼항 연산자 허용
+        "allowShortCircuit": true, // 단축 평가 허용
+        "allowTaggedTemplates": true, // 태그 템플릿 허용
       },
     ],
-    "max-nested-callbacks": ["error", 5],
+    "max-nested-callbacks": ["error", 5], // 중첩된 콜백 최대 5단계로 제한
     "import/order": [
+      // import 순서 정렬
       "warn",
       {
-        "groups": ["external", "internal", "builtin", "parent", "sibling", "index"],
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index"], // 그룹별 정렬
         "alphabetize": {
-          "order": "asc",
-          "caseInsensitive": true,
+          "order": "asc", // 알파벳 순 정렬
+          "caseInsensitive": true, // 대소문자 무시
         },
       },
     ],
     "react/self-closing-comp": [
+      // 닫힘 태그 없는 컴포넌트
       "error",
       {
         "component": true,
         "html": true,
       },
     ],
-    "react/react-in-jsx-scope": "off",
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }],
-    "@typescript-eslint/no-unused-vars": ["warn"],
-    "@typescript-eslint/no-shadow": ["warn"],
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "tailwindcss/classnames-order": "warn",
-    "tailwindcss/enforces-shorthand": "warn",
-    "tailwindcss/no-custom-classname": "warn",
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "react/prop-types": "off",
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
+    "react/react-in-jsx-scope": "off", // JSX 스코프 내 React 사용 가능
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }], // JSX를 사용할 파일 확장자 지정
+    "@typescript-eslint/no-unused-vars": ["warn"], // 미사용 변수 경고
+    "@typescript-eslint/no-shadow": ["warn"], // 변수 그림자 금지
+    "@typescript-eslint/explicit-module-boundary-types": "off", // 함수 반환 타입 명시 비필수
+    "tailwindcss/classnames-order": "warn", // Tailwind 클래스 이름 정렬
+    "tailwindcss/enforces-shorthand": "warn", // Tailwind 단축 속성 사용
+    "tailwindcss/no-custom-classname": "warn", // 사용자 정의 클래스 이름 제한
+    "@typescript-eslint/no-explicit-any": "warn", // `any` 타입 경고
+    "@typescript-eslint/explicit-function-return-type": "off", // 함수 반환 타입 비필수
+    "@typescript-eslint/consistent-type-imports": [
+      "warn",
+      {
+        "prefer": "type-imports", // 타입 import 선호
+        "fixStyle": "inline-type-imports", // 자동 수정 방식
+      },
+    ],
+    "react/prop-types": "off", // prop-types 사용 비필수 (TypeScript 사용)
+    "react-hooks/rules-of-hooks": "error", // React Hooks 규칙 엄격
+    "react-hooks/exhaustive-deps": "warn", // useEffect 종속성 배열 경고
   },
   "settings": {
+    // 설정
     "react": {
-      "version": "detect",
+      "version": "detect", // React 버전 자동 감지
     },
-    "import/extensions": [".js", ".jsx", ".ts", ".tsx"],
+    "import/extensions": [".js", ".jsx", ".ts", ".tsx"], // import 확장자 설정
     "import/resolver": {
       "node": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"], // Node.js 확장자 지원
       },
     },
     "tailwindcss": {
-      "callees": ["classnames", "clsx", "ctl"],
+      // Tailwind 설정
+      "callees": ["classnames", "clsx", "ctl"], // 클래스 이름 관련 유틸리티 함수
     },
   },
   "overrides": [
+    // 특정 파일에만 적용할 규칙
     {
-      "files": ["**/*.test.ts", "**/*.test.tsx", "next.config.mjs"],
+      "files": ["**/*.test.ts", "**/*.test.tsx", "next.config.mjs"], // 테스트 파일 및 Next.js 설정 파일
+      "rules": {
+        "no-unused-expressions": "off", // 불필요한 표현식 경고 무시
+        "@typescript-eslint/no-explicit-any": "off", // `any` 타입 경고 무시
+      },
     },
   ],
 }

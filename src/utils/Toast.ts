@@ -1,4 +1,4 @@
-import useToastStore, { ToastType } from "@/stores/ToastStore";
+import useToastStore, { type ToastType } from "@/stores/ToastStore";
 
 const toast = {
   success: (message: string, duration: number = 2000) =>
@@ -31,7 +31,7 @@ const toast = {
     msgs: {
       loading: string;
       success: string | ((data: T) => string);
-      error: string | ((error: any) => string);
+      error: string | ((error: Error) => string);
     }
   ) => {
     const id = toast.loading(msgs.loading);

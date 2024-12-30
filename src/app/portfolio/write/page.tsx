@@ -4,7 +4,7 @@ import ProjectForm from "./_components/ProjectForm";
 import getQueryClient from "@/components/QueryClient";
 import { getProject } from "@/services/Project.api";
 import { getUser } from "@/services/user.api";
-import { User } from "@/types/AuthType";
+import { type User } from "@/types/AuthType";
 
 export default async function PortfolioWritePage({ searchParams }: { searchParams: { id: number } }) {
   const queryClient = getQueryClient({ staleTime: 60 * 1000 });

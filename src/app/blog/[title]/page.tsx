@@ -1,5 +1,5 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import PostHeader from "./_components/PostHeader";
 import components from "@/components/MarkdownComponents";
 import getQueryClient from "@/components/QueryClient";
 import { getPost } from "@/services/post.api";
-import { Post } from "@/types/BlogType";
+import { type Post } from "@/types/BlogType";
 
 const Navigation = dynamic(() => import("./_components/Navigation"));
 const GenerateTOC = dynamic(() => import("./_components/GenerateTOC"));
