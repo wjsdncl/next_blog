@@ -51,7 +51,7 @@ const components = {
     const cleanAlt = alt?.replace(/{(\d+)x(\d+)}/, "").trim();
 
     return (
-      <span className="relative block max-w-full">
+      <span className="relative my-4 block max-w-full">
         <Image
           src={src}
           alt={cleanAlt ?? "이미지"}
@@ -59,7 +59,14 @@ const components = {
           height={0}
           sizes="100vw"
           className="size-auto max-h-[720px] max-w-full object-contain"
-          style={sizeInfo ? { width: sizeInfo.width, height: sizeInfo.height } : undefined}
+          style={
+            sizeInfo
+              ? {
+                  width: sizeInfo.width,
+                  ...(sizeInfo.height ? { height: sizeInfo.height } : {}),
+                }
+              : undefined
+          }
           {...props}
         />
       </span>

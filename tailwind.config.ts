@@ -108,7 +108,7 @@ export default {
             },
             h2: {
               position: "relative",
-              marginTop: "0",
+              marginTop: "1rem",
               marginBottom: "1rem",
               paddingBottom: "0",
               // borderBottom: "3px solid var(--color-gray-300)",

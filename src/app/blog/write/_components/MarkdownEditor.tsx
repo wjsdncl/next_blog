@@ -14,7 +14,7 @@ import TagInput from "@/components/TagInput";
 import { getPost, updatePost, uploadImage, writePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
-import { PostRequest } from "@/types/BlogType";
+import { type PostRequest } from "@/types/BlogType";
 
 // FormValues 타입 정의
 type FormValues = {
@@ -261,7 +261,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       >
         <h1 className="min-h-[58px] text-5xl font-bold">{title}</h1>
 
-        <div className="prose w-full max-w-none text-lg dark:prose-invert">
+        <div className="prose text-lg prose-headings:text-text-primary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
           <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
             {markdown}
           </ReactMarkdown>
