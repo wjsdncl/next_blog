@@ -4,7 +4,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef, useEffect } from "react";
 import ProjectCard from "./ProjectCard";
 import { getProjectList } from "@/services/Project.api";
-import { Project } from "@/types/PortfolioType";
+import { type Project } from "@/types/PortfolioType";
 import { formatDate } from "@/utils/FormatDate";
 
 export default function ProjectList({ isOwner }: { isOwner: boolean }) {

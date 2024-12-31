@@ -1,6 +1,6 @@
 import getInstance from "./axios";
 import TextSummarizer from "./TextSummarizer";
-import { Project, ProjectRequest } from "@/types/PortfolioType";
+import { type Project, type ProjectRequest } from "@/types/PortfolioType";
 
 const instance = getInstance();
 
