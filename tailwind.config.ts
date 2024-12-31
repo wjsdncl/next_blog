@@ -158,6 +158,10 @@ export default {
               margin: "5px 0",
               p: {
                 margin: "0",
+                marginTop: "1rem",
+                "&:first-child": {
+                  marginTop: "0",
+                },
               },
             },
             table: {
