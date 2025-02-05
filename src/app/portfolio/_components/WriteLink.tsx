@@ -2,15 +2,13 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useShallow } from "zustand/shallow";
 import { getUser } from "@/services/user.api";
-import useUserStore from "@/stores/UserStore";
 import { User } from "@/types/AuthType";
 
 export default function WriteLink() {
   const queryClient = useQueryClient();
 
-  const { isLoggedIn } = useUserStore(useShallow((state) => ({ isLoggedIn: state.isLoggedIn })));
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
   const { data: user } = useQuery({
     queryKey: ["user"],

@@ -10,7 +10,6 @@ import { deleteComment, editComment, getComments, writeComment } from "@/service
 import { getPost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
-import useUserStore from "@/stores/UserStore";
 import { User } from "@/types/AuthType";
 import { CommentRequest } from "@/types/BlogType";
 import toast from "@/utils/Toast";
@@ -28,7 +27,7 @@ export default function Comments({ title }: { title: string }) {
   const [limit] = useState(10);
   const offset = (page - 1) * limit;
 
-  const { isLoggedIn } = useUserStore(useShallow((state) => ({ isLoggedIn: state.isLoggedIn })));
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
   // 사용자 데이터 가져오기
   const { data: user } = useQuery({

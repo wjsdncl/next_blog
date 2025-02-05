@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { SubmitHandler } from "react-hook-form";
 import Form from "@/components/Form";
 import { SignIn } from "@/services/auth.api";
-import useUserStore from "@/stores/UserStore";
 import { SignInForm, SignInResponse } from "@/types/AuthType";
 import toast from "@/utils/Toast";
 
@@ -18,7 +17,7 @@ export default function LoginForm() {
     mutationKey: ["auth"],
     mutationFn: async (data: SignInForm) => SignIn(data),
     onSuccess: (data) => {
-      useUserStore.setState({ isLoggedIn: true });
+      localStorage.setItem("isLoggedIn", "true");
 
       // 유저 정보 갱신
       queryClient.refetchQueries({ queryKey: ["user"] });

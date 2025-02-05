@@ -6,13 +6,11 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRef, useEffect, useState } from "react";
 import removeMarkdown from "remove-markdown";
-import { useShallow } from "zustand/shallow";
 import Navigation from "./Navigation";
 import SearchInput from "./SearchInput";
 import { FavoriteEmpty } from "@/Icons/Favorite";
 import { getPostList } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
-import useUserStore from "@/stores/UserStore";
 import { type Post } from "@/types/BlogType";
 import { diffDate } from "@/utils/FormatDate";
 
@@ -27,7 +25,7 @@ export default function ClientPage() {
   const tagQuery = searchParams.get("tag") ?? undefined; // 태그 추출
 
   // 사용자 스토어 및 쿼리
-  const { isLoggedIn } = useUserStore(useShallow((state) => ({ isLoggedIn: state.isLoggedIn })));
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
   const { data: user } = useQuery({
     queryKey: ["user"],

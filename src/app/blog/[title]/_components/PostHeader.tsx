@@ -7,7 +7,6 @@ import Navigation from "./Navigation";
 import { deletePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
-import useUserStore from "@/stores/UserStore";
 import { type User } from "@/types/AuthType";
 import { type Post } from "@/types/BlogType";
 import { formatKoreanDate } from "@/utils/FormatDate";
@@ -21,7 +20,7 @@ export default function PostHeader({ post }: { post: Post }) {
     useShallow((state) => ({ openModal: state.openModal, closeModal: state.closeModal }))
   );
 
-  const { isLoggedIn } = useUserStore(useShallow((state) => ({ isLoggedIn: state.isLoggedIn })));
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
   const { data: user } = useQuery({
     queryKey: ["user"],

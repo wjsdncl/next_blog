@@ -6,7 +6,6 @@ import useFollowScroll from "@/hooks/useFollowScroll";
 import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import Share from "@/Icons/Share";
 import { getPost, likePost } from "@/services/post.api";
-import useUserStore from "@/stores/UserStore";
 import { Post } from "@/types/BlogType";
 import toast from "@/utils/Toast";
 
@@ -20,11 +19,7 @@ export default function Navigation({ title }: { title: string }) {
   const navRef = useFollowScroll<HTMLElement>(SCROLL_THRESHOLD);
 
   // 유저 로그인 여부 가져오기
-  const { isLoggedIn } = useUserStore(
-    useShallow((state) => ({
-      isLoggedIn: state.isLoggedIn,
-    }))
-  );
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
   // 게시물 데이터 가져오기
   const { data: post } = useQuery({

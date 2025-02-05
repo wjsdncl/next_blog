@@ -2,11 +2,9 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useShallow } from "zustand/shallow";
 import Form from "@/components/Form";
 import { createProject, getProject, updateProject } from "@/services/Project.api";
 import { getUser } from "@/services/user.api";
-import useUserStore from "@/stores/UserStore";
 import { type User } from "@/types/AuthType";
 import { type Project, type ProjectRequest } from "@/types/PortfolioType";
 import toast from "@/utils/Toast";
@@ -14,7 +12,7 @@ import toast from "@/utils/Toast";
 export default function ProjectForm({ id }: { id?: number }) {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { isLoggedIn } = useUserStore(useShallow((state) => ({ isLoggedIn: state.isLoggedIn })));
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
   // 사용자 정보 조회
   const { data: user } = useQuery({

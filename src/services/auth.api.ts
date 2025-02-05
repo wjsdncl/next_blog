@@ -10,3 +10,8 @@ export const SignUp = async (formData: SignUpForm) => {
 export const SignIn = async (formData: SignInForm): Promise<SignInResponse> => {
   return (await instance.post<SignInResponse>(`/auth/login`, formData)).data;
 };
+
+// 로그아웃
+export const SignOut = async () => {
+  return await instance.post(`/auth/logout`);
+};

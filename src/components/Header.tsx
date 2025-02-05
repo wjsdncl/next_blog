@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { setCookie } from "cookies-next";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -10,9 +10,9 @@ import GitHub from "@/Icons/Github";
 import { Mail } from "@/Icons/Mail";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
-import useUserStore from "@/stores/UserStore";
 import cn from "@/utils/cn";
 import toast from "@/utils/Toast";
+import { SignOut } from "@/services/auth.api";
 
 // 헤더의 기본 높이와 스크롤 임계값 설정
 const HEADER_HEIGHT = 200;
@@ -28,13 +28,7 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // 로그인 상태 관리를 위한 Zustand 스토어 사용
-  const { isLoggedIn, setIsLoggedIn } = useUserStore(
-    useShallow((state) => ({
-      isLoggedIn: state.isLoggedIn,
-      setIsLoggedIn: state.setIsLoggedIn,
-    }))
-  );
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
   // 모달 관리를 위한 Zustand 스토어 사용
   const { openModal, closeModal } = useModalStore(
@@ -77,10 +71,17 @@ export default function Header() {
   });
 
   // 로그아웃 처리 함수
-  const handleLogout = () => {
-    setCookie("accessToken", "", { expires: new Date() });
-    setCookie("refreshToken", "", { expires: new Date() });
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    try {
+      await SignOut();
+
+      toast.success("로그아웃 되었습니다.");
+    } catch (error) {
+      console.error(error);
+    }
+
+    localStorage.removeItem("isLoggedIn");
+
     queryClient.clear();
     router.push("/");
   };
