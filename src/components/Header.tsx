@@ -28,7 +28,7 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
 
   // 모달 관리를 위한 Zustand 스토어 사용
   const { openModal, closeModal } = useModalStore(

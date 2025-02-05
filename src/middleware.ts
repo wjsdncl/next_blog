@@ -16,7 +16,7 @@ export const middleware = (request: NextRequest) => {
 
   const acceptHeader = request.headers.get("accept") || "";
 
-  if (accessToken) localStorage.setItem("isLoggedIn", "true");
+  if (accessToken && typeof window !== "undefined") localStorage.setItem("isLoggedIn", "true");
 
   for (const [regex, redirectUrl] of map.entries()) {
     if (regex.test(pathname)) {
