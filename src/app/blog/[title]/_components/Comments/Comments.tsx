@@ -27,7 +27,7 @@ export default function Comments({ title }: { title: string }) {
   const [limit] = useState(10);
   const offset = (page - 1) * limit;
 
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
 
   // 사용자 데이터 가져오기
   const { data: user } = useQuery({

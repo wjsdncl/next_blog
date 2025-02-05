@@ -25,7 +25,7 @@ export default function ClientPage() {
   const tagQuery = searchParams.get("tag") ?? undefined; // 태그 추출
 
   // 사용자 스토어 및 쿼리
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
 
   const { data: user } = useQuery({
     queryKey: ["user"],

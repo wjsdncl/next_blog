@@ -20,7 +20,7 @@ export default function PostHeader({ post }: { post: Post }) {
     useShallow((state) => ({ openModal: state.openModal, closeModal: state.closeModal }))
   );
 
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
 
   const { data: user } = useQuery({
     queryKey: ["user"],

@@ -8,7 +8,7 @@ import { User } from "@/types/AuthType";
 export default function WriteLink() {
   const queryClient = useQueryClient();
 
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
 
   const { data: user } = useQuery({
     queryKey: ["user"],

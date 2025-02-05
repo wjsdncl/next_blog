@@ -19,7 +19,7 @@ export default function Navigation({ title }: { title: string }) {
   const navRef = useFollowScroll<HTMLElement>(SCROLL_THRESHOLD);
 
   // 유저 로그인 여부 가져오기
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
 
   // 게시물 데이터 가져오기
   const { data: post } = useQuery({
