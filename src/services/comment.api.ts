@@ -1,7 +1,5 @@
-import getInstance from "./axios";
 import { Comment, CommentRequest } from "@/types/BlogType";
-
-const instance = getInstance();
+import instance from "./axios";
 
 interface CommentResponse {
   comments: Comment[];

@@ -1,7 +1,5 @@
-import getInstance from "./axios";
 import { SignInForm, SignInResponse, SignUpForm } from "@/types/AuthType";
-
-const instance = getInstance();
+import instance from "./axios";
 
 // 회원가입
 export const SignUp = async (formData: SignUpForm) => {

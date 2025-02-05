@@ -1,7 +1,5 @@
-import getInstance from "./axios";
 import { CategoryCounts, Post, PostRequest } from "@/types/BlogType";
-
-const instance = getInstance();
+import instance from "./axios";
 
 export const getPostList = async ({
   offset = 0,

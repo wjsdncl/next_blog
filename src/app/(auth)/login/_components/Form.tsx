@@ -18,9 +18,6 @@ export default function LoginForm() {
     mutationKey: ["auth"],
     mutationFn: async (data: SignInForm) => SignIn(data),
     onSuccess: (data) => {
-      setCookie("accessToken", data.accessToken, { path: "/", secure: true, sameSite: "strict" });
-      setCookie("refreshToken", data.refreshToken, { path: "/", secure: true, sameSite: "strict" });
-
       useUserStore.setState({ isLoggedIn: true });
 
       // 유저 정보 갱신

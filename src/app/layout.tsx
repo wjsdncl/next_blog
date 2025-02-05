@@ -55,14 +55,10 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: Readonly<React.PropsWithChildren>) {
   const queryClient = getQueryClient({ staleTime: 60 * 1000 });
 
-  const accessToken = cookies().get("accessToken")?.value ?? "";
-
-  if (accessToken) {
-    await queryClient.prefetchQuery({
-      queryKey: ["user"],
-      queryFn: getUser,
-    });
-  }
+  await queryClient.prefetchQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  });
 
   return (
     <html lang="ko" className={`${pretendard.variable} dark`}>

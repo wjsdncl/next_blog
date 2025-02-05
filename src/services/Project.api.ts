@@ -1,8 +1,6 @@
-import getInstance from "./axios";
+import instance from "./axios";
 import TextSummarizer from "./TextSummarizer";
 import { type Project, type ProjectRequest } from "@/types/PortfolioType";
-
-const instance = getInstance();
 
 export const getProjectList = async ({
   offset = 0,

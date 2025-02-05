@@ -29,6 +29,11 @@
     "plugin:@next/next/recommended", // Next.js 권장 규칙
     "plugin:tailwindcss/recommended", // Tailwind CSS 권장 규칙
     "plugin:@tanstack/eslint-plugin-query/recommended", // React Query 권장 규칙
+    "plugin:react-hooks/recommended", // React Hooks 권장 규칙
+    "plugin:prettier/recommended", // Prettier 권장 규칙
+    "plugin:jsx-a11y/recommended", // 접근성 권장 규칙
+    "next/core-web-vitals", // Next.js Core Web Vitals 권장 규칙
+    "next/typescript", // Next.js TypeScript 권장 규칙
   ],
   "globals": {
     // 전역 변수 설정
