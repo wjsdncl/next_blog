@@ -20,18 +20,28 @@ const INDENT_CLASSES: { [key: string]: string } = {
 };
 
 /**
- * 주어진 텍스트에서 특수문자를 제거하고 ID를 생성합니다.
+ * 주어진 텍스트에서 특수문자를 제거하고 고유한 ID를 생성합니다.
  *
  * @param {string} text - ID를 생성할 텍스트
- * @returns {string} 생성된 ID
+ * @param {Map<string, number>} idCountMap - ID 중복 카운트를 추적하는 Map
+ * @returns {string} 생성된 고유 ID
  */
-const generateId = (text: string): string =>
-  text
+const generateUniqueId = (text: string, idCountMap: Map<string, number>): string => {
+  const baseId = text
     .replace(/^#+ /, "")
     .trim()
     .toLowerCase()
-    .replace(/[^a-z0-9ㄱ-ㅎㅏ-ㅣ가-힣\s-]/g, "") // 특수문자 제거
-    .replace(/\s+/g, "-"); // 공백을 하이픈으로 변환
+    .replace(/[^a-z0-9ㄱ-ㅎㅏ-ㅣ가-힣\s-]/g, "")
+    .replace(/\s+/g, "-");
+
+  // 현재 ID의 출현 횟수를 가져옴
+  const count = idCountMap.get(baseId) || 0;
+  // 현재 ID의 출현 횟수를 증가
+  idCountMap.set(baseId, count + 1);
+
+  // 첫 번째 출현이면 그대로 사용, 중복이면 숫자 추가
+  return count === 0 ? baseId : `${baseId}-${count}`;
+};
 
 /**
  * 목차를 생성하는 컴포넌트
@@ -47,30 +57,34 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
 
   const headingElementsRef = useRef<(HTMLHeadingElement | null)[]>([]);
 
+  // ID 중복을 추적하기 위한 Map
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const idCountMap = useMemo(() => new Map<string, number>(), [headings]);
+
   useEffect(() => {
     headingElementsRef.current = headings.map((heading) => {
-      const id = generateId(heading);
+      const id = generateUniqueId(heading, idCountMap);
       return document.getElementById(id) as HTMLHeadingElement | null;
     });
-  }, [headings]);
+  }, [headings, idCountMap]);
 
   const handleIntersect = useCallback((entries: IntersectionObserverEntry[]) => {
-    entries.forEach((entry) => {
+    for (const entry of entries) {
       const index = headingElementsRef.current.findIndex((el) => el === entry.target);
       if (entry.isIntersecting && index !== -1) {
         setSelectedIndex(index);
       }
-    });
+    }
   }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(handleIntersect, OBSERVER_OPTIONS);
-    headingElementsRef.current.forEach((el) => {
+    for (const el of headingElementsRef.current) {
       if (el) observer.observe(el);
-    });
+    }
 
     return () => observer.disconnect();
-  }, [headings, handleIntersect]);
+  }, [handleIntersect]);
 
   if (!headings.length) return null;
 
@@ -83,7 +97,7 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
         const levelMatch = heading.match(/^#+/);
         const level = levelMatch ? levelMatch[0].length : 0;
         const text = heading.replace(/^#+ /, "").trim();
-        const id = generateId(heading);
+        const id = generateUniqueId(heading, idCountMap);
 
         const liClass = INDENT_CLASSES[level] || "ml-1";
         const aClass = `block pb-1 hover:underline transition-transform duration-200 ${
@@ -92,7 +106,7 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
 
         return (
           <li
-            key={index}
+            key={id}
             className={`${liClass} leading-tight`}
             role="menuitem"
             onClick={(e) => {
@@ -104,6 +118,19 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
                 const yOffset = window.innerHeight * 0.2;
                 const y = targetElement.getBoundingClientRect().top + window.scrollY - yOffset;
                 window.scrollTo({ top: y, behavior: "smooth" });
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setSelectedIndex(index);
+
+                const targetElement = document.getElementById(id);
+                if (targetElement) {
+                  const yOffset = window.innerHeight * 0.2;
+                  const y = targetElement.getBoundingClientRect().top + window.scrollY - yOffset;
+                  window.scrollTo({ top: y, behavior: "smooth" });
+                }
               }
             }}
           >
