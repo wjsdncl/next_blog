@@ -1,12 +1,13 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useShallow } from "zustand/shallow";
+import { useEffect } from "react";
 import useFollowScroll from "@/hooks/useFollowScroll";
 import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import Share from "@/Icons/Share";
 import { getPost, likePost } from "@/services/post.api";
-import { Post } from "@/types/BlogType";
+import type { Post } from "@/types/BlogType";
+import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
 const SCROLL_THRESHOLD = 200;
@@ -19,30 +20,33 @@ export default function Navigation({ title }: { title: string }) {
   const navRef = useFollowScroll<HTMLElement>(SCROLL_THRESHOLD);
 
   // 유저 로그인 여부 가져오기
-  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
+  const accessToken = cookies.get("accessToken");
 
   // 게시물 데이터 가져오기
   const { data: post } = useQuery({
     queryKey: ["post", title],
     queryFn: () => getPost(title),
-    initialData: () => {
-      return queryClient.getQueryData(["post", title]);
-    },
     retry: 0,
   });
+
+  useEffect(() => {
+    if (accessToken && post?.isLiked === false) {
+      queryClient.invalidateQueries({ queryKey: ["post", title] });
+    }
+  }, [accessToken, post?.isLiked, queryClient, title]);
 
   // 좋아요 요청 Mutation 설정
   const LikePostMutation = useMutation({
     mutationKey: ["likePost"],
     mutationFn: async (id: number) => {
-      if (!isLoggedIn) {
+      if (!accessToken) {
         toast.error("로그인이 필요한 서비스입니다.");
         return;
       }
       await likePost(id);
     },
     onMutate: () => {
-      if (!isLoggedIn) return;
+      if (!accessToken) return;
       queryClient.setQueryData(["post", title], (oldPost: Post | undefined) =>
         oldPost ? { ...oldPost, likes: oldPost.likes + (post?.isLiked ? -1 : 1), isLiked: !post?.isLiked } : oldPost
       );

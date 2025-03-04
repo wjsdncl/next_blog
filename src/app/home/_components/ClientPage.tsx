@@ -6,7 +6,7 @@ import Link from "next/link";
 import removeMarkdown from "remove-markdown";
 import { FavoriteEmpty } from "@/Icons/Favorite";
 import { getPostList } from "@/services/post.api";
-import { Post } from "@/types/BlogType";
+import { type Post } from "@/types/BlogType";
 import { diffDate } from "@/utils/FormatDate";
 
 export default function ClientPage() {

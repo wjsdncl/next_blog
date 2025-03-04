@@ -1,4 +1,4 @@
-import IconType from "@/types/IconType";
+import type IconType from "@/types/IconType";
 
 export default function Search({ width = 24, height = 24, color = "#000" }: IconType) {
   return (

@@ -2,10 +2,10 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { SubmitHandler, useFormContext } from "react-hook-form";
+import { type SubmitHandler, useFormContext } from "react-hook-form";
 import Form from "@/components/Form";
 import { SignUp } from "@/services/auth.api";
-import { SignUpForm } from "@/types/AuthType";
+import { type SignUpForm } from "@/types/AuthType";
 import toast from "@/utils/Toast";
 
 export default function RegisterForm() {

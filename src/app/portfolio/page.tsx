@@ -1,11 +1,11 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import ProjectList from "./_components/ProjectList";
-import WriteLink from "./_components/WriteLink";
 import getQueryClient from "@/components/QueryClient";
 import { getProjectList } from "@/services/Project.api";
 import { getUser } from "@/services/user.api";
 import { type User } from "@/types/AuthType";
 import { type Project } from "@/types/PortfolioType";
+import ProjectList from "./_components/ProjectList";
+import WriteLink from "./_components/WriteLink";
 
 interface ProjectList {
   pages: {

@@ -1,14 +1,15 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 // Form.tsx
-import { ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import {
   FormProvider,
   useForm,
   useFormContext,
-  SubmitHandler,
-  Path,
-  FieldValues,
+  type SubmitHandler,
+  type Path,
+  type FieldValues,
   Controller,
-  DefaultValues,
+  type DefaultValues,
 } from "react-hook-form";
 import { default as Tag } from "@/components/TagInput";
 import { EyeClose, EyeOpen } from "@/Icons/Eyes";

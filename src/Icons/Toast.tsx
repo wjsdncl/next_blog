@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import IconType from "@/types/IconType";
+import type IconType from "@/types/IconType";
 
 export function Check({
   width = 14,

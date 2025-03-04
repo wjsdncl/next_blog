@@ -3,17 +3,17 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { getUser } from "@/services/user.api";
-import { User } from "@/types/AuthType";
+import { type User } from "@/types/AuthType";
+import cookies from "@/utils/cookies";
 
 export default function WriteLink() {
   const queryClient = useQueryClient();
-
-  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
+  const accessToken = cookies.get("accessToken");
 
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
-    enabled: isLoggedIn,
+    enabled: !!accessToken,
     retry: 0,
     initialData: () => {
       return queryClient.getQueryData<User>(["user"]);

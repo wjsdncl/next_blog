@@ -16,7 +16,7 @@ import { useShallow } from "zustand/shallow";
 
 import components from "@/components/MarkdownComponents";
 
-import GitHub from "@/Icons/Github";
+import { Github } from "@/Icons/Github";
 import LinkIcon from "@/Icons/Link";
 import { deleteProject } from "@/services/Project.api";
 import useModalStore from "@/stores/ModalStore";
@@ -204,7 +204,7 @@ export default function ProjectCard({
                     href={githubLink}
                     className="flex w-fit items-center justify-center gap-2 text-nowrap rounded-lg border border-gray-400 px-3 py-2"
                   >
-                    <GitHub width={16} height={16} color="var(--text-primary)" />
+                    <Github width={16} height={16} color="var(--text-primary)" />
                     깃허브 링크
                   </a>
                 )}
@@ -282,7 +282,7 @@ export default function ProjectCard({
             href={githubLink}
             className="flex w-fit items-center justify-center gap-2 text-nowrap rounded-lg border border-gray-400 px-3 py-2"
           >
-            <GitHub width={16} height={16} color="var(--text-primary)" />
+            <Github width={16} height={16} color="var(--text-primary)" />
             깃허브 링크
           </a>
         )}

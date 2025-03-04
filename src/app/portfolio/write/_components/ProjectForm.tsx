@@ -7,18 +7,19 @@ import { createProject, getProject, updateProject } from "@/services/Project.api
 import { getUser } from "@/services/user.api";
 import { type User } from "@/types/AuthType";
 import { type Project, type ProjectRequest } from "@/types/PortfolioType";
+import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
 export default function ProjectForm({ id }: { id?: number }) {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
+  const accessToken = cookies.get("accessToken");
 
   // 사용자 정보 조회
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
-    enabled: isLoggedIn,
+    enabled: !!accessToken,
     retry: 0,
     initialData: () => queryClient.getQueryData<User>(["user"]),
   });

@@ -1,4 +1,4 @@
-import IconType from "@/types/IconType";
+import type IconType from "@/types/IconType";
 
 export function Close({ width, height, color = "#adadad" }: IconType) {
   return (

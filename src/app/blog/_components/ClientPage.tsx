@@ -6,13 +6,14 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRef, useEffect, useState } from "react";
 import removeMarkdown from "remove-markdown";
-import Navigation from "./Navigation";
-import SearchInput from "./SearchInput";
 import { FavoriteEmpty } from "@/Icons/Favorite";
 import { getPostList } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import { type Post } from "@/types/BlogType";
+import cookies from "@/utils/cookies";
 import { diffDate } from "@/utils/FormatDate";
+import Navigation from "./Navigation";
+import SearchInput from "./SearchInput";
 
 export default function ClientPage() {
   const loadMoreRef = useRef(null);
@@ -25,12 +26,12 @@ export default function ClientPage() {
   const tagQuery = searchParams.get("tag") ?? undefined; // 태그 추출
 
   // 사용자 스토어 및 쿼리
-  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
+  const accessToken = cookies.get("accessToken");
 
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
-    enabled: isLoggedIn,
+    enabled: !!accessToken,
     retry: 0,
     gcTime: 0,
     initialData: () => {

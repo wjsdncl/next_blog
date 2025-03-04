@@ -5,14 +5,15 @@ import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
-import CommentItem from "./CommentItem";
 import { deleteComment, editComment, getComments, writeComment } from "@/services/comment.api";
 import { getPost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
-import { User } from "@/types/AuthType";
-import { CommentRequest } from "@/types/BlogType";
+import { type User } from "@/types/AuthType";
+import { type CommentRequest } from "@/types/BlogType";
+import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
+import CommentItem from "./CommentItem";
 
 interface CommentFormInputs {
   content: string;
@@ -27,13 +28,13 @@ export default function Comments({ title }: { title: string }) {
   const [limit] = useState(10);
   const offset = (page - 1) * limit;
 
-  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
+  const accessToken = cookies.get("accessToken");
 
   // 사용자 데이터 가져오기
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
-    enabled: isLoggedIn,
+    enabled: !!accessToken,
     retry: 0,
     initialData: () => {
       return queryClient.getQueryData<User>(["user"]);

@@ -1,4 +1,4 @@
-import IconType from "@/types/IconType";
+import type IconType from "@/types/IconType";
 
 export default function LinkIcon({ width = 16, height = 16, color = "#fff" }: IconType) {
   return (

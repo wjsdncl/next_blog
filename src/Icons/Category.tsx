@@ -1,4 +1,4 @@
-import IconType from "@/types/IconType";
+import type IconType from "@/types/IconType";
 
 export default function Category({ width = 24, height = 24, color = "#e8eaed" }: IconType) {
   return (

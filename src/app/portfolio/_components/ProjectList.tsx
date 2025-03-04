@@ -2,10 +2,10 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef, useEffect } from "react";
-import ProjectCard from "./ProjectCard";
 import { getProjectList } from "@/services/Project.api";
 import { type Project } from "@/types/PortfolioType";
 import { formatDate } from "@/utils/FormatDate";
+import ProjectCard from "./ProjectCard";
 
 export default function ProjectList({ isOwner }: { isOwner: boolean }) {
   const loadMoreRef = useRef(null);

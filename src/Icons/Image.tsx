@@ -1,4 +1,4 @@
-import IconType from "@/types/IconType";
+import type IconType from "@/types/IconType";
 
 export function ImageIcon({ width = 107, height = 85, color = "#fff" }: IconType) {
   return (

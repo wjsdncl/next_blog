@@ -3,14 +3,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
-import Navigation from "./Navigation";
 import { deletePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
-import { type User } from "@/types/AuthType";
-import { type Post } from "@/types/BlogType";
+import type { User } from "@/types/AuthType";
+import type { Post } from "@/types/BlogType";
+import cookies from "@/utils/cookies";
 import { formatKoreanDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
+import Navigation from "./Navigation";
 
 export default function PostHeader({ post }: { post: Post }) {
   const queryClient = useQueryClient();
@@ -20,12 +21,12 @@ export default function PostHeader({ post }: { post: Post }) {
     useShallow((state) => ({ openModal: state.openModal, closeModal: state.closeModal }))
   );
 
-  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
+  const accessToken = cookies.get("accessToken");
 
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
-    enabled: isLoggedIn,
+    enabled: !!accessToken,
     retry: 0,
     initialData: () => {
       return queryClient.getQueryData<User>(["user"]);
@@ -51,6 +52,7 @@ export default function PostHeader({ post }: { post: Post }) {
         <p className="pb-8 pt-6 text-center text-2xl font-semibold">정말로 삭제하시겠습니까?</p>
         <div className="flex gap-4">
           <button
+            type="button"
             onClick={() => {
               DeletePostMutation.mutateAsync(post.id);
               modalId && closeModal(modalId);
@@ -60,6 +62,7 @@ export default function PostHeader({ post }: { post: Post }) {
             삭제
           </button>
           <button
+            type="button"
             onClick={() => modalId && closeModal(modalId)}
             className="grow rounded bg-gray-300 px-4 py-2 text-text-primary hover:bg-gray-400"
           >
@@ -86,7 +89,7 @@ export default function PostHeader({ post }: { post: Post }) {
       <div className="flex size-full items-center justify-between pb-4">
         <p className="grow text-base">{formatKoreanDate(post.createdAt)}</p>
         <div className="flex items-center gap-2">
-          {user && user.isAdmin && (
+          {user?.isAdmin && (
             <>
               <button type="button" onClick={handleEdit} className="text-base text-text-primary hover:underline">
                 수정

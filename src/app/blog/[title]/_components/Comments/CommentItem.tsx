@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import CommentContent from "./CommentContent";
 import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import { likeComment } from "@/services/comment.api";
-import { User } from "@/types/AuthType";
-import { Comment } from "@/types/BlogType";
+import { type User } from "@/types/AuthType";
+import { type Comment } from "@/types/BlogType";
 import { formatKoreanDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
+import CommentContent from "./CommentContent";
 
 interface CommentFormInputs {
   content: string;

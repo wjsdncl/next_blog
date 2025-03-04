@@ -1,5 +1,5 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { type Metadata } from "next";
+import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,11 +7,11 @@ import ReactMarkdown from "react-markdown";
 import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
-import PostHeader from "./_components/PostHeader";
 import components from "@/components/MarkdownComponents";
 import getQueryClient from "@/components/QueryClient";
 import { getPost } from "@/services/post.api";
-import { type Post } from "@/types/BlogType";
+import type { Post } from "@/types/BlogType";
+import PostHeader from "./_components/PostHeader";
 
 const Navigation = dynamic(() => import("./_components/Navigation"));
 const GenerateTOC = dynamic(() => import("./_components/GenerateTOC"));
@@ -19,10 +19,9 @@ const Comments = dynamic(() => import("./_components/Comments/Comments"));
 
 export default async function Page({ params }: { params: { title: string } }) {
   const queryClient = getQueryClient({ staleTime: 60 * 1000 });
-  const title = params.title as string;
+  const title = params.title;
 
   await queryClient.prefetchQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ["post", title],
     queryFn: () => getPost(title),
   });
@@ -32,7 +31,7 @@ export default async function Page({ params }: { params: { title: string } }) {
   if (!post) {
     return (
       <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
-        <h1 className="text-4xl font-bold">게시글을 찾을 수 없습니다.</h1>
+        <h1 className="text-center text-4xl font-bold">게시글을 찾을 수 없습니다.</h1>
       </div>
     );
   }
@@ -77,7 +76,6 @@ export default async function Page({ params }: { params: { title: string } }) {
         {/* 썸네일 */}
         {post.coverImg && (
           <div className="relative h-[400px] w-full max-w-screen-tablet">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <Image
               src={post.coverImg}
               alt="coverImage"

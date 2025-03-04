@@ -1,7 +1,7 @@
 "use client";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
+import type React from "react";
 import { useShallow } from "zustand/shallow";
 import { CloseBold } from "@/Icons/Close";
 import useModalStore from "@/stores/ModalStore";

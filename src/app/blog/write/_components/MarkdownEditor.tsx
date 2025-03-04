@@ -8,13 +8,13 @@ import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
-import PreviewModal from "./PreviewModal";
 import components from "@/components/MarkdownComponents";
 import TagInput from "@/components/TagInput";
 import { getPost, updatePost, uploadImage, writePost } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import { type PostRequest } from "@/types/BlogType";
+import PreviewModal from "./PreviewModal";
 
 // FormValues 타입 정의
 type FormValues = {

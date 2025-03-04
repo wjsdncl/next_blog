@@ -1,4 +1,4 @@
-import IconType from "@/types/IconType";
+import type IconType from "@/types/IconType";
 
 export function EyeOpen({ width = 24, height = 24, color = "#b8b8b8" }: IconType) {
   return (
