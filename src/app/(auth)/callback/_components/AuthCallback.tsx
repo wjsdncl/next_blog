@@ -4,14 +4,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { SignInWithGithubCallback } from "@/services/auth.api";
+import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
 export default function AuthCallback({ code }: { code: string }) {
   const router = useRouter();
 
-  const { isSuccess, isError, error } = useQuery({
+  useQuery({
     queryKey: ["user"],
     queryFn: () => {
       const id = toast.loading("GitHub 계정으로 로그인 중...");
@@ -19,6 +19,11 @@ export default function AuthCallback({ code }: { code: string }) {
       return SignInWithGithubCallback(code)
         .then((result) => {
           toast.updateToast(id, "로그인에 성공했습니다.", "success", 2000);
+
+          cookies.set("accessToken", result.accessToken, 3);
+          cookies.set("refreshToken", result.refreshToken, 7);
+
+          router.push("/");
           return result.user;
         })
         .catch((err) => {
@@ -30,18 +35,6 @@ export default function AuthCallback({ code }: { code: string }) {
     enabled: !!code,
     retry: false,
   });
-
-  useEffect(() => {
-    if (isSuccess) {
-      localStorage.setItem("isLoggedIn", "true");
-
-      router.push("/");
-    }
-
-    if (isError) {
-      console.error("로그인 중 오류 발생:", error);
-    }
-  }, [isSuccess, isError, error, router]);
 
   return null;
 }

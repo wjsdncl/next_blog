@@ -1,4 +1,3 @@
-import LoginForm from "./_components/Form";
 import GithubAuth from "./_components/GithubAuth";
 
 export default async function Page() {
@@ -7,8 +6,6 @@ export default async function Page() {
       <div className="flex size-full max-w-[520px]">
         <GithubAuth />
       </div>
-
-      {/* <LoginForm /> */}
     </div>
   );
 }

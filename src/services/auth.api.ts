@@ -22,16 +22,6 @@ export const SignIn = async (formData: SignInForm): Promise<SignInResponse> => {
   }
 };
 
-// 로그아웃
-export const SignOut = async () => {
-  try {
-    return await instance.POST(`/auth/logout`);
-  } catch (error) {
-    console.error("로그아웃 실패:", error);
-    throw error;
-  }
-};
-
 // 깃허브 로그인
 export const SignInWithGithub = async () => {
   try {

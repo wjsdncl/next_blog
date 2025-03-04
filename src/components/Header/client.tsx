@@ -1,24 +1,23 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { setCookie } from "cookies-next";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useShallow } from "zustand/shallow";
-import GitHub from "@/Icons/Github";
+import { Github } from "@/Icons/Github";
 import { Mail } from "@/Icons/Mail";
 import { getUser } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import cn from "@/utils/cn";
+import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
-import { SignOut } from "@/services/auth.api";
 
 // 헤더의 기본 높이와 스크롤 임계값 설정
 const HEADER_HEIGHT = 200;
 const SCROLL_THRESHOLD = 0.9;
 
-export default function Header() {
+export default function ClientHeader() {
   // 헤더의 고정 상태와 표시 여부를 관리하는 상태
   const [isSticky, setIsSticky] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -27,8 +26,7 @@ export default function Header() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
-
-  const isLoggedIn = typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
+  const accessToken = cookies.get("accessToken");
 
   // 모달 관리를 위한 Zustand 스토어 사용
   const { openModal, closeModal } = useModalStore(
@@ -64,24 +62,16 @@ export default function Header() {
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
-    enabled: isLoggedIn,
     retry: 0,
-    gcTime: 0,
-    initialData: () => queryClient.getQueryData(["user"]),
+    enabled: !!accessToken,
   });
 
   // 로그아웃 처리 함수
-  const handleLogout = async () => {
-    try {
-      await SignOut();
-
-      toast.success("로그아웃 되었습니다.");
-    } catch (error) {
-      console.error(error);
-    }
-
-    localStorage.removeItem("isLoggedIn");
-
+  const handleLogout = () => {
+    // 로그아웃 처리
+    cookies.remove("accessToken");
+    cookies.remove("refreshToken");
+    toast.success("로그아웃 되었습니다.");
     queryClient.clear();
     router.push("/");
   };
@@ -128,7 +118,7 @@ export default function Header() {
       </button>
     ) : (
       <Link href="/login" className={cn(`${textSize} font-medium text-text-primary`)}>
-        로그인
+        <span className={cn("flex size-full items-center justify-center")}>로그인</span>
       </Link>
     );
 
@@ -136,7 +126,7 @@ export default function Header() {
   const renderSocialLinks = () => (
     <>
       <Link href="https://github.com/wjsdncl" className="flex size-9 items-center justify-center p-1">
-        <GitHub width="80%" height="80%" color="var(--text-primary)" />
+        <Github width="80%" height="80%" color="var(--text-primary)" />
       </Link>
 
       <button
