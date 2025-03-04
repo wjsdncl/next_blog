@@ -1,12 +1,11 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { setCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
-import { SubmitHandler } from "react-hook-form";
+import { type SubmitHandler } from "react-hook-form";
 import Form from "@/components/Form";
 import { SignIn } from "@/services/auth.api";
-import { SignInForm, SignInResponse } from "@/types/AuthType";
+import { type SignInForm, type SignInResponse } from "@/types/AuthType";
 import toast from "@/utils/Toast";
 
 export default function LoginForm() {
@@ -16,7 +15,7 @@ export default function LoginForm() {
   const SignInMutation = useMutation<SignInResponse, Error, SignInForm>({
     mutationKey: ["auth"],
     mutationFn: async (data: SignInForm) => SignIn(data),
-    onSuccess: (data) => {
+    onSuccess: () => {
       localStorage.setItem("isLoggedIn", "true");
 
       // 유저 정보 갱신

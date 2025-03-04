@@ -1,4 +1,4 @@
-import { Post } from "@/types/BlogType";
+import { type Post } from "@/types/BlogType";
 
 export interface SignUpForm {
   email: string;
@@ -22,8 +22,6 @@ export interface SignInForm {
 }
 
 export interface SignInResponse {
-  accessToken: string;
-  refreshToken: string;
   user: User;
 }
 

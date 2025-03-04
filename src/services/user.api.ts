@@ -1,13 +1,23 @@
-import { User } from "@/types/AuthType";
-import instance from "./axios";
+/* eslint-disable no-console */
+import { type User } from "@/types/AuthType";
+import instance from "./instance";
 
-export const getUser = async (): Promise<User> => {
-  const response = await instance.get<User>("/users/me");
-  return response.data;
+export const getUser = async (): Promise<User | undefined> => {
+  try {
+    return await instance.GET<User>("/users/me");
+  } catch (error) {
+    console.error("사용자 정보 조회 실패:", error);
+    return undefined;
+  }
 };
 
-export const patchUser = async (id: string, data: patchUserType) => {
-  return await instance.patch(`/users/${id}`, data);
+export const patchUser = async (id: string, data: patchUserType): Promise<User | undefined> => {
+  try {
+    return await instance.PATCH<User>(`/users/${id}`, data);
+  } catch (error) {
+    console.error(`사용자 정보 수정 실패 (ID: ${id}):`, error);
+    return undefined;
+  }
 };
 
 interface patchUserType {

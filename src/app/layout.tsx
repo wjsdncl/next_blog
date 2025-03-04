@@ -1,18 +1,13 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-
 import type { Metadata } from "next";
 
 import dynamic from "next/dynamic";
 import localFont from "next/font/local";
-import { cookies } from "next/headers";
 
 import "@/styles/globals.css";
 
 import Header from "@/components/Header";
-import getQueryClient from "@/components/QueryClient";
 import QueryProvider from "@/components/QueryProvider";
 import ThemeProvider from "@/components/ThemeProvider";
-import { getUser } from "@/services/user.api";
 
 const Footer = dynamic(() => import("@/components/Footer"));
 const Modal = dynamic(() => import("@/components/Modal"));
@@ -53,25 +48,16 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<React.PropsWithChildren>) {
-  const queryClient = getQueryClient({ staleTime: 60 * 1000 });
-
-  await queryClient.prefetchQuery({
-    queryKey: ["user"],
-    queryFn: getUser,
-  });
-
   return (
     <html lang="ko" className={`${pretendard.variable} dark`}>
       <body className="size-full min-h-dvh bg-background-primary font-pretendard text-text-primary">
         <ThemeProvider>
           <QueryProvider>
-            <HydrationBoundary state={dehydrate(queryClient)}>
-              <Header />
-              <main className="min-h-[calc(100dvh-256px)] w-full">{children}</main>
-              <Footer />
-              <Modal />
-              <Toaster />
-            </HydrationBoundary>
+            <Header />
+            <main className="flex h-full min-h-[calc(100dvh-256px)] flex-col">{children}</main>
+            <Footer />
+            <Modal />
+            <Toaster />
           </QueryProvider>
         </ThemeProvider>
       </body>

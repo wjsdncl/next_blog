@@ -1,5 +1,5 @@
-import { CategoryCounts, Post, PostRequest } from "@/types/BlogType";
-import instance from "./axios";
+import { type CategoryCounts, type Post, type PostRequest } from "@/types/BlogType";
+import instance from "./instance";
 
 export const getPostList = async ({
   offset = 0,
@@ -22,40 +22,63 @@ export const getPostList = async ({
   isLast: boolean;
   nextPage: number;
 }> => {
-  const params: { offset: number; limit: number; order?: string; search?: string; category?: string; tag?: string } = {
-    offset,
-    limit: limit,
-    order: order,
-  };
+  try {
+    /* eslint-disable no-console */
+    const params: { offset: number; limit: number; order?: string; search?: string; category?: string; tag?: string } =
+      {
+        offset,
+        limit: limit,
+        order: order,
+      };
 
-  if (search) params.search = search;
-  if (category) params.category = category;
-  if (tag) params.tag = tag;
+    if (search) params.search = search;
+    if (category) params.category = category;
+    if (tag) params.tag = tag;
 
-  const response = await instance.get<{
-    posts: Post[];
-    totalPosts: number;
-    categoryCounts: CategoryCounts;
-  }>("/posts", { params });
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) searchParams.append(key, String(value));
+    });
+    const response = await instance.GET<{
+      posts: Post[];
+      totalPosts: number;
+      categoryCounts: CategoryCounts;
+    }>(`/posts?${searchParams.toString()}`);
 
-  const { posts, totalPosts, categoryCounts } = response.data;
-  const isLast = posts.length < limit;
-  return { posts, totalPosts, isLast, nextPage: offset + limit, categoryCounts };
+    const { posts, totalPosts, categoryCounts } = response;
+    const isLast = posts.length < limit;
+    return { posts, totalPosts, isLast, nextPage: offset + limit, categoryCounts };
+  } catch (error) {
+    console.error("게시글 목록 조회 실패:", error);
+    throw error;
+  }
 };
 
 export const getPost = async (title: string) => {
-  const response = await instance.get<Post>(`/posts/${title}`);
-  return response.data;
+  try {
+    return await instance.GET<Post>(`/posts/${title}`);
+  } catch (error) {
+    console.error(`게시글 조회 실패 (${title}):`, error);
+    throw error;
+  }
 };
 
 export const deletePost = async (id: number) => {
-  const response = await instance.delete(`/posts/${id}`);
-  return response.data;
+  try {
+    return await instance.DELETE(`/posts/${id}`);
+  } catch (error) {
+    console.error(`게시글 삭제 실패 (ID: ${id}):`, error);
+    throw error;
+  }
 };
 
 export const writePost = async ({ postData, userId }: { postData: PostRequest; userId: string }) => {
-  const response = await instance.post("/posts", { ...postData, userId });
-  return response.data;
+  try {
+    return await instance.POST("/posts", { ...postData, userId });
+  } catch (error) {
+    console.error("게시글 작성 실패:", error);
+    throw error;
+  }
 };
 
 export const updatePost = async ({
@@ -68,27 +91,36 @@ export const updatePost = async ({
   coverImg?: string;
   userId: string;
 }) => {
-  const response = await instance.patch(`/posts/${id}`, { ...postData, userId });
-  return response.data;
+  try {
+    return await instance.PATCH(`/posts/${id}`, { ...postData, userId });
+  } catch (error) {
+    console.error(`게시글 수정 실패 (ID: ${id}):`, error);
+    throw error;
+  }
 };
 
 export const likePost = async (id: number) => {
-  const response = await instance.post(`/posts/${id}/like`);
-  return response.data;
+  try {
+    return await instance.POST(`/posts/${id}/like`);
+  } catch (error) {
+    console.error(`게시글 좋아요 실패 (ID: ${id}):`, error);
+    throw error;
+  }
 };
 
 export const uploadImage = async (file: File): Promise<string> => {
-  const formData = new FormData();
-  formData.append("file", file);
-
   try {
-    const response = await instance.post<{ url: string }>("/upload", formData, {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await instance.POST<{ url: string }>("/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    return response.data.url;
+    return response.url;
   } catch (error) {
+    console.error("이미지 업로드 실패:", error);
     throw error;
   }
 };
