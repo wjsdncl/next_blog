@@ -14,7 +14,7 @@ export default async function Page() {
   ]);
 
   return (
-    <div className="mx-auto flex size-full flex-col justify-between py-4 tablet:w-tablet desktop:w-desktop">
+    <div className="mx-auto flex size-full flex-col justify-between px-10 py-4 tablet:w-tablet tablet:max-w-none desktop:w-desktop desktop:px-0">
       <section>
         <div className="flex items-center justify-between">
           <h2 className="ml-3 text-2xl font-bold">인기글</h2>
@@ -41,18 +41,18 @@ const PostSection = ({ posts }: { posts: Post[] }) => (
       <Link
         key={post.id}
         href={`/blog/${post.slug}`}
-        className="flex h-[300px] w-[280px] flex-col rounded-md border border-gray-200 bg-gray-100"
+        className="flex flex-col rounded-md border border-gray-200 bg-gray-100 desktop:w-[280px]"
       >
         {post.coverImg && (
           <div className="relative flex min-h-36 w-full items-center justify-center">
             <Image src={post.coverImg} alt={"thumbnail"} className="rounded-t-md object-cover" fill sizes="300" />
           </div>
         )}
-        <div className={`flex max-h-full grow flex-col px-4 pb-4 ${post.coverImg ? "pt-3" : "pt-4"}`}>
+        <div className={cn(`flex max-h-full grow flex-col px-4 pb-4 ${post.coverImg ? "pt-3" : "pt-4"}`)}>
           <div className="size-full max-h-full grow border-b border-gray-400">
             <h3 className="line-clamp-1 text-2xl font-semibold text-gray-800">{post.title}</h3>
             {post.content && (
-              <p className={cn(`mt-2 text-sm text-gray-700 ${post.coverImg ? "line-clamp-2" : "line-clamp-[9]"}`)}>
+              <p className={cn(`mb-4 mt-2 text-sm text-gray-700 ${post.coverImg ? "line-clamp-2" : "line-clamp-[9]"}`)}>
                 {removeMarkdown(post.content.slice(0, 500))}
               </p>
             )}
