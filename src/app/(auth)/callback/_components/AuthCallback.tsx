@@ -5,6 +5,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { SignInWithGithubCallback } from "@/services/auth.api";
+import { USER_TAG } from "@/services/user.api";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
@@ -12,7 +13,7 @@ export default function AuthCallback({ code }: { code: string }) {
   const router = useRouter();
 
   useQuery({
-    queryKey: ["user"],
+    queryKey: USER_TAG,
     queryFn: () => {
       const id = toast.loading("GitHub 계정으로 로그인 중...");
 

@@ -1,10 +1,24 @@
-import { type CategoryCounts, type Post, type PostRequest } from "@/types/BlogType";
+/* eslint-disable no-console */
+
+import type { CategoryCounts, Post, PostRequest } from "@/types/BlogType";
 import instance from "./instance";
+
+export const POST_TAG = {
+  ALL: () => ["posts"],
+  TITLE: (title: string) => ["posts", title],
+  LIST: (order: "oldest" | "newest" | "like" = "newest", search?: string, category?: string, tag?: string) => {
+    const tags = ["posts", order];
+    if (search) tags.push(search);
+    if (category) tags.push(category);
+    if (tag) tags.push(tag);
+    return tags;
+  },
+};
 
 export const getPostList = async ({
   offset = 0,
   limit = 10,
-  order,
+  order = "newest",
   search,
   category,
   tag,
@@ -23,7 +37,6 @@ export const getPostList = async ({
   nextPage: number;
 }> => {
   try {
-    /* eslint-disable no-console */
     const params: { offset: number; limit: number; order?: string; search?: string; category?: string; tag?: string } =
       {
         offset,
@@ -43,7 +56,12 @@ export const getPostList = async ({
       posts: Post[];
       totalPosts: number;
       categoryCounts: CategoryCounts;
-    }>(`/posts?${searchParams.toString()}`);
+    }>(`/posts?${searchParams.toString()}`, {
+      next: {
+        revalidate: 60 * 30, // 30분
+        tags: POST_TAG.LIST(order, search, category, tag),
+      },
+    });
 
     const { posts, totalPosts, categoryCounts } = response;
     const isLast = posts.length < limit;

@@ -3,6 +3,11 @@ import { type Project, type ProjectRequest } from "@/types/PortfolioType";
 import instance from "./instance";
 import TextSummarizer from "./TextSummarizer";
 
+export const PROJECT_TAG = {
+  ALL: () => ["projects"],
+  DETAIL: (id: number) => ["projects", id],
+};
+
 export const getProjectList = async ({
   offset = 0,
   limit = 10,
@@ -20,7 +25,12 @@ export const getProjectList = async ({
       limit: limit.toString(),
     });
 
-    const response = await instance.GET<Project[]>(`/projects?${searchParams.toString()}`);
+    const response = await instance.GET<Project[]>(`/projects?${searchParams.toString()}`, {
+      next: {
+        revalidate: 60 * 60, // 1시간
+        tags: PROJECT_TAG.ALL(),
+      },
+    });
     const projects = response;
     const isLast = projects.length < limit;
 

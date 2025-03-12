@@ -1,14 +1,14 @@
 "use client";
 
-import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRef, useEffect, useState } from "react";
 import removeMarkdown from "remove-markdown";
 import { FavoriteEmpty } from "@/Icons/Favorite";
-import { getPostList } from "@/services/post.api";
-import { getUser } from "@/services/user.api";
+import { getPostList, POST_TAG } from "@/services/post.api";
+import { getUser, USER_TAG } from "@/services/user.api";
 import { type Post } from "@/types/BlogType";
 import cookies from "@/utils/cookies";
 import { diffDate } from "@/utils/FormatDate";
@@ -17,7 +17,6 @@ import SearchInput from "./SearchInput";
 
 export default function ClientPage() {
   const loadMoreRef = useRef(null);
-  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
 
   // 검색 파라미터 추출
@@ -29,19 +28,16 @@ export default function ClientPage() {
   const accessToken = cookies.get("accessToken");
 
   const { data: user } = useQuery({
-    queryKey: ["user"],
+    queryKey: USER_TAG,
     queryFn: getUser,
     enabled: !!accessToken,
     retry: 0,
     gcTime: 0,
-    initialData: () => {
-      return queryClient.getQueryData(["user"]);
-    },
   });
 
   // 무한 스크롤을 통한 게시물 가져오기
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["posts", searchQuery, categoryQuery, tagQuery],
+    queryKey: POST_TAG.LIST("newest", searchQuery, categoryQuery, tagQuery),
     queryFn: ({ pageParam = 0 }) =>
       getPostList({ offset: pageParam, search: searchQuery, category: categoryQuery, tag: tagQuery }),
     getNextPageParam: (lastPage) => (!lastPage.isLast ? lastPage.nextPage : undefined),

@@ -1,4 +1,4 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -8,9 +8,7 @@ import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import components from "@/components/MarkdownComponents";
-import getQueryClient from "@/components/QueryClient";
-import { getPost } from "@/services/post.api";
-import type { Post } from "@/types/BlogType";
+import { getPost, POST_TAG } from "@/services/post.api";
 import PostHeader from "./_components/PostHeader";
 
 const Navigation = dynamic(() => import("./_components/Navigation"));
@@ -18,15 +16,12 @@ const GenerateTOC = dynamic(() => import("./_components/GenerateTOC"));
 const Comments = dynamic(() => import("./_components/Comments/Comments"));
 
 export default async function Page({ params }: { params: { title: string } }) {
-  const queryClient = getQueryClient({ staleTime: 60 * 1000 });
+  const queryClient = new QueryClient();
   const title = params.title;
 
-  await queryClient.prefetchQuery({
-    queryKey: ["post", title],
-    queryFn: () => getPost(title),
-  });
+  const post = await getPost(title);
 
-  const post = queryClient.getQueryData<Post>(["post", title]);
+  queryClient.setQueryData(POST_TAG.TITLE(title), post);
 
   if (!post) {
     return (

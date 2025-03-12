@@ -8,6 +8,11 @@ interface CommentResponse {
   parentComments: number;
 }
 
+export const COMMENT_TAG = {
+  ALL: () => ["comments"],
+  POST: (postID: number, offset: number, limit: number) => ["comments", postID, offset, limit],
+};
+
 export const getCommentList = async () => {
   try {
     return await instance.GET<Comment[]>("/comments");

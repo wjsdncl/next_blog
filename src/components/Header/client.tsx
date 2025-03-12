@@ -7,7 +7,8 @@ import { useEffect, useState, useRef } from "react";
 import { useShallow } from "zustand/shallow";
 import { Github } from "@/Icons/Github";
 import { Mail } from "@/Icons/Mail";
-import { getUser } from "@/services/user.api";
+import { revalidateUser } from "@/services/server.action";
+import { getUser, USER_TAG } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import cn from "@/utils/cn";
 import cookies from "@/utils/cookies";
@@ -60,19 +61,20 @@ export default function ClientHeader() {
 
   // 사용자 정보 조회를 위한 React Query 사용
   const { data: user } = useQuery({
-    queryKey: ["user"],
+    queryKey: USER_TAG,
     queryFn: getUser,
     retry: 0,
     enabled: !!accessToken,
   });
 
   // 로그아웃 처리 함수
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // 로그아웃 처리
+    await revalidateUser();
     cookies.remove("accessToken");
     cookies.remove("refreshToken");
-    toast.success("로그아웃 되었습니다.");
     queryClient.clear();
+    toast.success("로그아웃 되었습니다.");
     router.push("/");
   };
 
@@ -125,11 +127,16 @@ export default function ClientHeader() {
   // 소셜 링크 렌더링 함수
   const renderSocialLinks = () => (
     <>
-      <Link href="https://github.com/wjsdncl" className="flex size-9 items-center justify-center p-1">
+      <Link
+        aria-label="GitHub Profile"
+        href="https://github.com/wjsdncl"
+        className="flex size-9 items-center justify-center p-1"
+      >
         <Github width="80%" height="80%" color="var(--text-primary)" />
       </Link>
 
       <button
+        aria-label="Send Email"
         className="group relative flex size-9 items-center justify-center p-1"
         onClick={() => window.open("mailto:wjsdncl2222@gmail.com")}
       >

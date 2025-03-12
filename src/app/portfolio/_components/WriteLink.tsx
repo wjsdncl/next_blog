@@ -1,23 +1,18 @@
 "use client";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { getUser } from "@/services/user.api";
-import { type User } from "@/types/AuthType";
+import { getUser, USER_TAG } from "@/services/user.api";
 import cookies from "@/utils/cookies";
 
 export default function WriteLink() {
-  const queryClient = useQueryClient();
   const accessToken = cookies.get("accessToken");
 
   const { data: user } = useQuery({
-    queryKey: ["user"],
+    queryKey: USER_TAG,
     queryFn: getUser,
     enabled: !!accessToken,
     retry: 0,
-    initialData: () => {
-      return queryClient.getQueryData<User>(["user"]);
-    },
   });
 
   if (!user) return null;

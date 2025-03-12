@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
-import { likeComment } from "@/services/comment.api";
+import { COMMENT_TAG, likeComment } from "@/services/comment.api";
 import { type User } from "@/types/AuthType";
 import { type Comment } from "@/types/BlogType";
 import { formatKoreanDate } from "@/utils/FormatDate";
@@ -55,7 +55,7 @@ export default function CommentItem({
       await likeComment(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments"] });
+      queryClient.invalidateQueries({ queryKey: COMMENT_TAG.ALL() });
     },
   });
 

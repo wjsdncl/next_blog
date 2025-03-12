@@ -2,7 +2,7 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef, useEffect } from "react";
-import { getProjectList } from "@/services/Project.api";
+import { getProjectList, PROJECT_TAG } from "@/services/Project.api";
 import { type Project } from "@/types/PortfolioType";
 import { formatDate } from "@/utils/FormatDate";
 import ProjectCard from "./ProjectCard";
@@ -11,7 +11,7 @@ export default function ProjectList({ isOwner }: { isOwner: boolean }) {
   const loadMoreRef = useRef(null);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["projects"],
+    queryKey: PROJECT_TAG.ALL(),
     queryFn: ({ pageParam = 0 }) => getProjectList({ offset: pageParam }),
     getNextPageParam: (lastPage) => (!lastPage.isLast ? lastPage.nextPage : undefined),
     initialPageParam: 0,

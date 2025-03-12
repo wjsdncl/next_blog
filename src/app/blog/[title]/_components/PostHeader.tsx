@@ -3,10 +3,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
-import { deletePost } from "@/services/post.api";
-import { getUser } from "@/services/user.api";
+import { deletePost, POST_TAG } from "@/services/post.api";
+import { getUser, USER_TAG } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
-import type { User } from "@/types/AuthType";
 import type { Post } from "@/types/BlogType";
 import cookies from "@/utils/cookies";
 import { formatKoreanDate } from "@/utils/FormatDate";
@@ -24,13 +23,10 @@ export default function PostHeader({ post }: { post: Post }) {
   const accessToken = cookies.get("accessToken");
 
   const { data: user } = useQuery({
-    queryKey: ["user"],
+    queryKey: USER_TAG,
     queryFn: getUser,
     enabled: !!accessToken,
     retry: 0,
-    initialData: () => {
-      return queryClient.getQueryData<User>(["user"]);
-    },
   });
 
   const DeletePostMutation = useMutation({
@@ -40,8 +36,8 @@ export default function PostHeader({ post }: { post: Post }) {
     },
     onSuccess: () => {
       toast.success("글이 삭제되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: POST_TAG.ALL() });
+      queryClient.invalidateQueries({ queryKey: USER_TAG });
       router.push("/blog");
     },
   });

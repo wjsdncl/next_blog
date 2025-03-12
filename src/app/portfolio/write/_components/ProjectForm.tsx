@@ -3,9 +3,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Form from "@/components/Form";
-import { createProject, getProject, updateProject } from "@/services/Project.api";
-import { getUser } from "@/services/user.api";
-import { type User } from "@/types/AuthType";
+import { createProject, getProject, PROJECT_TAG, updateProject } from "@/services/Project.api";
+import { revalidateProjectList } from "@/services/server.action";
+import { getUser, USER_TAG } from "@/services/user.api";
 import { type Project, type ProjectRequest } from "@/types/PortfolioType";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
@@ -17,26 +17,26 @@ export default function ProjectForm({ id }: { id?: number }) {
 
   // 사용자 정보 조회
   const { data: user } = useQuery({
-    queryKey: ["user"],
+    queryKey: USER_TAG,
     queryFn: getUser,
     enabled: !!accessToken,
     retry: 0,
-    initialData: () => queryClient.getQueryData<User>(["user"]),
   });
 
   const { data: project } = useQuery({
-    queryKey: ["project", id],
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: PROJECT_TAG.DETAIL(id as number),
     queryFn: () => getProject(id as number),
     enabled: !!id,
     retry: 0,
-    initialData: () => queryClient.getQueryData<Project>(["project", id]),
   });
 
   // 프로젝트 생성 뮤테이션
   const createProjectMutation = useMutation({
     mutationFn: createProject,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["projectList"] });
+    onSuccess: async () => {
+      await revalidateProjectList();
+      queryClient.invalidateQueries({ queryKey: PROJECT_TAG.ALL() });
       router.push("/portfolio");
     },
   });
@@ -45,8 +45,9 @@ export default function ProjectForm({ id }: { id?: number }) {
   const updateProjectMutation = useMutation({
     mutationFn: async (data: { id: number; projectData: ProjectRequest }) =>
       updateProject({ id: data.id, projectData: data.projectData }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["projectList"] });
+    onSuccess: async () => {
+      await revalidateProjectList();
+      queryClient.invalidateQueries({ queryKey: PROJECT_TAG.ALL() });
       router.push("/portfolio");
     },
   });

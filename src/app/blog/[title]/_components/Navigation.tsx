@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import useFollowScroll from "@/hooks/useFollowScroll";
 import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import Share from "@/Icons/Share";
-import { getPost, likePost } from "@/services/post.api";
+import { getPost, likePost, POST_TAG } from "@/services/post.api";
 import type { Post } from "@/types/BlogType";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
@@ -24,14 +24,14 @@ export default function Navigation({ title }: { title: string }) {
 
   // 게시물 데이터 가져오기
   const { data: post } = useQuery({
-    queryKey: ["post", title],
+    queryKey: POST_TAG.TITLE(title),
     queryFn: () => getPost(title),
     retry: 0,
   });
 
   useEffect(() => {
     if (accessToken && post?.isLiked === false) {
-      queryClient.invalidateQueries({ queryKey: ["post", title] });
+      queryClient.invalidateQueries({ queryKey: POST_TAG.TITLE(title) });
     }
   }, [accessToken, post?.isLiked, queryClient, title]);
 
@@ -47,15 +47,15 @@ export default function Navigation({ title }: { title: string }) {
     },
     onMutate: () => {
       if (!accessToken) return;
-      queryClient.setQueryData(["post", title], (oldPost: Post | undefined) =>
+      queryClient.setQueryData(POST_TAG.TITLE(title), (oldPost: Post | undefined) =>
         oldPost ? { ...oldPost, likes: oldPost.likes + (post?.isLiked ? -1 : 1), isLiked: !post?.isLiked } : oldPost
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["post", title] });
+      queryClient.invalidateQueries({ queryKey: POST_TAG.TITLE(title) });
     },
     onError: () => {
-      queryClient.setQueryData(["post", title], (oldPost: Post | undefined) =>
+      queryClient.setQueryData(POST_TAG.TITLE(title), (oldPost: Post | undefined) =>
         oldPost ? { ...oldPost, likes: oldPost.likes + (post?.isLiked ? -1 : 1), isLiked: !post?.isLiked } : oldPost
       );
       toast.error("좋아요 요청에 실패했습니다.");

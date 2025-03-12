@@ -1,26 +1,16 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
-import getQueryClient from "@/components/QueryClient";
-import { getProject } from "@/services/Project.api";
-import { getUser } from "@/services/user.api";
-import { type User } from "@/types/AuthType";
+import { getProject, PROJECT_TAG } from "@/services/Project.api";
+import { getUser, USER_TAG } from "@/services/user.api";
 import ProjectForm from "./_components/ProjectForm";
 
 export default async function PortfolioWritePage({ searchParams }: { searchParams: { id: number } }) {
-  const queryClient = getQueryClient({ staleTime: 60 * 1000 });
+  const queryClient = new QueryClient();
 
-  await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: ["project", searchParams.id],
-      queryFn: () => getProject(searchParams.id),
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ["user"],
-      queryFn: getUser,
-    }),
-  ]);
+  const [project, user] = await Promise.all([searchParams.id ? getProject(searchParams.id) : undefined, getUser()]);
 
-  const user = queryClient.getQueryData<User>(["user"]);
+  queryClient.setQueryData(PROJECT_TAG.DETAIL(searchParams.id), project);
+  queryClient.setQueryData(USER_TAG, user);
 
   // 관리자가 아니면 로그인 페이지로 이동
   if (!user?.isAdmin) {

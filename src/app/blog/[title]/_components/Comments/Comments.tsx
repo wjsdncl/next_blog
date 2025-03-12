@@ -5,11 +5,10 @@ import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
-import { deleteComment, editComment, getComments, writeComment } from "@/services/comment.api";
-import { getPost } from "@/services/post.api";
-import { getUser } from "@/services/user.api";
+import { COMMENT_TAG, deleteComment, editComment, getComments, writeComment } from "@/services/comment.api";
+import { getPost, POST_TAG } from "@/services/post.api";
+import { getUser, USER_TAG } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
-import { type User } from "@/types/AuthType";
 import { type CommentRequest } from "@/types/BlogType";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
@@ -32,27 +31,22 @@ export default function Comments({ title }: { title: string }) {
 
   // 사용자 데이터 가져오기
   const { data: user } = useQuery({
-    queryKey: ["user"],
+    queryKey: USER_TAG,
     queryFn: getUser,
     enabled: !!accessToken,
     retry: 0,
-    initialData: () => {
-      return queryClient.getQueryData<User>(["user"]);
-    },
   });
 
   const { data: post } = useQuery({
-    queryKey: ["post", title],
+    queryKey: POST_TAG.TITLE(title),
     queryFn: () => getPost(title),
-    initialData: () => {
-      return queryClient.getQueryData(["post", title]);
-    },
     retry: 0,
   });
 
   // 댓글 데이터 가져오기
   const { data: comments, isFetching } = useQuery({
-    queryKey: ["comments", post?.id, offset, limit],
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: COMMENT_TAG.POST(post?.id as number, offset, limit),
     queryFn: () => getComments(post?.id as number, offset, limit),
     enabled: !!post?._count?.comments,
     retry: 0,
@@ -75,8 +69,8 @@ export default function Comments({ title }: { title: string }) {
       await writeComment(body);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", post?.id] });
-      queryClient.invalidateQueries({ queryKey: ["post", title] });
+      queryClient.invalidateQueries({ queryKey: COMMENT_TAG.ALL() });
+      queryClient.invalidateQueries({ queryKey: POST_TAG.TITLE(title) });
       toast.success("댓글이 등록되었습니다.");
       reset();
       setReplyCommentId(null);
@@ -92,7 +86,7 @@ export default function Comments({ title }: { title: string }) {
       await editComment(id, content);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", post?.title] });
+      queryClient.invalidateQueries({ queryKey: COMMENT_TAG.ALL() });
       toast.success("댓글이 수정되었습니다.");
       setEditCommentId(null);
     },
@@ -107,7 +101,7 @@ export default function Comments({ title }: { title: string }) {
       await deleteComment(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", post?.title] });
+      queryClient.invalidateQueries({ queryKey: COMMENT_TAG.ALL() });
       toast.success("댓글이 삭제되었습니다.");
     },
     onError: () => {

@@ -1,8 +1,6 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import getQueryClient from "@/components/QueryClient";
-import { getProjectList } from "@/services/Project.api";
-import { getUser } from "@/services/user.api";
-import { type User } from "@/types/AuthType";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { getProjectList, PROJECT_TAG } from "@/services/Project.api";
+import { getUser, USER_TAG } from "@/services/user.api";
 import { type Project } from "@/types/PortfolioType";
 import ProjectList from "./_components/ProjectList";
 import WriteLink from "./_components/WriteLink";
@@ -17,21 +15,15 @@ interface ProjectList {
 }
 
 export default async function Page() {
-  const queryClient = getQueryClient({ staleTime: 60 * 1000 });
+  const queryClient = new QueryClient();
 
-  await Promise.all([
-    queryClient.prefetchInfiniteQuery({
-      queryKey: ["projectList"],
-      queryFn: ({ pageParam = 0 }) => getProjectList({ offset: pageParam, limit: 10 }),
-      initialPageParam: 0,
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ["user"],
-      queryFn: getUser,
-    }),
-  ]);
+  const [project, user] = await Promise.all([getProjectList({ offset: 0, limit: 10 }), getUser()]);
 
-  const user = queryClient.getQueryData<User>(["user"]);
+  queryClient.setQueryData(PROJECT_TAG.ALL(), {
+    pages: [project],
+    pageParams: [0],
+  });
+  queryClient.setQueryData(USER_TAG, user);
 
   return (
     <div
