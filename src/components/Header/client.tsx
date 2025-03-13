@@ -29,7 +29,6 @@ export default function ClientHeader() {
   const pathname = usePathname();
   const accessToken = cookies.get("accessToken");
 
-  // 모달 관리를 위한 Zustand 스토어 사용
   const { openModal, closeModal } = useModalStore(
     useShallow((state) => ({
       openModal: state.openModal,
@@ -115,12 +114,12 @@ export default function ClientHeader() {
   // 로그인/로그아웃 버튼 렌더링 함수
   const renderAuthButton = (textSize: string) =>
     user ? (
-      <button onClick={openLogoutModal} className={cn(`${textSize} font-medium text-text-primary`)}>
+      <button onClick={openLogoutModal} className={cn(`${textSize} text-nowrap font-medium text-text-primary`)}>
         로그아웃
       </button>
     ) : (
       <Link href="/login" className={cn(`${textSize} font-medium text-text-primary`)}>
-        <span className={cn("flex size-full items-center justify-center")}>로그인</span>
+        <span className={cn("flex size-full items-center justify-center text-nowrap")}>로그인</span>
       </Link>
     );
 
@@ -130,14 +129,14 @@ export default function ClientHeader() {
       <Link
         aria-label="GitHub Profile"
         href="https://github.com/wjsdncl"
-        className="flex size-9 items-center justify-center p-1"
+        className={cn(`${isSticky ? "hidden tablet:flex" : "flex"} size-9 items-center justify-center p-1`)}
       >
         <Github width="80%" height="80%" color="var(--text-primary)" />
       </Link>
 
       <button
         aria-label="Send Email"
-        className="group relative flex size-9 items-center justify-center p-1"
+        className="group relative hidden size-9 items-center justify-center p-1 tablet:flex"
         onClick={() => window.open("mailto:wjsdncl2222@gmail.com")}
       >
         <Mail width="100%" height="100%" color="var(--text-primary)" />
@@ -179,11 +178,19 @@ export default function ClientHeader() {
           )}
         >
           {/* 헤더 내용을 감싸는 컨테이너 */}
-          <div className={cn(`flex px-4 ${isSticky ? "flex-row items-center" : "flex-col gap-10"}`)}>
+          <div
+            className={cn(
+              `flex px-5 tablet:px-0 desktop:px-5 ${isSticky ? "flex-row items-center" : "flex-col gap-6"}`
+            )}
+          >
             {/* 로고 섹션 */}
             <section className={cn(`${isSticky ? "mr-8" : "flex w-full justify-between"}`)}>
-              <Link href="/" className="z-20">
-                <span className={cn(`font-medium transition-all ${isSticky ? "text-2xl" : "text-6xl"}`)}>
+              <Link href="/" className="z-20" scroll={true} onClick={() => window.scrollTo(0, 0)}>
+                <span
+                  className={cn(
+                    `text-nowrap font-medium transition-all ${isSticky ? "text-2xl" : "text-4xl tablet:text-6xl"}`
+                  )}
+                >
                   JMJ&apos;s Devlog
                 </span>
               </Link>
@@ -192,9 +199,13 @@ export default function ClientHeader() {
             </section>
 
             {/* 네비게이션 섹션 */}
-            <section className={cn(`${isSticky ? "flex-1" : "flex w-full justify-between"}`)}>
+            <section className={cn(`${isSticky ? "hidden flex-1 tablet:flex" : "flex w-full justify-between"}`)}>
               <nav>
-                <ul className={cn(`flex gap-4 font-semibold ${isSticky ? "text-base" : "mx-5 text-lg"}`)}>
+                <ul
+                  className={cn(
+                    `flex size-full items-center gap-4 font-semibold ${isSticky ? "text-base" : "text-lg"}`
+                  )}
+                >
                   {["Home", "Blog", "Portfolio", "About"].map((item) => (
                     <li key={item}>
                       <Link href={item === "Home" ? "/" : `/${item.toLowerCase()}`}>{item}</Link>

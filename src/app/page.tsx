@@ -14,7 +14,7 @@ export default async function Page() {
   ]);
 
   return (
-    <div className="mx-auto flex size-full flex-col justify-between px-10 py-4 tablet:w-tablet tablet:max-w-none desktop:w-desktop desktop:px-0">
+    <div className="mx-auto flex size-full flex-col justify-between px-6 py-4 tablet:w-tablet tablet:max-w-none desktop:w-desktop desktop:px-0">
       <section>
         <div className="flex items-center justify-between">
           <h2 className="ml-3 text-2xl font-bold">인기글</h2>

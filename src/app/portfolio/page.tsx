@@ -1,4 +1,5 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { cookies } from "next/headers";
 import { getProjectList, PROJECT_TAG } from "@/services/Project.api";
 import { getUser, USER_TAG } from "@/services/user.api";
 import { type Project } from "@/types/PortfolioType";
@@ -17,7 +18,12 @@ interface ProjectList {
 export default async function Page() {
   const queryClient = new QueryClient();
 
-  const [project, user] = await Promise.all([getProjectList({ offset: 0, limit: 10 }), getUser()]);
+  const accessToken = cookies().get("accessToken");
+
+  const [project, user] = await Promise.all([
+    getProjectList({ offset: 0, limit: 10 }),
+    accessToken ? getUser() : undefined,
+  ]);
 
   queryClient.setQueryData(PROJECT_TAG.ALL(), {
     pages: [project],
