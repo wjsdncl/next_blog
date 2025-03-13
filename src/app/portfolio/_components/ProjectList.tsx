@@ -76,7 +76,7 @@ export default function ProjectList({ isOwner }: { isOwner: boolean }) {
 
   return (
     <>
-      <section className="mx-auto flex w-full max-w-screen-tablet flex-col gap-6">
+      <section className="mx-auto flex w-full max-w-screen-tablet flex-col gap-6 px-6">
         {data ? (
           <>
             {data.pages.map((page, pageIndex) =>
