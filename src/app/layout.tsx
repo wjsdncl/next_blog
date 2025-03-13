@@ -54,7 +54,9 @@ export default async function RootLayout({ children }: Readonly<React.PropsWithC
         <ThemeProvider>
           <QueryProvider>
             <Header />
-            <main className="flex h-full min-h-[calc(100dvh-256px)] flex-col">{children}</main>
+            <main className="flex h-full min-h-[calc(100dvh-166px-56px)] flex-col tablet:min-h-[calc(100dvh-186px-56px)]">
+              {children}
+            </main>
             <Footer />
             <Modal />
             <Toaster />

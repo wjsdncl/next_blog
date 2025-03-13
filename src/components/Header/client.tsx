@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useShallow } from "zustand/shallow";
+import { Copy } from "@/Icons/Copy";
 import { Github } from "@/Icons/Github";
 import { Mail } from "@/Icons/Mail";
 import { revalidateUser } from "@/services/server.action";
@@ -137,16 +138,16 @@ export default function ClientHeader() {
       <button
         aria-label="Send Email"
         className="group relative hidden size-9 items-center justify-center p-1 tablet:flex"
-        onClick={() => window.open("mailto:wjsdncl2222@gmail.com")}
+        onClick={handleEmailClick}
       >
         <Mail width="100%" height="100%" color="var(--text-primary)" />
         <span
           className={cn(
-            "absolute -bottom-8 right-0 hidden rounded-md bg-gray-300 px-2 py-1 text-text-primary transition group-hover:block"
+            "absolute -bottom-8 right-0 hidden items-center gap-2 rounded-md bg-gray-300 px-2 py-1 text-text-primary transition group-hover:flex"
           )}
           onClick={handleEmailClick}
         >
-          wjsdncl2222@gmail.com
+          wjsdncl2222@gmail.com <Copy width={20} height={20} color="var(--text-primary)" />
         </span>
       </button>
     </>
