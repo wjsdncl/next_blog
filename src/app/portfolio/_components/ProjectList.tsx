@@ -3,7 +3,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef, useEffect } from "react";
 import { getProjectList, PROJECT_TAG } from "@/services/Project.api";
-import { type Project } from "@/types/PortfolioType";
+import type { Project } from "@/types/PortfolioType";
 import { formatDate } from "@/utils/FormatDate";
 import ProjectCard from "./ProjectCard";
 
@@ -107,7 +107,7 @@ export default function ProjectList({ isOwner }: { isOwner: boolean }) {
         )}
       </section>
 
-      <div ref={loadMoreRef} className="flex justify-center py-4">
+      <div ref={loadMoreRef} className="flex justify-center py-10">
         {isFetchingNextPage && <p>로딩 중...</p>}
       </div>
     </>

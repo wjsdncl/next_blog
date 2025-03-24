@@ -12,18 +12,21 @@ const ExpandedContent = ({
   onClose,
   project,
 }: {
-  coords: { top: number; left: number; width: number };
+  coords: { top: number; width: number };
   onClose: () => void;
   project: ProjectCardProps;
 }) => (
-  <div className="fixed inset-0 z-50 overflow-y-auto bg-black_opacity-60 backdrop-blur-sm scrollbar-hide">
-    <div className="flex min-h-full items-start justify-center py-12" onClick={onClose}>
+  <div className="fixed inset-0 z-50 overflow-y-auto bg-black_opacity-80 backdrop-blur-sm scrollbar-hide">
+    <div className="flex min-h-full items-start justify-center tablet:py-12" onClick={onClose}>
       <div
-        className="relative mx-auto overflow-hidden rounded-2xl bg-gray-100"
+        className="relative overflow-hidden bg-gray-100 tablet:rounded-2xl"
         style={{
           marginTop: coords.top,
           width: coords.width,
-          animation: "expandHorizontal 0.4s forwards, expandVertical 0.4s forwards",
+          animation:
+            window.innerWidth > 768
+              ? "expandHorizontal 0.4s forwards, expandVertical 0.4s forwards"
+              : "mobileExpandHorizontal  0.4s forwards, expandVertical 0.4s forwards",
         }}
       >
         <div className="p-6" onClick={(e) => e.stopPropagation()}>
@@ -64,7 +67,7 @@ const ExpandedContent = ({
 
             <div className="">
               <h3 className="mb-2 text-2xl font-semibold"># 상세 내용</h3>
-              <div className="prose text-lg prose-headings:text-text-primary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
+              <div className="prose rounded-xl border-4 border-gray-150 p-4 text-lg prose-headings:text-text-primary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0 tablet:px-6 tablet:py-4">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm, remarkBreaks]}
                   rehypePlugins={[rehypeSlug]}
@@ -76,8 +79,13 @@ const ExpandedContent = ({
             </div>
           </div>
 
-          <TechStack stack={project.techStack} />
-          <ProjectLinks githubLink={project.githubLink} projectLink={project.projectLink} />
+          <div className="flex flex-col gap-4">
+            <TechStack stack={project.techStack} />
+
+            <div className="flex justify-end">
+              <ProjectLinks githubLink={project.githubLink} projectLink={project.projectLink} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

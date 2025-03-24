@@ -2,18 +2,8 @@ import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query
 import { cookies } from "next/headers";
 import { getProjectList, PROJECT_TAG } from "@/services/Project.api";
 import { getUser, USER_TAG } from "@/services/user.api";
-import { type Project } from "@/types/PortfolioType";
 import ProjectList from "./_components/ProjectList";
 import WriteLink from "./_components/WriteLink";
-
-interface ProjectList {
-  pages: {
-    projects: Project[];
-    isLast: boolean;
-    nextPage: number;
-  };
-  pageParams: number[];
-}
 
 export default async function Page() {
   const queryClient = new QueryClient();

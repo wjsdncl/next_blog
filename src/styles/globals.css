@@ -99,17 +99,15 @@ input:-webkit-autofill {
   --background-tertiary: #414141;
 }
 
-@keyframes expandCard {
-  100% {
-    width: min(90vw, 1000px);
-    height: auto;
-    margin-top: 0;
-  }
-}
-
 @keyframes expandHorizontal {
   to {
     width: min(90vw, 1000px);
+  }
+}
+
+@keyframes mobileExpandHorizontal {
+  to {
+    width: min(100vw, 1000px);
   }
 }
 

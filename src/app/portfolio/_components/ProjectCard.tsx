@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import removeMarkdown from "remove-markdown";
 import { useShallow } from "zustand/shallow";
+import useDeviceSize from "@/hooks/useDeviceSize";
 import useModalStore from "@/stores/ModalStore";
 import DeleteConfirmationModal from "./ProjectDeleteModal";
 import ExpandedContent from "./ProjectDetailOverlay";
@@ -44,8 +45,9 @@ const useProjectActions = (projectId: number) => {
 export default function ProjectCard(project: ProjectCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const articleRef = useRef<HTMLElement>(null);
-  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+  const [coords, setCoords] = useState({ top: 0, width: 0 });
   const { handleEdit, handleDelete } = useProjectActions(project.id);
+  const deviceSize = useDeviceSize();
 
   useEffect(() => {
     document.body.style.overflow = isExpanded ? "hidden" : "unset";
@@ -57,7 +59,8 @@ export default function ProjectCard(project: ProjectCardProps) {
   const handleExpand = () => {
     if (!isExpanded && articleRef.current) {
       const rect = articleRef.current.getBoundingClientRect();
-      setCoords({ top: rect.top - 40, left: rect.left + rect.width / 2, width: rect.width });
+      if (deviceSize === "mobile") setCoords({ top: rect.top, width: window.innerWidth });
+      else setCoords({ top: rect.top, width: rect.width });
     }
     setIsExpanded(!isExpanded);
   };
@@ -67,28 +70,37 @@ export default function ProjectCard(project: ProjectCardProps) {
       ref={articleRef}
       className="flex flex-col gap-4 rounded-lg border-2 border-gray-300 bg-gray-100 p-5 text-text-primary"
     >
-      <div className="flex items-center pb-2">
-        <h2 className="grow text-3xl font-semibold">{project.title}</h2>
-        {project.isOwner && (
-          <div className="flex items-center gap-1">
-            <button onClick={handleEdit} className="p-1 font-semibold text-brand-tertiary">
-              수정
-            </button>
-            <button onClick={handleDelete} className="p-1 font-semibold text-brand-tertiary">
-              삭제
-            </button>
-          </div>
-        )}
-        <button onClick={handleExpand} className="px-3 py-1 font-semibold text-brand-tertiary">
-          자세히 보기
-        </button>
+      <div className="flex flex-col gap-2 tablet:flex-row tablet:items-center">
+        <div className="flex flex-1 items-end gap-2">
+          <h2 className="text-3xl font-semibold">{project.title}</h2>
+
+          <span className="pb-1 text-sm font-semibold text-brand-tertiary tablet:hidden">
+            {`(${project.isPersonal ? "개인 프로젝트" : "팀 프로젝트"})`}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <button onClick={handleExpand} className="p-1 font-semibold text-brand-tertiary">
+            자세히 보기
+          </button>
+          {project.isOwner && (
+            <>
+              <button onClick={handleEdit} className="p-1 font-semibold text-brand-tertiary">
+                수정
+              </button>
+              <button onClick={handleDelete} className="p-1 font-semibold text-brand-tertiary">
+                삭제
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div>
         <p className="pb-3 font-medium text-gray-800">
-          {project.date}{" "}
-          <span className="text-sm font-semibold text-brand-tertiary">
-            ({project.isPersonal ? "개인 프로젝트" : "팀 프로젝트"})
+          {project.date}&nbsp;
+          <span className="hidden text-sm font-semibold text-brand-tertiary tablet:inline">
+            {`(${project.isPersonal ? "개인 프로젝트" : "팀 프로젝트"})`}
           </span>
         </p>
         <hr className="border-t-2 border-gray-400" />
@@ -96,7 +108,7 @@ export default function ProjectCard(project: ProjectCardProps) {
 
       <div>
         <p className="mb-3 line-clamp-5 text-lg font-medium">{project.description}</p>
-        <ul className="list-disc">
+        <ul className="hidden list-disc tablet:block">
           <span className="text-lg font-medium">AI 기반 핵심 요약</span>
           {project.summary.map((item, index) => (
             <li key={index} className="ml-5">
