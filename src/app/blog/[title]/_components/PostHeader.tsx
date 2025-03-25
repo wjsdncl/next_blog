@@ -1,33 +1,24 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import { deletePost, POST_TAG } from "@/services/post.api";
-import { getUser, USER_TAG } from "@/services/user.api";
+import { USER_TAG } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
+import { type User } from "@/types/AuthType";
 import type { Post } from "@/types/BlogType";
-import cookies from "@/utils/cookies";
 import { formatKoreanDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
 import Navigation from "./Navigation";
 
-export default function PostHeader({ post }: { post: Post }) {
+export default function PostHeader({ post, user }: { post: Post; user?: User }) {
   const queryClient = useQueryClient();
   const router = useRouter();
 
   const { openModal, closeModal } = useModalStore(
     useShallow((state) => ({ openModal: state.openModal, closeModal: state.closeModal }))
   );
-
-  const accessToken = cookies.get("accessToken");
-
-  const { data: user } = useQuery({
-    queryKey: USER_TAG,
-    queryFn: getUser,
-    enabled: !!accessToken,
-    retry: 0,
-  });
 
   const DeletePostMutation = useMutation({
     mutationKey: ["deletePost"],
@@ -70,7 +61,7 @@ export default function PostHeader({ post }: { post: Post }) {
   };
 
   const handleEdit = () => {
-    router.push(`/blog/write?title=${post?.slug}`);
+    router.push(`/blog/write?title=${post.slug}`);
   };
 
   return (
@@ -79,7 +70,7 @@ export default function PostHeader({ post }: { post: Post }) {
         {/* 제목 */}
         <p className="pb-6 text-[50px] font-bold leading-[52px] text-text-primary">{post.title}</p>
 
-        <Navigation title={encodeURIComponent(post.slug)} />
+        <Navigation post={post} />
       </div>
 
       <div className="flex size-full items-center justify-between pb-4">

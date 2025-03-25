@@ -13,6 +13,7 @@ export const POST_TAG = {
     if (tag) tags.push(tag);
     return tags;
   },
+  LIKE: (id: number) => ["posts", id, "like"],
 };
 
 export const getPostList = async ({
@@ -74,7 +75,12 @@ export const getPostList = async ({
 
 export const getPost = async (title: string) => {
   try {
-    return await instance.GET<Post>(`/posts/${title}`);
+    return await instance.GET<Post>(`/posts/${title}`, {
+      next: {
+        revalidate: 60 * 30, // 30분
+        tags: POST_TAG.TITLE(title),
+      },
+    });
   } catch (error) {
     console.error(`게시글 조회 실패 (${title}):`, error);
     throw error;
@@ -117,9 +123,9 @@ export const updatePost = async ({
   }
 };
 
-export const likePost = async (id: number) => {
+export const likePost = async (id: number, signal: AbortSignal) => {
   try {
-    return await instance.POST(`/posts/${id}/like`);
+    return await instance.POST(`/posts/${id}/like`, undefined, { signal });
   } catch (error) {
     console.error(`게시글 좋아요 실패 (ID: ${id}):`, error);
     throw error;

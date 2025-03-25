@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
@@ -9,8 +9,8 @@ import { Copy } from "@/Icons/Copy";
 import { Github } from "@/Icons/Github";
 import { Mail } from "@/Icons/Mail";
 import { revalidateUser } from "@/services/server.action";
-import { getUser, USER_TAG } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
+import { type User } from "@/types/AuthType";
 import cn from "@/utils/cn";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
@@ -19,7 +19,7 @@ import toast from "@/utils/Toast";
 const HEADER_HEIGHT = 200;
 const SCROLL_THRESHOLD = 0.9;
 
-export default function ClientHeader() {
+export default function ClientHeader({ user }: { user?: User }) {
   // 헤더의 고정 상태와 표시 여부를 관리하는 상태
   const [isSticky, setIsSticky] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -28,7 +28,6 @@ export default function ClientHeader() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
-  const accessToken = cookies.get("accessToken");
 
   const { openModal, closeModal } = useModalStore(
     useShallow((state) => ({
@@ -58,14 +57,6 @@ export default function ClientHeader() {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // 사용자 정보 조회를 위한 React Query 사용
-  const { data: user } = useQuery({
-    queryKey: USER_TAG,
-    queryFn: getUser,
-    retry: 0,
-    enabled: !!accessToken,
-  });
 
   // 로그아웃 처리 함수
   const handleLogout = async () => {

@@ -59,6 +59,7 @@ const components = {
           height={0}
           sizes="100vw"
           className="size-auto max-h-[720px] max-w-full object-contain"
+          loading="eager"
           style={
             sizeInfo
               ? {

@@ -1,64 +1,58 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useRef, useState, useEffect } from "react";
 import useFollowScroll from "@/hooks/useFollowScroll";
 import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
 import Share from "@/Icons/Share";
-import { getPost, likePost, POST_TAG } from "@/services/post.api";
+import { likePost } from "@/services/post.api";
+import { revalidatePostList } from "@/services/server.action";
 import type { Post } from "@/types/BlogType";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
 const SCROLL_THRESHOLD = 200;
 
-export default function Navigation({ title }: { title: string }) {
-  // queryClient 초기화
-  const queryClient = useQueryClient();
-
+export default function Navigation({ post }: { post: Post }) {
   // DOM 참조와 위치 저장
   const navRef = useFollowScroll<HTMLElement>(SCROLL_THRESHOLD);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  // 유저 로그인 여부 가져오기
+  const [isPostLiked, setIsPostLiked] = useState(post.isLiked);
+  const [likesCount, setLikes] = useState(post.likes);
+
   const accessToken = cookies.get("accessToken");
 
-  // 게시물 데이터 가져오기
-  const { data: post } = useQuery({
-    queryKey: POST_TAG.TITLE(title),
-    queryFn: () => getPost(title),
-    retry: 0,
-  });
-
-  useEffect(() => {
-    if (accessToken && post?.isLiked === false) {
-      queryClient.invalidateQueries({ queryKey: POST_TAG.TITLE(title) });
-    }
-  }, [accessToken, post?.isLiked, queryClient, title]);
-
   // 좋아요 요청 Mutation 설정
-  const LikePostMutation = useMutation({
-    mutationKey: ["likePost"],
+  const likePostMutation = useMutation({
     mutationFn: async (id: number) => {
-      if (!accessToken) {
-        toast.error("로그인이 필요한 서비스입니다.");
-        return;
+      // 이전 요청이 있으면 취소
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
-      await likePost(id);
+
+      // 새로운 AbortController 생성
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
+
+      const result = await likePost(id, abortController.signal);
+      abortControllerRef.current = null;
+      return result;
     },
     onMutate: () => {
-      if (!accessToken) return;
-      queryClient.setQueryData(POST_TAG.TITLE(title), (oldPost: Post | undefined) =>
-        oldPost ? { ...oldPost, likes: oldPost.likes + (post?.isLiked ? -1 : 1), isLiked: !post?.isLiked } : oldPost
-      );
+      setIsPostLiked((prev) => !prev);
+      setLikes((prev) => (isPostLiked ? prev - 1 : prev + 1));
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: POST_TAG.TITLE(title) });
+    onSuccess: async () => {
+      await revalidatePostList();
     },
-    onError: () => {
-      queryClient.setQueryData(POST_TAG.TITLE(title), (oldPost: Post | undefined) =>
-        oldPost ? { ...oldPost, likes: oldPost.likes + (post?.isLiked ? -1 : 1), isLiked: !post?.isLiked } : oldPost
-      );
-      toast.error("좋아요 요청에 실패했습니다.");
+    onError: (error) => {
+      // AbortError는 사용자가 의도적으로 취소한 것이므로 오류 처리하지 않음
+      if (error.name !== "AbortError") {
+        setIsPostLiked((prev) => !prev);
+        setLikes((prev) => (isPostLiked ? prev - 1 : prev + 1));
+        toast.error("좋아요 요청에 실패했습니다.");
+      }
     },
   });
 
@@ -74,9 +68,22 @@ export default function Navigation({ title }: { title: string }) {
 
   // 좋아요 버튼 클릭 핸들러
   const handleLike = () => {
-    if (LikePostMutation.isPending) return;
-    LikePostMutation.mutateAsync(post?.id as number);
+    if (!accessToken) {
+      toast.error("로그인 후 이용할 수 있습니다.");
+      return;
+    }
+
+    likePostMutation.mutate(post?.id as number);
   };
+
+  // 컴포넌트 언마운트 시 요청 취소
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   return (
     <nav
@@ -85,7 +92,7 @@ export default function Navigation({ title }: { title: string }) {
     >
       <button type="button" onClick={handleLike}>
         <div aria-label="like" className="size-5 desktop:size-8">
-          {post?.isLiked ? (
+          {isPostLiked ? (
             <FavoriteFilled width={"100%"} height={"100%"} color="#656079" />
           ) : (
             <FavoriteEmpty width={"100%"} height={"100%"} color="var(--text-primary)" />
@@ -93,7 +100,7 @@ export default function Navigation({ title }: { title: string }) {
         </div>
       </button>
 
-      <p className="font-medium">{post?.likes}</p>
+      <p className="font-medium">{likesCount}</p>
 
       <button type="button" onClick={handleShare} className="size-5 desktop:size-8">
         <Share width={"100%"} height={"100%"} color="var(--text-primary)" />

@@ -6,11 +6,10 @@ import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
 import { COMMENT_TAG, deleteComment, editComment, getComments, writeComment } from "@/services/comment.api";
-import { getPost, POST_TAG } from "@/services/post.api";
-import { getUser, USER_TAG } from "@/services/user.api";
+import { revalidatePostList } from "@/services/server.action";
 import useModalStore from "@/stores/ModalStore";
-import { type CommentRequest } from "@/types/BlogType";
-import cookies from "@/utils/cookies";
+import { type User } from "@/types/AuthType";
+import { type Post, type CommentRequest } from "@/types/BlogType";
 import toast from "@/utils/Toast";
 import CommentItem from "./CommentItem";
 
@@ -18,7 +17,7 @@ interface CommentFormInputs {
   content: string;
 }
 
-export default function Comments({ title }: { title: string }) {
+export default function Comments({ post, user }: { post: Post; user?: User }) {
   const queryClient = useQueryClient();
   const [editCommentId, setEditCommentId] = useState<number | null>(null);
   const [replyCommentId, setReplyCommentId] = useState<number | null>(null);
@@ -27,28 +26,12 @@ export default function Comments({ title }: { title: string }) {
   const [limit] = useState(10);
   const offset = (page - 1) * limit;
 
-  const accessToken = cookies.get("accessToken");
-
-  // 사용자 데이터 가져오기
-  const { data: user } = useQuery({
-    queryKey: USER_TAG,
-    queryFn: getUser,
-    enabled: !!accessToken,
-    retry: 0,
-  });
-
-  const { data: post } = useQuery({
-    queryKey: POST_TAG.TITLE(title),
-    queryFn: () => getPost(title),
-    retry: 0,
-  });
-
   // 댓글 데이터 가져오기
   const { data: comments, isFetching } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: COMMENT_TAG.POST(post?.id as number, offset, limit),
-    queryFn: () => getComments(post?.id as number, offset, limit),
-    enabled: !!post?._count?.comments,
+    queryKey: COMMENT_TAG.POST(post.id as number, offset, limit),
+    queryFn: () => getComments(post.id as number, offset, limit),
+    enabled: !!post._count?.comments,
     retry: 0,
   });
 
@@ -68,9 +51,10 @@ export default function Comments({ title }: { title: string }) {
     mutationFn: async (body: CommentRequest) => {
       await writeComment(body);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await revalidatePostList();
       queryClient.invalidateQueries({ queryKey: COMMENT_TAG.ALL() });
-      queryClient.invalidateQueries({ queryKey: POST_TAG.TITLE(title) });
+
       toast.success("댓글이 등록되었습니다.");
       reset();
       setReplyCommentId(null);

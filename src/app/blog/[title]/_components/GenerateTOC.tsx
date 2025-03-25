@@ -27,15 +27,17 @@ const INDENT_CLASSES: { [key: string]: string } = {
  * @returns {string} 생성된 고유 ID
  */
 const generateUniqueId = (text: string, idCountMap: Map<string, number>): string => {
-  const baseId = text
-    .replace(/^#+ /, "")
-    .trim()
+  // 헤딩 레벨 제거 (예: "## 제목" -> "제목")
+  const headingText = text.replace(/^#+ /, "").trim();
+
+  const baseId = headingText
     .toLowerCase()
     .replace(/[^a-z0-9ㄱ-ㅎㅏ-ㅣ가-힣\s-]/g, "")
     .replace(/\s+/g, "-");
 
   // 현재 ID의 출현 횟수를 가져옴
   const count = idCountMap.get(baseId) || 0;
+
   // 현재 ID의 출현 횟수를 증가
   idCountMap.set(baseId, count + 1);
 
@@ -52,36 +54,78 @@ const generateUniqueId = (text: string, idCountMap: Map<string, number>): string
 export default function GenerateTOC({ content }: GenerateTOCProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const tocRef = useFollowScroll<HTMLUListElement>(SCROLL_THRESHOLD);
+  const idCountMap = useRef(new Map<string, number>()).current;
 
   const headings = useMemo(() => content.match(/^#{1,3}\s+([^#\n]+)$/gm) || [], [content]);
-
   const headingElementsRef = useRef<(HTMLHeadingElement | null)[]>([]);
+  const headingIdsRef = useRef<string[]>([]);
 
-  // ID 중복을 추적하기 위한 Map
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const idCountMap = useMemo(() => new Map<string, number>(), [headings]);
-
+  // 헤딩 ID 생성 및 저장
   useEffect(() => {
-    headingElementsRef.current = headings.map((heading) => {
-      const id = generateUniqueId(heading, idCountMap);
-      return document.getElementById(id) as HTMLHeadingElement | null;
-    });
+    // ID 맵 초기화
+    idCountMap.clear();
+
+    // 모든 헤딩에 대한 ID 생성
+    const ids = headings.map((heading) => generateUniqueId(heading, idCountMap));
+    headingIdsRef.current = ids;
+
+    // DOM이 완전히 로드된 후 헤딩 요소를 찾아 ID 설정
+    const applyIds = () => {
+      // 레벨에 따른 헤딩 태그 선택자 생성
+      const headingSelectors = [1, 2, 3].map((level) => `h${level}`).join(", ");
+      const contentHeadings = Array.from(document.querySelectorAll(headingSelectors));
+      const matchedHeadings: (HTMLHeadingElement | null)[] = new Array(headings.length).fill(null);
+
+      // 각 헤딩에 ID 적용
+      headings.forEach((heading, index) => {
+        const headingText = heading.replace(/^#+ /, "").trim();
+        const id = headingIdsRef.current[index];
+
+        // 이미 찾은 요소는 제외하기 위한 필터링
+        const availableHeadings = contentHeadings.filter((el) => !matchedHeadings.includes(el as HTMLHeadingElement));
+
+        // 텍스트가 일치하는 헤딩 요소 찾기
+        const headingElement = availableHeadings.find((el) => el.textContent?.trim() === headingText) as
+          | HTMLHeadingElement
+          | undefined;
+
+        if (headingElement) {
+          // ID 직접 적용 (rehypeSlug가 생성한 ID를 덮어씀)
+          headingElement.id = id;
+          matchedHeadings[index] = headingElement;
+        }
+      });
+
+      // 참조 업데이트
+      headingElementsRef.current = matchedHeadings;
+    };
+
+    // DOM이 로드된 후 IDs 적용
+    setTimeout(applyIds, 100);
   }, [headings, idCountMap]);
 
   const handleIntersect = useCallback((entries: IntersectionObserverEntry[]) => {
-    for (const entry of entries) {
-      const index = headingElementsRef.current.findIndex((el) => el === entry.target);
-      if (entry.isIntersecting && index !== -1) {
-        setSelectedIndex(index);
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const index = headingElementsRef.current.findIndex((el) => el === entry.target);
+        if (index !== -1) {
+          setSelectedIndex(index);
+        }
       }
-    }
+    });
   }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(handleIntersect, OBSERVER_OPTIONS);
-    for (const el of headingElementsRef.current) {
-      if (el) observer.observe(el);
-    }
+
+    // 관찰 요소 설정 (setTimeout으로 지연 실행하여 요소가 제대로 참조되도록 함)
+    const setupObserver = () => {
+      headingElementsRef.current.forEach((el) => {
+        if (el) observer.observe(el);
+      });
+    };
+
+    setTimeout(setupObserver, 200);
 
     return () => observer.disconnect();
   }, [handleIntersect]);
@@ -97,7 +141,7 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
         const levelMatch = heading.match(/^#+/);
         const level = levelMatch ? levelMatch[0].length : 0;
         const text = heading.replace(/^#+ /, "").trim();
-        const id = generateUniqueId(heading, idCountMap);
+        const id = headingIdsRef.current[index];
 
         const liClass = INDENT_CLASSES[level] || "ml-1";
         const aClass = `block pb-1 hover:underline transition-transform duration-200 ${
