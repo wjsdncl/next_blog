@@ -53,7 +53,7 @@ const generateUniqueId = (text: string, idCountMap: Map<string, number>): string
  */
 export default function GenerateTOC({ content }: GenerateTOCProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const tocRef = useFollowScroll<HTMLUListElement>(SCROLL_THRESHOLD);
+  const tocRef = useFollowScroll<HTMLDivElement>(SCROLL_THRESHOLD);
   const idCountMap = useRef(new Map<string, number>()).current;
 
   const headings = useMemo(() => content.match(/^#{1,3}\s+([^#\n]+)$/gm) || [], [content]);
@@ -130,65 +130,61 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
     return () => observer.disconnect();
   }, [handleIntersect]);
 
+  const handleItemClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, index: number, id: string) => {
+    e.preventDefault();
+    setSelectedIndex(index);
+
+    const targetElement = document.getElementById(id);
+    if (targetElement) {
+      const yOffset = window.innerHeight * 0.2;
+      const y = targetElement.getBoundingClientRect().top + window.scrollY - yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+
+      // 스크롤 후 포커스 이동 (접근성 개선)
+      setTimeout(() => {
+        targetElement.tabIndex = -1;
+        targetElement.focus({ preventScroll: true });
+      }, 500);
+    }
+  }, []);
+
   if (!headings.length) return null;
 
   return (
-    <ul
+    <nav
       ref={tocRef}
+      aria-label="목차"
       className="absolute left-[800px] top-28 mb-4 hidden w-[185px] border-l-2 border-gray-400 py-2 pl-1 text-[15px] font-light text-gray-800 desktop:block"
     >
-      {headings.map((heading, index) => {
-        const levelMatch = heading.match(/^#+/);
-        const level = levelMatch ? levelMatch[0].length : 0;
-        const text = heading.replace(/^#+ /, "").trim();
-        const id = headingIdsRef.current[index];
+      <h2 className="sr-only">글 목차</h2>
+      <ul>
+        {headings.map((heading, index) => {
+          const levelMatch = heading.match(/^#+/);
+          const level = levelMatch ? levelMatch[0].length : 0;
+          const text = heading.replace(/^#+ /, "").trim();
+          const id = headingIdsRef.current[index] || `heading-${index}`;
+          const isSelected = selectedIndex === index;
 
-        const liClass = INDENT_CLASSES[level] || "ml-1";
-        const aClass = `block pb-1 hover:underline transition-transform duration-200 ${
-          selectedIndex === index ? "scale-105 text-text-primary font-normal" : ""
-        }`;
+          const liClass = INDENT_CLASSES[level] || "ml-1";
+          const aClass = `block pb-1 hover:underline transition-transform duration-200 ${
+            isSelected ? "scale-105 text-text-primary font-normal" : ""
+          }`;
 
-        return (
-          <li
-            key={id}
-            className={`${liClass} leading-tight`}
-            role="menuitem"
-            onClick={(e) => {
-              e.preventDefault();
-              setSelectedIndex(index);
-
-              const targetElement = document.getElementById(id);
-              if (targetElement) {
-                const yOffset = window.innerHeight * 0.2;
-                const y = targetElement.getBoundingClientRect().top + window.scrollY - yOffset;
-                window.scrollTo({ top: y, behavior: "smooth" });
-              }
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                setSelectedIndex(index);
-
-                const targetElement = document.getElementById(id);
-                if (targetElement) {
-                  const yOffset = window.innerHeight * 0.2;
-                  const y = targetElement.getBoundingClientRect().top + window.scrollY - yOffset;
-                  window.scrollTo({ top: y, behavior: "smooth" });
-                }
-              }
-            }}
-          >
-            <a
-              href={`#${id}`}
-              className={aClass}
-              aria-current={selectedIndex === index ? "true" : undefined}
-              aria-label={`목차 항목: ${text}`}
-            >
-              {text}
-            </a>
-          </li>
-        );
-      })}
-    </ul>
+          return (
+            <li key={`toc-item-${index}-${id}`} className={`${liClass} leading-tight`}>
+              <a
+                href={`#${id}`}
+                className={aClass}
+                onClick={(e) => handleItemClick(e, index, id)}
+                aria-current={isSelected ? "true" : undefined}
+                aria-label={`목차 항목: ${text}, 레벨 ${level}`}
+              >
+                {text}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
   );
 }
