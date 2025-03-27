@@ -1,13 +1,44 @@
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { type Metadata } from "next";
-import { Suspense } from "react";
+import dynamic from "next/dynamic";
+import { getPostList, POST_TAG } from "@/services/post.api";
 import ClientPage from "./_components/ClientPage";
 
-export default function Page() {
+const Navigation = dynamic(() => import("./_components/Navigation"));
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: {
+    search: string;
+    category: string;
+    tag: string;
+  };
+}) {
+  const queryClient = new QueryClient();
+
+  const searchQuery = searchParams.search ?? undefined;
+  const categoryQuery = searchParams.category ?? undefined;
+  const tagQuery = searchParams.tag ?? undefined;
+
+  const posts = await getPostList({
+    offset: 0,
+    limit: 10,
+    search: searchQuery,
+    category: categoryQuery,
+    tag: tagQuery,
+  });
+  queryClient.setQueryData(POST_TAG.LIST("newest", searchQuery, categoryQuery, tagQuery), {
+    pages: [posts],
+    pageParams: [0],
+  });
+
   return (
     <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 tablet:w-tablet tablet:px-0">
-      <Suspense fallback={null}>
+      <Navigation categoryCounts={posts.categoryCounts} totalPosts={posts.totalPosts} />
+      <HydrationBoundary state={dehydrate(queryClient)}>
         <ClientPage />
-      </Suspense>
+      </HydrationBoundary>
     </div>
   );
 }

@@ -16,6 +16,7 @@ export interface Post {
   content: string;
   tags: string[];
   likes: number;
+  isPrivate: boolean;
   createdAt: Date;
   updatedAt: Date;
 
