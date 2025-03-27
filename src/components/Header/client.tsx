@@ -61,10 +61,10 @@ export default function ClientHeader({ user }: { user?: User }) {
   // 로그아웃 처리 함수
   const handleLogout = async () => {
     // 로그아웃 처리
-    await revalidateUser();
     cookies.remove("accessToken");
     cookies.remove("refreshToken");
     queryClient.clear();
+    await revalidateUser();
     toast.success("로그아웃 되었습니다.");
     router.push("/");
   };

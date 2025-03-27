@@ -5,12 +5,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { SignInWithGithubCallback } from "@/services/auth.api";
+import { revalidateUser } from "@/services/server.action";
 import { USER_TAG } from "@/services/user.api";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
 export default function AuthCallback({ code }: { code: string }) {
   const router = useRouter();
+
+  const handleRevalidate = async () => {
+    await revalidateUser();
+  };
 
   useQuery({
     queryKey: USER_TAG,
@@ -23,6 +28,8 @@ export default function AuthCallback({ code }: { code: string }) {
 
           cookies.set("accessToken", result.accessToken, 3);
           cookies.set("refreshToken", result.refreshToken, 7);
+
+          handleRevalidate();
 
           router.push("/");
           return result.user;
