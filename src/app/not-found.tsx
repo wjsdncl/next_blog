@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { NotFound } from "@/Icons/NotFound";
+import NotFound from "@/Icons/NotFound.svg";
 
 export default function Page() {
   return (

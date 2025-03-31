@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
+import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
+import FavoriteFilled from "@/Icons/FavoriteFilled.svg";
 import { COMMENT_TAG, likeComment } from "@/services/comment.api";
 import { type User } from "@/types/AuthType";
 import { type Comment } from "@/types/BlogType";

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import removeMarkdown from "remove-markdown";
-import { CloseBold } from "@/Icons/Close";
-import { ImageIcon } from "@/Icons/Image";
+import CloseBold from "@/Icons/CloseBold.svg";
+import ImageIcon from "@/Icons/Image.svg";
 import { uploadImage } from "@/services/post.api";
 
 interface PreviewModalProps {

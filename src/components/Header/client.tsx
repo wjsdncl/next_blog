@@ -5,9 +5,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useShallow } from "zustand/shallow";
-import { Copy } from "@/Icons/Copy";
-import { Github } from "@/Icons/Github";
-import { Mail } from "@/Icons/Mail";
+import Copy from "@/Icons/Copy.svg";
+import Github from "@/Icons/Github.svg";
+import Mail from "@/Icons/Mail.svg";
 import { revalidateUser } from "@/services/server.action";
 import useModalStore from "@/stores/ModalStore";
 import { type User } from "@/types/AuthType";
@@ -123,7 +123,7 @@ export default function ClientHeader({ user }: { user?: User }) {
         href="https://github.com/wjsdncl"
         className={cn(`${isSticky ? "hidden tablet:flex" : "flex"} size-9 items-center justify-center p-1`)}
       >
-        <Github width="80%" height="80%" color="var(--text-primary)" />
+        <Github width="90%" height="90%" color="var(--text-primary)" />
       </Link>
 
       <button

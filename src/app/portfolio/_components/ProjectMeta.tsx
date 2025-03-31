@@ -1,5 +1,5 @@
-import { Github } from "@/Icons/Github";
-import LinkIcon from "@/Icons/Link";
+import Github from "@/Icons/Github.svg";
+import LinkIcon from "@/Icons/Link.svg";
 
 export const TechStack = ({ stack }: { stack: string[] }) => (
   <div className="flex flex-wrap gap-2 text-wrap border-l-4 border-brand_dark-secondary px-3 py-2">
@@ -18,8 +18,8 @@ export const ProjectLinks = ({ githubLink, projectLink }: { githubLink?: string;
         href={githubLink}
         className="flex w-fit items-center justify-center gap-2 text-nowrap rounded-lg border border-gray-400 px-3 py-2 text-sm font-medium tablet:text-base"
       >
-        <Github width={16} height={16} color="var(--text-primary)" />
-        깃허브 링크
+        <Github width={20} height={20} color="var(--text-primary)" />
+        {"깃허브 링크"}
       </a>
     )}
     {projectLink && (
@@ -27,8 +27,8 @@ export const ProjectLinks = ({ githubLink, projectLink }: { githubLink?: string;
         href={projectLink}
         className="flex w-fit items-center justify-center gap-2 text-nowrap rounded-lg border border-gray-400 bg-brand_dark-tertiary px-3 py-2 text-sm font-medium tablet:text-base"
       >
-        <LinkIcon width={16} height={16} color="var(--text-primary)" />
-        프로젝트 링크
+        <LinkIcon width={20} height={20} color="var(--text-primary)" />
+        {"프로젝트 링크"}
       </a>
     )}
   </div>

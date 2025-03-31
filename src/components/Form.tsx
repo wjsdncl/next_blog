@@ -12,7 +12,8 @@ import {
   type DefaultValues,
 } from "react-hook-form";
 import { default as Tag } from "@/components/TagInput";
-import { EyeClose, EyeOpen } from "@/Icons/Eyes";
+import EyeClose from "@/Icons/EyeClose.svg";
+import EyeOpen from "@/Icons/EyeOpen.svg";
 import cn from "@/utils/cn";
 
 // Types

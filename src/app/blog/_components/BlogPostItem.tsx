@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { memo } from "react";
 import removeMarkdown from "remove-markdown";
-import { FavoriteEmpty } from "@/Icons/Favorite";
+import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
 import { type Post } from "@/types/BlogType";
 import { diffDate } from "@/utils/FormatDate";
 

@@ -3,8 +3,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRef, useState, useEffect } from "react";
 import useFollowScroll from "@/hooks/useFollowScroll";
-import { FavoriteEmpty, FavoriteFilled } from "@/Icons/Favorite";
-import Share from "@/Icons/Share";
+import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
+import FavoriteFilled from "@/Icons/FavoriteFilled.svg";
+import Share from "@/Icons/Share.svg";
 import { likePost } from "@/services/post.api";
 import { revalidatePostList } from "@/services/server.action";
 import type { Post } from "@/types/BlogType";

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import removeMarkdown from "remove-markdown";
-import { FavoriteEmpty } from "@/Icons/Favorite";
+import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
 import { getPostList } from "@/services/post.api";
 import { type Post } from "@/types/BlogType";
 import cn from "@/utils/cn";

@@ -3,7 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type React from "react";
 import { useShallow } from "zustand/shallow";
-import { CloseBold } from "@/Icons/Close";
+import CloseBold from "@/Icons/CloseBold.svg";
 import useModalStore from "@/stores/ModalStore";
 
 export default function Modal() {

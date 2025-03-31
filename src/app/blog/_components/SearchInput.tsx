@@ -2,8 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState, useCallback } from "react";
-import Category from "@/Icons/Category";
-import SearchIcon from "@/Icons/Search";
+import Category from "@/Icons/Category.svg";
+import SearchIcon from "@/Icons/Search.svg";
 import { debounce } from "@/utils/DelayManager";
 
 export default function SearchInput() {

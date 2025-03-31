@@ -96,15 +96,14 @@ export default function ProjectCard(project: ProjectCardProps) {
         </div>
       </div>
 
-      <div>
-        <p className="pb-3 font-medium text-gray-800">
-          {project.date}&nbsp;
-          <span className="hidden text-sm font-semibold text-brand-tertiary tablet:inline">
-            {`(${project.isPersonal ? "개인 프로젝트" : "팀 프로젝트"})`}
-          </span>
-        </p>
-        <hr className="border-t-2 border-gray-400" />
+      <div className="flex items-center gap-2">
+        <p className="font-medium text-gray-800">{project.date}</p>
+        <span className="hidden text-sm font-semibold text-brand-tertiary tablet:inline">
+          {`(${project.isPersonal ? "개인 프로젝트" : "팀 프로젝트"})`}
+        </span>
       </div>
+
+      <hr className="border-t-2 border-gray-400" />
 
       <div>
         <p className="mb-3 line-clamp-5 text-lg font-medium">{project.description}</p>
