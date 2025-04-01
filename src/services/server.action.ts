@@ -18,7 +18,7 @@ export async function revalidateUser() {
   await revalidateTag("user");
 }
 
-export async function revalidatePostList() {
+export async function revalidatePosts() {
   console.log("게시글 목록 캐시 갱신");
   await revalidateTag("posts");
 }

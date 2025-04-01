@@ -11,7 +11,7 @@ import { useShallow } from "zustand/shallow";
 import components from "@/components/MarkdownComponents";
 import TagInput from "@/components/TagInput";
 import { getPost, POST_TAG, updatePost, uploadImage, writePost } from "@/services/post.api";
-import { revalidatePostList } from "@/services/server.action";
+import { revalidatePosts } from "@/services/server.action";
 import { getUser, USER_TAG } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import type { PostRequest } from "@/types/BlogType";
@@ -61,7 +61,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
   const completeWritingMutation = useMutation({
     mutationFn: async (data: PostRequest) => writePost({ postData: data, userId: user?.id as string }),
     onSuccess: async () => {
-      await revalidatePostList();
+      await revalidatePosts();
       queryClient.invalidateQueries({ queryKey: POST_TAG.ALL() }); // 포스트 목록 갱신
       queryClient.invalidateQueries({ queryKey: USER_TAG }); // 사용자 데이터 갱신
       router.push("/blog"); // 블로그 목록 페이지로 이동
@@ -73,7 +73,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     mutationFn: async (data: { id: number; postData: PostRequest }) =>
       updatePost({ id: data.id, postData: data.postData, userId: user?.id as string }),
     onSuccess: async () => {
-      await revalidatePostList();
+      await revalidatePosts();
       queryClient.invalidateQueries({ queryKey: POST_TAG.ALL() }); // 포스트 목록 갱신
       queryClient.invalidateQueries({ queryKey: USER_TAG }); // 사용자 데이터 갱신
       router.push("/blog"); // 블로그 목록 페이지로 이동

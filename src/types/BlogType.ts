@@ -5,6 +5,7 @@ export interface PostRequest {
   content: string;
   category?: string;
   tags: string[];
+  isPrivate?: boolean;
 }
 
 export interface Post {

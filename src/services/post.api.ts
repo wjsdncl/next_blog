@@ -5,7 +5,7 @@ import instance from "./instance";
 
 export const POST_TAG = {
   ALL: () => ["posts"],
-  TITLE: (title: string) => ["posts", title],
+  TITLE: (title: string) => ["posts", title, "detail"],
   LIST: (order: "oldest" | "newest" | "like" = "newest", search?: string, category?: string, tag?: string) => {
     const tags = ["posts", order];
     if (search) tags.push(search);
@@ -75,12 +75,7 @@ export const getPostList = async ({
 
 export const getPost = async (title: string) => {
   try {
-    return await instance.GET<Post>(`/posts/${title}`, {
-      next: {
-        revalidate: 60 * 30, // 30분
-        tags: POST_TAG.TITLE(title),
-      },
-    });
+    return await instance.GET<Post>(`/posts/${title}`);
   } catch (error) {
     console.error(`게시글 조회 실패 (${title}):`, error);
     throw error;

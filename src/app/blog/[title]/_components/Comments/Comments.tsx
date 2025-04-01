@@ -6,7 +6,6 @@ import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
 import { COMMENT_TAG, deleteComment, editComment, getComments, writeComment } from "@/services/comment.api";
-import { revalidatePostList } from "@/services/server.action";
 import useModalStore from "@/stores/ModalStore";
 import { type User } from "@/types/AuthType";
 import { type Post, type CommentRequest } from "@/types/BlogType";
@@ -52,7 +51,6 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
       await writeComment(body);
     },
     onSuccess: async () => {
-      await revalidatePostList();
       queryClient.invalidateQueries({ queryKey: COMMENT_TAG.ALL() });
 
       toast.success("댓글이 등록되었습니다.");

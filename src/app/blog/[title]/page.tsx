@@ -1,3 +1,4 @@
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { cookies } from "next/headers";
@@ -8,7 +9,7 @@ import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import components from "@/components/MarkdownComponents";
-import { getPost } from "@/services/post.api";
+import { getPost, POST_TAG } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import PostHeader from "./_components/PostHeader";
 
@@ -22,6 +23,9 @@ export default async function Page({ params }: { params: { title: string } }) {
   const post = await getPost(title);
   const user = accessToken ? await getUser() : undefined;
 
+  const queryClient = new QueryClient();
+  queryClient.setQueryData(POST_TAG.TITLE(decodeURIComponent(title)), post);
+
   if (!post) {
     return (
       <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
@@ -32,7 +36,9 @@ export default async function Page({ params }: { params: { title: string } }) {
 
   return (
     <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
-      <PostHeader post={post} user={user} />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <PostHeader title={decodeURIComponent(title)} user={user} />
+      </HydrationBoundary>
 
       {/* 목차 */}
       {post.content.trim() && <GenerateTOC content={post.content} />}
@@ -92,7 +98,11 @@ export default async function Page({ params }: { params: { title: string } }) {
       {/* 네비게이션 */}
       <div className="mb-10 mt-20 flex w-full items-center justify-end gap-2 desktop:hidden">
         <hr className="grow-[5] rounded-l-full border-2 border-gray-300" />
-        <Navigation post={post} />
+
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <Navigation title={decodeURIComponent(title)} />
+        </HydrationBoundary>
+
         <hr className="w-5 rounded-r-full border-2 border-gray-300" />
       </div>
 
