@@ -23,6 +23,22 @@ export default async function Page({ params }: { params: { title: string } }) {
   const post = await getPost(title);
   const user = accessToken ? await getUser() : undefined;
 
+  if (post.isPrivate && user?.isAdmin === false) {
+    // 비공개 게시글인 경우
+    // 관리자가 아닌 경우에는 비공개 게시글을 보여주지 않음
+    return (
+      <div className="mx-auto flex size-full grow flex-col items-center justify-center gap-20 px-5 py-8 text-lg tablet:w-tablet tablet:px-0 tablet:pb-40">
+        <h1 className="text-center text-4xl font-bold">비공개 게시글입니다.</h1>
+
+        <div className="flex">
+          <a href="/" className="rounded-md bg-gray-200 px-6 py-3 text-base font-medium hover:bg-gray-300">
+            홈으로 돌아가기
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   const queryClient = new QueryClient();
   queryClient.setQueryData(POST_TAG.TITLE(decodeURIComponent(title)), post);
 
