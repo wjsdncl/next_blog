@@ -214,6 +214,10 @@ function TagInput<T extends FieldValues>({ label, style = "default", validation 
             tags={value || []}
             addTag={(tag: string) => field.onChange([...(value || []), tag])}
             removeTag={(tag: string) => field.onChange((value || []).filter((t: string) => t !== tag))}
+            addTags={(newTags: string[]) => {
+              const uniqueTags = [...new Set([...(value || []), ...newTags])];
+              field.onChange(uniqueTags);
+            }}
             style={style}
           />
         );

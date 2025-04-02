@@ -20,10 +20,11 @@ interface TagInputProps {
   tags: string[];
   addTag: (tag: string) => void;
   removeTag: (tag: string) => void;
+  addTags: (tags: string[]) => void;
   style?: "default" | "outline";
 }
 
-const TagInput = ({ tags, addTag, removeTag, style = "default" }: TagInputProps) => {
+const TagInput = ({ tags, addTag, removeTag, addTags, style = "default" }: TagInputProps) => {
   const [inputValue, setInputValue] = useState("");
 
   const tagStyle =
@@ -31,11 +32,36 @@ const TagInput = ({ tags, addTag, removeTag, style = "default" }: TagInputProps)
       ? "group rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 pr-10 text-text-primary focus-within:border-brand-secondary dark:focus-within:border-brand_dark-primary"
       : "";
 
+  // 콤마로 구분된 태그 처리 함수
+  const handleTagInput = (value: string) => {
+    if (!value.trim()) return;
+
+    // 문자열을 정규 표현식을 사용하여 콤마로 분리
+    // 콤마 앞뒤 공백을 제거하면서 빈 문자열은 제외
+    const tagArray = value
+      .split(/\s*,\s*/)
+      .filter((tag) => tag.trim() !== "")
+      .map((tag) => tag.trim());
+
+    if (tagArray.length > 1 && addTags) {
+      // 여러 태그가 있고 addTags 함수가 제공된 경우, 한 번에 추가
+      addTags(tagArray);
+    } else {
+      // 단일 태그이거나 addTags가 없는 경우, 개별적으로 추가
+      tagArray.forEach((tag) => {
+        if (tag) {
+          addTag(tag);
+        }
+      });
+    }
+
+    setInputValue("");
+  };
+
   const handleKeyDown = (e: { key: string; preventDefault: () => void }) => {
     if ((e.key === "Enter" || e.key === ",") && inputValue.trim()) {
       e.preventDefault();
-      addTag(inputValue.trim());
-      setInputValue("");
+      handleTagInput(inputValue);
     } else if (e.key === "Backspace" && inputValue === "") {
       e.preventDefault();
       if (tags.length > 0) {
@@ -44,6 +70,12 @@ const TagInput = ({ tags, addTag, removeTag, style = "default" }: TagInputProps)
     } else if (e.key === "," || e.key === "Enter") {
       e.preventDefault();
     }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData("text");
+    handleTagInput(pastedText);
   };
 
   return (
@@ -55,6 +87,7 @@ const TagInput = ({ tags, addTag, removeTag, style = "default" }: TagInputProps)
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
+        onPaste={handlePaste}
       />
     </div>
   );
