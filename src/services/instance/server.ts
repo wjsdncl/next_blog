@@ -35,12 +35,14 @@ export async function GET<T = any>(url: string, options?: RequestInit): Promise<
 export async function POST<T = any>(url: string, body?: object, options?: RequestInit): Promise<T> {
   const { accessToken, refreshToken } = getServerTokens();
 
+  const isFormData = body instanceof FormData;
+
   const _options: RequestInit = {
     ...options,
     method: "POST",
-    body: JSON.stringify(body),
+    body: isFormData ? body : JSON.stringify(body),
     headers: {
-      "Content-Type": "application/json",
+      ...(!isFormData && { "Content-Type": "application/json" }),
       ...options?.headers,
       ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       ...(refreshToken && { "X-Refresh-Token": refreshToken }),

@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 // Form.tsx
-import { type ReactNode, useState } from "react";
+import Image from "next/image";
+import { type ReactNode, useState, useRef, useEffect } from "react";
 import {
   FormProvider,
   useForm,
@@ -15,6 +16,13 @@ import { default as Tag } from "@/components/TagInput";
 import EyeClose from "@/Icons/EyeClose.svg";
 import EyeOpen from "@/Icons/EyeOpen.svg";
 import cn from "@/utils/cn";
+
+// 파일 미리보기 인터페이스 정의
+export interface FilePreview {
+  file: File;
+  previewUrl: string;
+  isUploaded?: boolean; // 이미 업로드된 이미지인지 여부
+}
 
 // Types
 interface FormProps<T extends FieldValues> {
@@ -60,6 +68,14 @@ interface CheckboxProps<T extends FieldValues> {
 interface SubmitProps {
   text?: string;
   disabled?: boolean;
+}
+
+// FileInputProps에서 onUpload 제거
+interface FileInputProps<T extends FieldValues> {
+  label: Path<T>;
+  accept?: string;
+  multiple?: boolean;
+  validation?: object;
 }
 
 // Components
@@ -273,6 +289,149 @@ function Checkbox<T extends FieldValues>({ label }: CheckboxProps<T>) {
   );
 }
 
+function FileInput<T extends FieldValues>({
+  label,
+  accept = "image/*",
+  multiple = true,
+  validation = {},
+}: FileInputProps<T>) {
+  const { control } = useFormContext<T>();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 미리보기 생성 함수
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    onChange: (value: FilePreview[]) => void,
+    currentValue: FilePreview[] = []
+  ) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setIsProcessing(true);
+    try {
+      // 파일 미리보기 URL 생성 (실제 업로드는 하지 않음)
+      const newPreviews = files.map((file) => ({
+        file,
+        previewUrl: URL.createObjectURL(file),
+        isUploaded: false,
+      }));
+
+      // 기존 미리보기와 새 미리보기 병합
+      onChange([...(currentValue || []), ...newPreviews]);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("파일 미리보기 생성 실패:", error);
+    } finally {
+      setIsProcessing(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  // 미리보기 제거 함수
+  const removePreview = (index: number, onChange: (value: FilePreview[]) => void, currentValue: FilePreview[] = []) => {
+    const newPreviews = [...currentValue];
+
+    // placeholder 파일이 아닌 경우만 URL 해제 (실제 파일을 가진 경우)
+    if (!newPreviews[index].isUploaded) {
+      URL.revokeObjectURL(newPreviews[index].previewUrl);
+    }
+
+    // 해당 미리보기 제거
+    newPreviews.splice(index, 1);
+    onChange(newPreviews);
+  };
+
+  // 컴포넌트 언마운트 시 미리보기 URL 정리
+  const { getValues } = useFormContext<T>();
+  useEffect(() => {
+    return () => {
+      // 안전하게 값 가져오기
+      try {
+        const values = getValues(label) as FilePreview[] | undefined;
+
+        if (values && Array.isArray(values)) {
+          values.forEach((preview) => {
+            // 이미 업로드된 이미지가 아닐 경우만 URL 해제
+            if (preview?.previewUrl && !preview.isUploaded) {
+              URL.revokeObjectURL(preview.previewUrl);
+            }
+          });
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("미리보기 정리 중 오류:", error);
+      }
+    };
+  }, [getValues, label]);
+
+  return (
+    <Controller
+      name={label}
+      control={control}
+      rules={validation}
+      render={({ field }) => (
+        <div className="w-full">
+          <div className="mb-3 flex items-center">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isProcessing}
+              className="rounded-md bg-gray-200 px-4 py-2 font-medium text-gray-700 hover:bg-gray-300 disabled:opacity-50"
+            >
+              {isProcessing ? "처리 중..." : "이미지 선택"}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={accept}
+              multiple={multiple}
+              onChange={(e) => handleFileChange(e, field.onChange, field.value)}
+              className="hidden"
+            />
+          </div>
+
+          {field.value && field.value.length > 0 && (
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+              {field.value.map((preview: FilePreview, index: number) => (
+                <div key={index} className="relative">
+                  <div className="group relative h-24 w-full overflow-hidden rounded-md">
+                    {preview.isUploaded && (
+                      <div className="absolute left-1 top-1 z-10 rounded-full bg-blue-500 px-2 py-0.5 text-xs font-medium text-white">
+                        저장됨
+                      </div>
+                    )}
+                    <Image
+                      src={preview.previewUrl}
+                      alt={`업로드할 이미지 ${index + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removePreview(index, field.onChange, field.value)}
+                    className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="size-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    />
+  );
+}
+
 function Submit({ text = "입력", disabled }: SubmitProps) {
   const {
     formState: { isValid },
@@ -297,5 +456,6 @@ Form.TagInput = TagInput;
 Form.Select = Select;
 Form.Checkbox = Checkbox;
 Form.Submit = Submit;
+Form.FileInput = FileInput;
 
 export default Form;
