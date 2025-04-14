@@ -93,6 +93,7 @@ export default function ProjectList({ isOwner }: { isOwner: boolean }) {
                   techStack={project.techStack}
                   githubLink={project.githubLink}
                   projectLink={project.projectLink}
+                  images={project.images}
                   isOwner={isOwner}
                 />
               ))

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteProject, PROJECT_TAG } from "@/services/Project.api";
 import toast from "@/utils/Toast";
 
-const DeleteConfirmationModal = ({ projectId, onClose }: { projectId: number; onClose: () => void }) => {
+export default function DeleteConfirmationModal({ projectId, onClose }: { projectId: number; onClose: () => void }) {
   const queryClient = useQueryClient();
 
   const { mutateAsync: deleteProjectMutation } = useMutation({
@@ -32,6 +32,4 @@ const DeleteConfirmationModal = ({ projectId, onClose }: { projectId: number; on
       </div>
     </div>
   );
-};
-
-export default DeleteConfirmationModal;
+}

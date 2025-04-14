@@ -23,6 +23,7 @@ export interface ProjectCardProps {
   githubLink?: string;
   projectLink?: string;
   isOwner?: boolean;
+  images?: string[];
 }
 
 const useProjectActions = (projectId: number) => {

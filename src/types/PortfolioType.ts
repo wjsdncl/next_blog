@@ -5,6 +5,7 @@ export interface Project {
   startDate: Date;
   endDate?: Date;
   description: string;
+  images?: string[];
   content: string;
   summary: string[];
   techStack: string[];
