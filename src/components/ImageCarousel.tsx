@@ -4,6 +4,7 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import CloseIcon from "@/Icons/Close.svg";
 
 interface ImageCarouselProps {
@@ -15,6 +16,13 @@ interface ImageCarouselProps {
 export default function ImageCarousel({ images, slidesPerView = 1, className = "" }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // 컴포넌트 마운트 확인 (createPortal에 필요)
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
 
   // 이미지가 확대되었을 때 스크롤 방지를 위한 useEffect
   useEffect(() => {
@@ -49,14 +57,18 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
   }, [enlargedImage]);
 
   const handlePrev = () => {
+    // slidesPerView 단위로 이전으로 이동
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+      setCurrentIndex(Math.max(0, currentIndex - slidesPerView));
     }
   };
 
   const handleNext = () => {
-    if (currentIndex < images.length - slidesPerView) {
-      setCurrentIndex(currentIndex + 1);
+    // slidesPerView 단위로 다음으로 이동
+    if (currentIndex + slidesPerView < images.length) {
+      const nextIndex = currentIndex + slidesPerView;
+      // 마지막 슬라이드를 넘어가지 않도록
+      setCurrentIndex(Math.min(nextIndex, images.length - slidesPerView));
     }
   };
 
@@ -71,8 +83,34 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
     setEnlargedImage(null);
   };
 
+  // 슬라이드 상태 조건 계산 (인덱스 기반)
   const isStart = currentIndex === 0;
-  const isEnd = currentIndex >= images.length - slidesPerView;
+  const isEnd = currentIndex + slidesPerView >= images.length;
+
+  // 인디케이터 계산을 위한 페이지 계산
+  const totalSlides = Math.ceil(images.length / slidesPerView);
+  const currentSlide = Math.floor(currentIndex / slidesPerView);
+
+  // 확대된 이미지 모달 컴포넌트
+  const EnlargedImageModal = () => (
+    <div
+      className="fixed inset-0 z-[999] flex size-full items-center justify-center bg-zinc-800/80 backdrop-blur-xl"
+      onClick={closeEnlargedView}
+    >
+      <button className="absolute right-6 top-6 rounded-full bg-zinc-200/20 p-1" onClick={closeEnlargedView}>
+        <CloseIcon width={24} height={24} color={"#fff"} />
+      </button>
+      <div className="max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
+        <Image
+          src={enlargedImage!}
+          alt="확대된 이미지"
+          width={1200}
+          height={800}
+          className="max-h-[90vh] max-w-[90vw] object-contain"
+        />
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -82,15 +120,15 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
           <div
             className="flex transition-transform duration-300"
             style={{
-              transform: `translateX(-${currentIndex * (100 / slidesPerView)}%)`,
-              width: `${(images.length / slidesPerView) * 100}%`,
+              transform: `translateX(-${(currentIndex * 100) / images.length}%)`,
+              width: `${(images.length * 100) / slidesPerView}%`,
             }}
           >
             {images.map((image, index) => (
               <div
                 key={index}
                 className="cursor-pointer px-1"
-                style={{ width: `${(100 / images.length) * slidesPerView}%` }}
+                style={{ width: `${100 / slidesPerView}%` }}
                 onClick={() => handleImageClick(image)}
               >
                 <div className="overflow-hidden rounded-lg">
@@ -144,37 +182,17 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
         </div>
 
         <div className="mt-2 flex justify-center gap-2">
-          {Array.from({ length: Math.ceil(images.length / slidesPerView) }).map((_, index) => (
+          {Array.from({ length: totalSlides }).map((_, index) => (
             <button
               key={index}
-              className={`size-2 rounded-full ${
-                index === Math.floor(currentIndex / slidesPerView) ? "bg-brand-tertiary" : "bg-gray-300"
-              }`}
+              className={`size-2 rounded-full ${index === currentSlide ? "bg-brand-tertiary" : "bg-gray-300"}`}
               onClick={() => setCurrentIndex(index * slidesPerView)}
             />
           ))}
         </div>
       </div>
 
-      {enlargedImage && (
-        <div
-          className="fixed inset-0 z-[70] flex size-full items-center justify-center bg-zinc-800/80 backdrop-blur-xl"
-          onClick={closeEnlargedView}
-        >
-          <button className="absolute right-6 top-6 rounded-full bg-zinc-200/20 p-1" onClick={closeEnlargedView}>
-            <CloseIcon width={24} height={24} color={"#fff"} />
-          </button>
-          <div className="max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
-            <Image
-              src={enlargedImage}
-              alt="확대된 이미지"
-              width={1200}
-              height={800}
-              className="max-h-[90vh] max-w-[90vw] object-contain"
-            />
-          </div>
-        </div>
-      )}
+      {isMounted && enlargedImage && createPortal(<EnlargedImageModal />, document.body)}
     </>
   );
 }
