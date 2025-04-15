@@ -54,21 +54,44 @@ export const getProject = async (id: number): Promise<Project> => {
   }
 };
 
-export const createProject = async ({ projectData, userId }: { projectData: ProjectRequest; userId: string }) => {
+export const createProject = async ({
+  projectData,
+  userId,
+  generateSummary = true,
+}: {
+  projectData: ProjectRequest;
+  userId: string;
+  generateSummary?: boolean;
+}) => {
   try {
-    const summaries = await TextSummarizer(projectData.content);
+    let summaries;
+    if (generateSummary) {
+      summaries = await TextSummarizer(projectData.content);
+    }
 
-    return await instance.POST<Project>("/projects", { ...projectData, userId, summary: summaries });
+    return await instance.POST<Project>("/projects", {
+      ...projectData,
+      userId,
+      summary: summaries,
+    });
   } catch (error) {
     console.error("프로젝트 생성 실패:", error);
     throw error;
   }
 };
 
-export const updateProject = async ({ id, projectData }: { id: number; projectData: ProjectRequest }) => {
+export const updateProject = async ({
+  id,
+  projectData,
+  generateSummary = true,
+}: {
+  id: number;
+  projectData: ProjectRequest;
+  generateSummary?: boolean;
+}) => {
   try {
     let summaries = undefined;
-    if (projectData.content) {
+    if (projectData.content && generateSummary) {
       summaries = await TextSummarizer(projectData.content);
     }
     return await instance.PATCH(`/projects/${id}`, {

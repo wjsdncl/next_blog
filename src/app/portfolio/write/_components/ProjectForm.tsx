@@ -28,6 +28,7 @@ export default function ProjectForm({ id }: { id?: number }) {
   const router = useRouter();
   const accessToken = cookies.get("accessToken");
   const [isUploading, setIsUploading] = useState(false);
+  const [generateSummary, setGenerateSummary] = useState(true); // AI 요약 생성 여부
 
   // 사용자 정보 조회
   const { data: user } = useQuery({
@@ -95,8 +96,8 @@ export default function ProjectForm({ id }: { id?: number }) {
 
   // 프로젝트 수정 뮤테이션
   const updateProjectMutation = useMutation({
-    mutationFn: async (data: { id: number; projectData: ProjectRequest }) =>
-      updateProject({ id: data.id, projectData: data.projectData }),
+    mutationFn: async (data: { id: number; projectData: ProjectRequest; generateSummary: boolean }) =>
+      updateProject({ id: data.id, projectData: data.projectData, generateSummary: data.generateSummary }),
     onSuccess: async () => {
       await revalidateProjectList();
       queryClient.invalidateQueries({ queryKey: PROJECT_TAG.ALL() });
@@ -156,10 +157,12 @@ export default function ProjectForm({ id }: { id?: number }) {
         ? updateProjectMutation.mutateAsync({
             id: Number(id),
             projectData: serverData as ProjectRequest,
+            generateSummary, // 요약 생성 여부 전달
           })
         : createProjectMutation.mutateAsync({
             projectData: serverData as ProjectRequest,
             userId: user?.id as string,
+            generateSummary, // 요약 생성 여부 전달
           }),
       {
         loading: "포트폴리오 작성 중...",
@@ -295,6 +298,21 @@ export default function ProjectForm({ id }: { id?: number }) {
           />
         </div>
         <Form.Error name="content" />
+
+        {/* AI 요약 토글 버튼 추가 */}
+        <div className="mt-2 flex items-center gap-2">
+          <label className="inline-flex cursor-pointer items-center">
+            <input
+              type="checkbox"
+              className="peer sr-only"
+              checked={generateSummary}
+              onChange={() => setGenerateSummary(!generateSummary)}
+            />
+            <div className="peer relative h-6 w-11 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none rtl:peer-checked:after:-translate-x-full" />
+            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">AI 요약 생성</span>
+          </label>
+          <div className="text-xs text-gray-500">(내용 기반으로 자동 요약을 생성합니다)</div>
+        </div>
       </div>
 
       <div className="pt-4" />
