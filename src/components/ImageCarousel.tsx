@@ -16,6 +16,7 @@ interface ImageCarouselProps {
 export default function ImageCarousel({ images, slidesPerView = 1, className = "" }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const [enlargedImageIndex, setEnlargedImageIndex] = useState<number>(-1);
   const [isMounted, setIsMounted] = useState(false);
 
   // 컴포넌트 마운트 확인 (createPortal에 필요)
@@ -24,7 +25,7 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
     return () => setIsMounted(false);
   }, []);
 
-  // 이미지가 확대되었을 때 스크롤 방지를 위한 useEffect
+  // 이미지가 확대되었을 때 스크롤 방지 및 키보드 이벤트 등록
   useEffect(() => {
     if (enlargedImage) {
       // 이미지 확대 시 스크롤 방지
@@ -35,6 +36,22 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
       if (overlayElement) {
         overlayElement.style.overflow = "hidden";
       }
+
+      // 키보드 이벤트 리스너 추가
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "ArrowLeft") {
+          handlePrevEnlarged();
+        } else if (e.key === "ArrowRight") {
+          handleNextEnlarged();
+        } else if (e.key === "Escape") {
+          closeEnlargedView();
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+      };
     } else {
       // 원래 상태로 복원
       document.body.style.overflow = "";
@@ -72,8 +89,27 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
     }
   };
 
-  const handleImageClick = (image: string) => {
+  const handlePrevEnlarged = () => {
+    if (enlargedImageIndex > 0) {
+      const newIndex = enlargedImageIndex - 1;
+      setEnlargedImageIndex(newIndex);
+      setEnlargedImage(images[newIndex]);
+      setCurrentIndex(Math.floor(newIndex / slidesPerView) * slidesPerView);
+    }
+  };
+
+  const handleNextEnlarged = () => {
+    if (enlargedImageIndex < images.length - 1) {
+      const newIndex = enlargedImageIndex + 1;
+      setEnlargedImageIndex(newIndex);
+      setEnlargedImage(images[newIndex]);
+      setCurrentIndex(Math.floor(newIndex / slidesPerView) * slidesPerView);
+    }
+  };
+
+  const handleImageClick = (image: string, index: number) => {
     setEnlargedImage(image);
+    setEnlargedImageIndex(index);
   };
 
   const closeEnlargedView = (e?: React.MouseEvent) => {
@@ -81,6 +117,7 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
       e.stopPropagation();
     }
     setEnlargedImage(null);
+    setEnlargedImageIndex(-1);
   };
 
   // 슬라이드 상태 조건 계산 (인덱스 기반)
@@ -100,14 +137,67 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
       <button className="absolute right-6 top-6 rounded-full bg-zinc-200/20 p-1" onClick={closeEnlargedView}>
         <CloseIcon width={24} height={24} color={"#fff"} />
       </button>
-      <div className="max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
-        <Image
-          src={enlargedImage!}
-          alt="확대된 이미지"
-          width={1200}
-          height={800}
-          className="max-h-[90vh] max-w-[90vw] object-contain"
-        />
+      <div className="relative max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
+        <div className="relative size-full">
+          <Image
+            src={enlargedImage!}
+            alt="확대된 이미지"
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: "100%", height: "auto", maxHeight: "90vh", objectFit: "contain" }}
+            priority
+          />
+        </div>
+
+        {/* 이전 이미지 버튼 */}
+        <button
+          className={`absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black bg-opacity-50 p-2 text-white transition ${
+            enlargedImageIndex === 0 ? "cursor-not-allowed opacity-30" : "opacity-70 hover:opacity-100"
+          }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePrevEnlarged();
+          }}
+          disabled={enlargedImageIndex === 0}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="size-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        {/* 다음 이미지 버튼 */}
+        <button
+          className={`absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black bg-opacity-50 p-2 text-white transition ${
+            enlargedImageIndex === images.length - 1 ? "cursor-not-allowed opacity-30" : "opacity-70 hover:opacity-100"
+          }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNextEnlarged();
+          }}
+          disabled={enlargedImageIndex === images.length - 1}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="size-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        {/* 현재 이미지 번호 표시 */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black bg-opacity-50 px-3 py-1 text-sm text-white">
+          {enlargedImageIndex + 1} / {images.length}
+        </div>
       </div>
     </div>
   );
@@ -129,15 +219,17 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
                 key={index}
                 className="cursor-pointer px-1"
                 style={{ width: `${100 / slidesPerView}%` }}
-                onClick={() => handleImageClick(image)}
+                onClick={() => handleImageClick(image, index)}
               >
                 <div className="overflow-hidden rounded-lg">
                   <Image
                     src={image}
                     alt={`프로젝트 이미지 ${index + 1}`}
-                    width={600}
-                    height={400}
-                    className="h-auto w-full object-cover transition-transform duration-300 hover:scale-105"
+                    width={0}
+                    height={0}
+                    sizes="(max-width: 768px) 100vw, 600px"
+                    style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                    className="transition-transform duration-300 hover:scale-105"
                   />
                 </div>
               </div>
