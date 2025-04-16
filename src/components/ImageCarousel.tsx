@@ -227,7 +227,7 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
                     width={0}
                     height={0}
                     sizes="(max-width: 768px) 100vw, 600px"
-                    style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                    style={{ width: "100%", height: "auto", maxHeight: "500px", objectFit: "cover" }}
                     className="transition-transform duration-300 hover:scale-105"
                   />
                 </div>
