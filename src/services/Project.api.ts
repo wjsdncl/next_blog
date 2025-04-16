@@ -94,8 +94,7 @@ export const updateProject = async ({
     if (generateSummary) {
       summaries = await TextSummarizer(projectData.content);
     }
-    console.log("summaries", summaries);
-    console.log("projectData", projectData);
+
     return await instance.PATCH(`/projects/${id}`, {
       ...projectData,
       ...(summaries && { summary: summaries }),
