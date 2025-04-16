@@ -20,8 +20,16 @@ const TextSummarizer = async (description: string): Promise<string[] | undefined
     });
 
     if (response.message) {
-      const summaryLines = response.message.content?.map((line) => line.text).join(". ");
-      const cleanedSummary = summaryLines?.split("\n")[0]?.split(". ").slice(0, 3);
+      // 텍스트 추출
+      const text = response.message.content?.map((item) => item.text).join("");
+
+      // 줄바꿈으로 나누고 bullet point 제거
+      const cleanedSummary = text
+        ?.split("\n")
+        .map((line) => line.replace(/^-\s*/, "").trim())
+        .filter((line) => line.length > 0)
+        .slice(0, 3);
+
       return cleanedSummary;
     }
 
