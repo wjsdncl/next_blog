@@ -146,7 +146,6 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
             height={0}
             sizes="100vw"
             style={{ width: "100%", height: "auto", maxHeight: "90vh", objectFit: "contain" }}
-            priority
           />
         </div>
 
@@ -208,7 +207,7 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
         <h3 className="mb-2 text-2xl font-semibold"># 프로젝트 이미지</h3>
         <div className="relative">
           <div
-            className="flex transition-transform duration-300"
+            className="flex items-center transition-transform duration-300"
             style={{
               transform: `translateX(-${(currentIndex * 100) / images.length}%)`,
               width: `${(images.length * 100) / slidesPerView}%`,
