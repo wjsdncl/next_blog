@@ -96,6 +96,7 @@ export default function PostHeader({ title, user }: { title: string; user?: User
     onSuccess: async () => {
       toast.success("공개 상태가 변경되었습니다.");
       queryClient.invalidateQueries({ queryKey: POST_TAG.TITLE(title) });
+      await revalidatePosts();
     },
   });
 

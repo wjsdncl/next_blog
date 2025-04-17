@@ -109,7 +109,13 @@ export default function ProjectList({ isOwner }: { isOwner: boolean }) {
       </section>
 
       <div ref={loadMoreRef} className="flex justify-center py-10">
-        {isFetchingNextPage && <p>로딩 중...</p>}
+        {isFetchingNextPage && (
+          <>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <SkeletonItem key={`skeleton-${index}`} />
+            ))}
+          </>
+        )}
       </div>
     </>
   );

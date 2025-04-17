@@ -1,7 +1,7 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { cookies } from "next/headers";
 import { getProjectList, PROJECT_TAG } from "@/services/Project.api";
-import { getUser, USER_TAG } from "@/services/user.api";
+import { getUser } from "@/services/user.api";
 import ProjectList from "./_components/ProjectList";
 import WriteLink from "./_components/WriteLink";
 
@@ -19,7 +19,6 @@ export default async function Page() {
     pages: [project],
     pageParams: [0],
   });
-  queryClient.setQueryData(USER_TAG, user);
 
   return (
     <div

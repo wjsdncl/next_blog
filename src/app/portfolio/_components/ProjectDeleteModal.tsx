@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteProject, PROJECT_TAG } from "@/services/Project.api";
+import { revalidateProjects } from "@/services/server.action";
 import toast from "@/utils/Toast";
 
 export default function DeleteConfirmationModal({ projectId, onClose }: { projectId: number; onClose: () => void }) {
@@ -7,9 +8,10 @@ export default function DeleteConfirmationModal({ projectId, onClose }: { projec
 
   const { mutateAsync: deleteProjectMutation } = useMutation({
     mutationFn: deleteProject,
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("프로젝트가 삭제되었습니다.");
       queryClient.invalidateQueries({ queryKey: PROJECT_TAG.ALL() });
+      await revalidateProjects();
     },
     onError: () => {
       toast.error("프로젝트 삭제에 실패하였습니다.");

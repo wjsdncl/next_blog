@@ -3,14 +3,9 @@
 
 import { revalidateTag } from "next/cache";
 
-export async function revalidateProjectList() {
+export async function revalidateProjects() {
   console.log("프로젝트 목록 캐시 갱신");
   await revalidateTag("projects");
-}
-
-export async function revalidateCommentList() {
-  console.log("댓글 목록 캐시 갱신");
-  await revalidateTag("comments");
 }
 
 export async function revalidateUser() {

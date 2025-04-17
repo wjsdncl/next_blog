@@ -75,7 +75,12 @@ export const getPostList = async ({
 
 export const getPost = async (title: string) => {
   try {
-    return await instance.GET<Post>(`/posts/${title}`);
+    return await instance.GET<Post>(`/posts/${title}`, {
+      next: {
+        revalidate: 60 * 60, // 1시간
+        tags: POST_TAG.TITLE(decodeURIComponent(title)),
+      },
+    });
   } catch (error) {
     console.error(`게시글 조회 실패 (${title}):`, error);
     throw error;

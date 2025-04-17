@@ -7,7 +7,7 @@ import Form from "@/components/Form";
 import { type FilePreview } from "@/components/Form";
 import { uploadImage } from "@/services/post.api";
 import { createProject, getProject, PROJECT_TAG, updateProject } from "@/services/Project.api";
-import { revalidateProjectList } from "@/services/server.action";
+import { revalidateProjects } from "@/services/server.action";
 import { getUser, USER_TAG } from "@/services/user.api";
 import { type Project, type ProjectRequest } from "@/types/PortfolioType";
 import cookies from "@/utils/cookies";
@@ -88,7 +88,7 @@ export default function ProjectForm({ id }: { id?: number }) {
   const createProjectMutation = useMutation({
     mutationFn: createProject,
     onSuccess: async () => {
-      await revalidateProjectList();
+      await revalidateProjects();
       queryClient.invalidateQueries({ queryKey: PROJECT_TAG.ALL() });
       router.push("/portfolio");
     },
@@ -99,7 +99,7 @@ export default function ProjectForm({ id }: { id?: number }) {
     mutationFn: async (data: { id: number; projectData: ProjectRequest; generateSummary: boolean }) =>
       updateProject({ id: data.id, projectData: data.projectData, generateSummary: data.generateSummary }),
     onSuccess: async () => {
-      await revalidateProjectList();
+      await revalidateProjects();
       queryClient.invalidateQueries({ queryKey: PROJECT_TAG.ALL() });
       router.push("/portfolio");
     },
