@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 /* eslint-disable tailwindcss/migration-from-tailwind-2 */
@@ -19,7 +20,7 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
   const [enlargedImageIndex, setEnlargedImageIndex] = useState<number>(-1);
   const [isMounted, setIsMounted] = useState(false);
 
-  // 컴포넌트 마운트 확인 (createPortal에 필요)
+  // 컴포넌트 마운트 확인
   useEffect(() => {
     setIsMounted(true);
     return () => setIsMounted(false);
@@ -151,7 +152,7 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
 
         {/* 이전 이미지 버튼 */}
         <button
-          className={`absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black bg-opacity-50 p-2 text-white transition ${
+          className={`fixed left-0 top-1/2 -translate-y-1/2 rounded-r-full bg-black bg-opacity-50 p-3 text-white transition ${
             enlargedImageIndex === 0 ? "cursor-not-allowed opacity-30" : "opacity-70 hover:opacity-100"
           }`}
           onClick={(e) => {
@@ -173,7 +174,7 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
 
         {/* 다음 이미지 버튼 */}
         <button
-          className={`absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black bg-opacity-50 p-2 text-white transition ${
+          className={`fixed right-0 top-1/2 -translate-y-1/2 rounded-l-full bg-black bg-opacity-50 p-3 text-white transition ${
             enlargedImageIndex === images.length - 1 ? "cursor-not-allowed opacity-30" : "opacity-70 hover:opacity-100"
           }`}
           onClick={(e) => {
@@ -194,7 +195,7 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
         </button>
 
         {/* 현재 이미지 번호 표시 */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black bg-opacity-50 px-3 py-1 text-sm text-white">
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 rounded-t-lg bg-black bg-opacity-70 px-4 py-2 text-sm font-medium text-white">
           {enlargedImageIndex + 1} / {images.length}
         </div>
       </div>
