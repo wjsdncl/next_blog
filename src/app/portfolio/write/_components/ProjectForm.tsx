@@ -13,12 +13,11 @@ import { type Project, type ProjectRequest } from "@/types/PortfolioType";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
-// 프로젝트 폼 데이터 인터페이스
+// 타입 정의
 interface ProjectFormData extends Omit<Project, "images"> {
   images?: FilePreview[];
 }
 
-// 서버로 전송할 프로젝트 데이터
 type ServerProjectData = Omit<ProjectRequest, "images"> & {
   images?: string[];
 };
@@ -28,7 +27,7 @@ export default function ProjectForm({ id }: { id?: number }) {
   const router = useRouter();
   const accessToken = cookies.get("accessToken");
   const [isUploading, setIsUploading] = useState(false);
-  const [generateSummary, setGenerateSummary] = useState(true); // AI 요약 생성 여부
+  const [generateSummary, setGenerateSummary] = useState(true); // AI 요약 생성 여부 상태
 
   // 사용자 정보 조회
   const { data: user } = useQuery({
@@ -38,6 +37,7 @@ export default function ProjectForm({ id }: { id?: number }) {
     retry: 0,
   });
 
+  // 프로젝트 정보 조회 (수정 모드일 경우)
   const { data: project } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: PROJECT_TAG.DETAIL(id as number),
@@ -46,38 +46,35 @@ export default function ProjectForm({ id }: { id?: number }) {
     retry: 0,
   });
 
-  // 이미지 업로드 함수
+  // 이미지 업로드 처리 함수
   const uploadImages = async (previews: FilePreview[]): Promise<string[]> => {
     if (!previews || previews.length === 0) return [];
 
     try {
-      // 이미 업로드된 이미지 URL과 새로 업로드할 파일 분리
+      // 이미 업로드된 이미지와 새 이미지 분리
       const alreadyUploadedUrls: string[] = [];
       const newFilesToUpload: FilePreview[] = [];
 
       previews.forEach((preview) => {
         if (preview.isUploaded && preview.previewUrl) {
-          // 이미 업로드된 이미지는 URL만 수집
           alreadyUploadedUrls.push(preview.previewUrl);
         } else {
-          // 새 파일은 업로드 대상으로 분류
           newFilesToUpload.push(preview);
         }
       });
 
-      // 새 파일이 있으면 업로드 프로세스 실행
+      // 새 파일 업로드 처리
       let newUploadedUrls: string[] = [];
       if (newFilesToUpload.length > 0) {
         const uploadPromises = newFilesToUpload.map((preview) => uploadImage(preview.file));
         newUploadedUrls = await Promise.all(uploadPromises);
 
-        // 업로드 후 미리보기 URL 정리
+        // 메모리 정리
         newFilesToUpload.forEach((preview) => {
           URL.revokeObjectURL(preview.previewUrl);
         });
       }
 
-      // 기존 URL과 새로 업로드된 URL 합치기
       return [...alreadyUploadedUrls, ...newUploadedUrls];
     } catch (error) {
       throw new Error("이미지 업로드 중 오류가 발생했습니다.");
@@ -111,58 +108,59 @@ export default function ProjectForm({ id }: { id?: number }) {
       return;
     }
 
-    // 이미지 미리보기가 있는지 확인
-    const hasImagePreviews = formData.images && formData.images.length > 0;
-
     // 서버로 전송할 데이터 준비
     const serverData: ServerProjectData = {
       ...formData,
-      images: undefined, // 초기 설정
+      images: undefined,
     };
 
-    // 이미지 파일이 있으면 처리 진행
-    if (hasImagePreviews) {
-      // 새로 업로드할 이미지가 있는지 확인
-      const newImages = formData.images!.filter((img) => !img.isUploaded);
+    // 이미지 처리 로직
+    if (
+      id &&
+      project?.images &&
+      (!formData.images || (Array.isArray(formData.images) && formData.images.length === 0))
+    ) {
+      // 수정 모드에서 이미지 변경이 없으면 기존 이미지 유지
+      serverData.images = project.images;
+    } else if (formData.images && formData.images.length > 0) {
+      const newImages = formData.images.filter((img) => !img.isUploaded);
 
-      // 업로드할 새 이미지가 있는 경우에만 업로드 프로세스 실행
       if (newImages.length > 0) {
+        // 새 이미지가 있으면 업로드 실행
         setIsUploading(true);
         toast.info(`${newImages.length}개 이미지 업로드 중...`);
 
         try {
-          // 이미지 업로드 및 URL 배열 받기
-          const imageUrls = await uploadImages(formData.images!);
+          const imageUrls = await uploadImages(formData.images);
           serverData.images = imageUrls;
           setIsUploading(false);
         } catch (error) {
           setIsUploading(false);
           toast.error("이미지 업로드에 실패했습니다.");
-          return; // 업로드 실패 시 제출 중단
+          return;
         }
       } else {
-        // 새 이미지가 없고 기존 이미지만 있는 경우
-        // formData.images에는 이미 삭제된 이미지가 제외된 상태임
-        const existingUrls = formData.images!.filter((img) => img.isUploaded).map((img) => img.previewUrl);
+        // 기존 이미지만 있는 경우
+        const existingUrls = formData.images.filter((img) => img.isUploaded).map((img) => img.previewUrl);
         serverData.images = existingUrls;
       }
     } else {
-      // 이미지가 없는 경우 - 모든 이미지가 삭제된 경우를 포함
+      // 이미지가 없거나 모두 삭제된 경우
       serverData.images = [];
     }
 
-    // 프로젝트 생성 또는 수정 진행
+    // 프로젝트 생성 또는 수정 요청 전송
     toast.promise(
       id
         ? updateProjectMutation.mutateAsync({
             id: Number(id),
             projectData: serverData as ProjectRequest,
-            generateSummary, // 요약 생성 여부 전달
+            generateSummary,
           })
         : createProjectMutation.mutateAsync({
             projectData: serverData as ProjectRequest,
             userId: user?.id as string,
-            generateSummary, // 요약 생성 여부 전달
+            generateSummary,
           }),
       {
         loading: "포트폴리오 작성 중...",
@@ -172,17 +170,15 @@ export default function ProjectForm({ id }: { id?: number }) {
     );
   };
 
-  // 기존 데이터가 있으면서 이미지 URL이 있는 경우, FilePreview 형식으로 변환
+  // 기존 데이터 있을 때 폼 초기값 설정
   const defaultValues = project
     ? {
         ...project,
-        // 기존 이미지 URL이 있으면 그것을 보여주기 위한 가공
         images: project.images
           ? project.images.map((url) => ({
-              // 여기서는 파일 객체가 없지만, 표시는 가능하게 함
               file: new File([], "placeholder", { type: "image/jpeg" }),
               previewUrl: url,
-              isUploaded: true, // 이미 업로드된 이미지임을 표시
+              isUploaded: true,
             }))
           : undefined,
       }
@@ -190,7 +186,6 @@ export default function ProjectForm({ id }: { id?: number }) {
 
   return (
     <Form onSubmit={onSubmit} defaultValues={defaultValues}>
-      {/* 프로젝트 기본 정보 */}
       <div className="flex gap-4">
         <div className="flex grow flex-col gap-2">
           <label className="text-lg font-medium" htmlFor="title">
@@ -252,7 +247,6 @@ export default function ProjectForm({ id }: { id?: number }) {
 
       <div className="pb-4" />
 
-      {/* 프로젝트 설명 */}
       <div className="flex flex-col gap-2">
         <label className="text-lg font-medium" htmlFor="description">
           프로젝트 설명
@@ -268,7 +262,6 @@ export default function ProjectForm({ id }: { id?: number }) {
 
       <div className="pt-4" />
 
-      {/* 프로젝트 이미지 - onUpload 제거됨 */}
       <div className="flex flex-col gap-2">
         <label className="text-lg font-medium" htmlFor="images">
           프로젝트 이미지
@@ -281,7 +274,6 @@ export default function ProjectForm({ id }: { id?: number }) {
 
       <div className="pt-4" />
 
-      {/* 프로젝트 내용 */}
       <div className="flex flex-col gap-2">
         <label className="text-lg font-medium" htmlFor="content">
           프로젝트 내용
@@ -299,7 +291,7 @@ export default function ProjectForm({ id }: { id?: number }) {
         </div>
         <Form.Error name="content" />
 
-        {/* AI 요약 토글 버튼 추가 */}
+        {/* AI 요약 생성 옵션 */}
         <div className="mt-2 flex items-center gap-2">
           <label className="inline-flex cursor-pointer items-center">
             <input
@@ -317,7 +309,6 @@ export default function ProjectForm({ id }: { id?: number }) {
 
       <div className="pt-4" />
 
-      {/* 기술 스택 */}
       <div className="flex flex-col gap-2">
         <label className="text-lg font-medium" htmlFor="techStack">
           기술 스택
@@ -327,7 +318,6 @@ export default function ProjectForm({ id }: { id?: number }) {
 
       <div className="pt-4" />
 
-      {/* 프로젝트 링크 */}
       <div className="flex gap-5">
         <div className="flex grow flex-col gap-2">
           <label className="text-lg font-medium" htmlFor="githubLink">
@@ -370,7 +360,6 @@ export default function ProjectForm({ id }: { id?: number }) {
 
       <div className="pt-4" />
 
-      {/* 제출 버튼 */}
       <div className="mx-96 flex items-center justify-end">
         <Form.Submit text={isUploading ? "이미지 업로드 중..." : "포트폴리오 작성하기"} disabled={isUploading} />
       </div>
