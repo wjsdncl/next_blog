@@ -56,7 +56,7 @@ export default function Navigation({ title }: { title: string }) {
         queryClient.setQueryData<Post>(POST_TAG.TITLE(title), {
           ...previousPost,
           isLiked: !previousPost.isLiked,
-          likes: previousPost.isLiked ? previousPost.likes - 1 : previousPost.likes + 1,
+          likesCount: previousPost.isLiked ? previousPost.likesCount - 1 : previousPost.likesCount + 1,
         });
       }
 
@@ -123,7 +123,7 @@ export default function Navigation({ title }: { title: string }) {
         )}
       </button>
 
-      <p className="font-medium">{post?.likes}</p>
+      <p className="font-medium">{post?.likesCount}</p>
 
       <button type="button" aria-label="share-btn" onClick={handleShare} className="size-5 desktop:size-8">
         <Share width={"100%"} height={"100%"} color="var(--text-primary)" />

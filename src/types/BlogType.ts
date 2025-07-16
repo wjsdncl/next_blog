@@ -13,6 +13,7 @@ export interface Post {
   title: string;
   content: string;
   commentsCount: number;
+  isLiked: boolean;
   likesCount: number;
   views: number;
   createdAt: Date; // ISO 8601

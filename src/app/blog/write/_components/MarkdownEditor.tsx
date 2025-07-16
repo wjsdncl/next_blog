@@ -84,9 +84,9 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
   useEffect(() => {
     if (slug && post) {
       setValue("title", post.title);
-      setValue("category", post.category || "");
+      setValue("category", post.category?.name || "");
       setValue("content", post.content as string);
-      setValue("tags", post.tags || []);
+      setValue("tags", post.tags.map((tag) => tag.name) || []);
     }
   }, [post, setValue, slug]);
 
@@ -99,9 +99,9 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       <PreviewModal
         title={data.title}
         content={data.content}
-        initialCoverImg={post?.coverImg || firstImage}
-        onComplete={(coverImg) => {
-          const postData = { ...data, coverImg, userId: user?.id as string };
+        initialCoverImg={post?.thumbnail || firstImage}
+        onComplete={(thumbnail) => {
+          const postData = { ...data, thumbnail, userId: user?.id as string };
           slug
             ? updatePostMutation.mutate({ id: Number(post?.id), postData })
             : completeWritingMutation.mutate(postData);

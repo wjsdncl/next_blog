@@ -118,7 +118,7 @@ export const updatePost = async ({
 }: {
   id: number;
   postData: PostRequest;
-  coverImg?: string;
+  thumbnail?: string;
   userId: string;
 }) => {
   try {

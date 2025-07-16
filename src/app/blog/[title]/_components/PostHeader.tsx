@@ -87,7 +87,7 @@ export default function PostHeader({ title, user }: { title: string; user?: User
         postData: {
           title: post.title,
           content: post.content,
-          tags: post.tags,
+          tags: post.tags.map((tag) => tag.name),
           isPrivate: !post.isPrivate,
         },
         userId: user?.id as string,

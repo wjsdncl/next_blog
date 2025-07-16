@@ -9,11 +9,11 @@ interface PreviewModalProps {
   title: string;
   content: string;
   initialCoverImg: string;
-  onComplete: (coverImg: string) => void;
+  onComplete: (thumbnail: string) => void;
 }
 
 export default function PreviewModal({ title, content, initialCoverImg, onComplete }: PreviewModalProps) {
-  const [coverImg, setCoverImg] = useState(initialCoverImg);
+  const [thumbnail, setCoverImg] = useState(initialCoverImg);
 
   const handleImageSelection = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -35,9 +35,9 @@ export default function PreviewModal({ title, content, initialCoverImg, onComple
       <div className="pt-4" />
 
       <label htmlFor="file" className="block w-full cursor-default rounded-lg bg-gray-200 p-4 text-center">
-        {coverImg ? (
+        {thumbnail ? (
           <div className="relative flex h-40 w-full items-center justify-center">
-            <Image src={coverImg} alt="coverImage" className="object-cover" fill sizes="300" />
+            <Image src={thumbnail} alt="coverImage" className="object-cover" fill sizes="300" />
             <button className="absolute -right-2 -top-2 rounded-full bg-gray-400 p-1" onClick={() => setCoverImg("")}>
               <CloseBold width={16} height={16} />
             </button>
@@ -63,7 +63,7 @@ export default function PreviewModal({ title, content, initialCoverImg, onComple
 
       <button
         className="float-right w-max text-nowrap rounded-lg bg-brand-primary px-4 py-2 text-lg font-bold text-white"
-        onClick={() => onComplete(coverImg)}
+        onClick={() => onComplete(thumbnail)}
       >
         게시글 작성 완료
       </button>
