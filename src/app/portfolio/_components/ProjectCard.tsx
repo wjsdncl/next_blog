@@ -20,8 +20,12 @@ export interface ProjectCardProps {
   content: string;
   summary: string[];
   techStack: string[];
-  githubLink?: string;
-  projectLink?: string;
+  links: Array<{
+    id: number;
+    title: string; // "GitHub", "Demo", "Design" 등
+    url: string;
+    icon: string | null;
+  }>;
   isOwner?: boolean;
   images?: string[];
 }
@@ -119,7 +123,7 @@ export default function ProjectCard(project: ProjectCardProps) {
       </div>
 
       <TechStack stack={project.techStack} />
-      <ProjectLinks githubLink={project.githubLink} projectLink={project.projectLink} />
+      <ProjectLinks links={project.links} />
 
       {isExpanded &&
         createPortal(<ExpandedContent coords={coords} onClose={handleExpand} project={project} />, document.body)}

@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { type ProjectResponse } from "@/app/api/projects/route";
 import { type Project, type ProjectRequest } from "@/types/PortfolioType";
 import instance from "./instance";
 import TextSummarizer from "./TextSummarizer";
@@ -25,14 +26,15 @@ export const getProjectList = async ({
       limit: limit.toString(),
     });
 
-    const response = await instance.GET<Project[]>(`/projects?${searchParams.toString()}`, {
+    const response = await instance.GET<ProjectResponse>(`/projects?${searchParams.toString()}`, {
       next: {
         revalidate: 60 * 60, // 1시간
         tags: PROJECT_TAG.ALL(),
       },
     });
-    const projects = response;
-    const isLast = projects.length < limit;
+
+    const projects = response.data;
+    const isLast = response.meta.pagination.total <= offset + limit;
 
     return {
       projects,
