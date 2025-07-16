@@ -57,18 +57,18 @@ export default async function Page({ params }: { params: { title: string } }) {
       </HydrationBoundary>
 
       {/* 목차 */}
-      {post.content.trim() && <GenerateTOC content={post.content} />}
+      <GenerateTOC content={post.content} />
 
       {/* 태그 */}
-      {post.tags.length > 0 && (
+      {post.tags && (
         <div className="flex flex-wrap gap-2 pb-5">
           {post.tags.map((tag) => (
             <Link
-              key={tag}
-              href={`/blog?tag=${tag}`}
+              key={tag.slug}
+              href={`/blog?tag=${tag.slug}`}
               className="rounded-md bg-gray-200 px-2 py-1 text-base font-medium"
             >
-              {tag}
+              {tag.name}
             </Link>
           ))}
         </div>
@@ -79,20 +79,20 @@ export default async function Page({ params }: { params: { title: string } }) {
         <div className="mb-10 flex h-fit max-h-[200px] w-full rounded-lg bg-gray-200 p-8">
           <div className="grow">
             <Link
-              href={`/blog?category=${post.category}`}
+              href={`/blog?category=${post.category.slug}`}
               className="text-2xl font-bold text-text-primary hover:underline"
             >
-              [ {post.category} ]
+              [ {post.category.name} ]
             </Link>
           </div>
         </div>
       )}
 
       {/* 썸네일 */}
-      {post.coverImg && (
+      {post.thumbnail && (
         <div className="relative h-[400px] w-full max-w-screen-tablet">
           <Image
-            src={post.coverImg}
+            src={post.thumbnail}
             alt="coverImage"
             className="object-contain px-6"
             fill

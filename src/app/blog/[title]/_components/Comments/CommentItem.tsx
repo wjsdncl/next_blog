@@ -116,7 +116,7 @@ export default function CommentItem({
               ) : (
                 <FavoriteEmpty width={18} height={18} color="var(--text-primary)" />
               )}
-              {comment.likes}
+              {comment.likesCount}
             </button>
           </div>
         </div>

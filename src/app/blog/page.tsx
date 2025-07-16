@@ -35,7 +35,7 @@ export default async function Page({
 
   return (
     <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 tablet:w-tablet tablet:px-0">
-      <Navigation categoryCounts={posts.categoryCounts} totalPosts={posts.totalPosts} />
+      <Navigation categories={posts.categories} totalPosts={posts.totalPosts} />
       <HydrationBoundary state={dehydrate(queryClient)}>
         <ClientPage />
       </HydrationBoundary>

@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
-import type { CategoryCounts, Post, PostRequest } from "@/types/BlogType";
+import { type PostResponse } from "@/app/api/posts/route";
+import { type PostRequest, type Post } from "@/types/BlogType";
 import instance from "./instance";
 
 export const POST_TAG = {
@@ -30,13 +31,7 @@ export const getPostList = async ({
   search?: string;
   category?: string;
   tag?: string;
-}): Promise<{
-  posts: Post[];
-  totalPosts: number;
-  categoryCounts: CategoryCounts;
-  isLast: boolean;
-  nextPage: number;
-}> => {
+}) => {
   try {
     const params: { offset: number; limit: number; order?: string; search?: string; category?: string; tag?: string } =
       {
@@ -53,20 +48,28 @@ export const getPostList = async ({
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined) searchParams.append(key, String(value));
     });
-    const response = await instance.GET<{
-      posts: Post[];
-      totalPosts: number;
-      categoryCounts: CategoryCounts;
-    }>(`/posts?${searchParams.toString()}`, {
+    const postRes = await instance.GET<PostResponse>(`/posts?${searchParams.toString()}`, {
       next: {
         revalidate: 60 * 30, // 30분
         tags: POST_TAG.LIST(order, search, category, tag),
       },
     });
 
-    const { posts, totalPosts, categoryCounts } = response;
+    const { data: posts, categories, meta } = postRes;
+    const totalPosts = meta.pagination.total;
     const isLast = posts.length < limit;
-    return { posts, totalPosts, isLast, nextPage: offset + limit, categoryCounts };
+    const c = categories.reduce(
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      (acc, category) => {
+        if (category.postsCount && category.postsCount > 0) {
+          acc[category.slug] = category.postsCount;
+        }
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
+    return { posts, totalPosts, isLast, nextPage: offset + limit, categories: c };
   } catch (error) {
     console.error("게시글 목록 조회 실패:", error);
     throw error;
@@ -75,12 +78,15 @@ export const getPostList = async ({
 
 export const getPost = async (title: string) => {
   try {
-    return await instance.GET<Post>(`/posts/${title}`, {
+    const postRes = await instance.GET(`/posts/title/${title}`, {
       next: {
         revalidate: 60 * 60, // 1시간
         tags: POST_TAG.TITLE(decodeURIComponent(title)),
       },
     });
+
+    const post: Post = postRes.data;
+    return post;
   } catch (error) {
     console.error(`게시글 조회 실패 (${title}):`, error);
     throw error;

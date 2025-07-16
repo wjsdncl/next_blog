@@ -5,12 +5,12 @@ import useFollowScroll from "@/hooks/useFollowScroll";
 
 interface NavigationProps {
   totalPosts: number;
-  categoryCounts: Record<string, number>;
+  categories: Record<string, number>;
 }
 
 const SCROLL_THRESHOLD = 200;
 
-export default function Navigation({ totalPosts, categoryCounts }: NavigationProps) {
+export default function Navigation({ totalPosts, categories: categoryCounts }: NavigationProps) {
   const navRef = useFollowScroll<HTMLElement>(SCROLL_THRESHOLD);
 
   return (

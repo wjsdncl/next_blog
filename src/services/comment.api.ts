@@ -1,30 +1,25 @@
 /* eslint-disable no-console */
-import { type Comment, type CommentRequest } from "@/types/BlogType";
+import { type CommentResponse } from "@/app/api/comments/post/route";
+import { type CommentRequest } from "@/types/BlogType";
 import instance from "./instance";
-
-interface CommentResponse {
-  comments: Comment[];
-  totalComments: number;
-  parentComments: number;
-}
 
 export const COMMENT_TAG = {
   ALL: () => ["comments"],
   POST: (postID: number, offset: number, limit: number) => ["comments", postID, offset, limit],
 };
 
-export const getCommentList = async () => {
-  try {
-    return await instance.GET<Comment[]>("/comments");
-  } catch (error) {
-    console.error("댓글 전체 목록 조회 실패:", error);
-    throw error;
-  }
-};
-
 export const getComments = async (postID: number, offset = 0, limit = 10) => {
   try {
-    return await instance.GET<CommentResponse>(`/comments/${postID}?offset=${offset}&limit=${limit}`);
+    const response = await instance.GET<CommentResponse>(
+      `/comments/post?postId=${postID}&offset=${offset}&limit=${limit}`
+    );
+
+    const { data: comments, meta } = response;
+
+    return {
+      comments,
+      totalCount: meta.totalCount,
+    };
   } catch (error) {
     console.error(`게시글의 댓글 조회 실패 (게시글 ID: ${postID}):`, error);
     throw error;

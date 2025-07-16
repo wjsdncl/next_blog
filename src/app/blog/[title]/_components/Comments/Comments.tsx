@@ -26,16 +26,19 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
   const offset = (page - 1) * limit;
 
   // 댓글 데이터 가져오기
-  const { data: comments, isFetching } = useQuery({
+  const { data, isFetching } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: COMMENT_TAG.POST(post.id as number, offset, limit),
     queryFn: () => getComments(post.id as number, offset, limit),
-    enabled: !!post._count?.comments,
+    enabled: !!post.commentsCount,
     retry: 0,
   });
 
+  const comments = data?.comments;
+  const totalCount = data?.totalCount;
+
   // 총 페이지 수 계산
-  const totalPages = Math.ceil((comments?.parentComments ?? 0) / limit);
+  const totalPages = Math.ceil((totalCount ?? 0) / limit);
 
   // 댓글 작성 폼
   const {
@@ -166,7 +169,7 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
       <Suspense fallback={null}>
         <form onSubmit={handleSubmit(onSubmit)} className="flex w-full flex-col gap-4">
           <div className="flex w-full grow items-center justify-between">
-            <p className="text-2xl font-bold">{comments?.totalComments ?? 0}개의 댓글</p>
+            <p className="text-2xl font-bold">{totalCount ?? 0}개의 댓글</p>
             {user ? (
               <button
                 type="submit"
@@ -194,7 +197,7 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
       </Suspense>
 
       <div className="flex flex-col gap-4">
-        {comments?.comments?.map((comment) => (
+        {comments?.map((comment) => (
           <CommentItem
             key={comment.id}
             comment={comment}

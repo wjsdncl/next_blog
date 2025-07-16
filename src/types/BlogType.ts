@@ -1,5 +1,3 @@
-import { type User } from "@/types/AuthType";
-
 export interface PostRequest {
   title: string;
   content: string;
@@ -10,54 +8,68 @@ export interface PostRequest {
 
 export interface Post {
   id: number;
-  slug: string;
-  coverImg?: string;
-  category?: string;
+  thumbnail: string | null;
+  categoryId: number | null;
   title: string;
   content: string;
-  tags: string[];
-  likes: number;
+  commentsCount: number;
+  likesCount: number;
+  views: number;
+  createdAt: Date; // ISO 8601
+  updatedAt: Date; // ISO 8601
+  slug: string;
+  choseongTitle: string; // 초성 제목
   isPrivate: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-
-  user: User;
-  userId: string;
-
-  _count?: {
-    comments: number;
-    like: number;
-  };
-
-  isLiked: boolean;
+  category: {
+    name: string;
+    slug: string;
+  } | null;
+  tags: Array<{
+    name: string;
+    slug: string;
+  }>;
 }
 
 export interface CategoryCounts {
   [category: string]: number;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  createdAt: string;
+  postsCount: number;
+  projectsCount: number;
+  totalCount: number;
+}
+
+export interface Tag {
+  id: number;
+  name: string;
+  slug: string;
+  createdAt: string;
+  postsCount: number;
+  projectsCount: number;
+  totalCount: number;
+}
+
 export interface Comment {
   id: number;
   content: string;
-  likes: number;
-  createdAt: Date;
-  updatedAt: Date;
-
-  user: User;
-  userId: string;
-
-  post: Post;
-  postId: number;
-
-  parentComment?: Comment;
-  parentCommentId?: number;
-
-  replies?: Comment[];
-
-  _count: {
-    CommentLike: number;
-  };
+  likesCount: number;
   isLiked: boolean;
+  createdAt: Date; // ISO 8601
+  updatedAt: Date; // ISO 8601
+  userId: string;
+  postId: number;
+  parentCommentId: number | null;
+  isEdited: boolean;
+  user: {
+    id: string;
+    name: string;
+  };
+  replies: Array<Comment>;
 }
 
 export interface CommentRequest {
