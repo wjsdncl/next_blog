@@ -14,17 +14,15 @@ export const middleware = (request: NextRequest) => {
   const accessToken = request.cookies.get("accessToken");
   const map = accessToken ? authMap : guestMap;
 
-  const acceptHeader = request.headers.get("accept") || "";
-
   for (const [regex, redirectUrl] of map.entries()) {
     if (regex.test(pathname)) {
       return NextResponse.redirect(new URL(redirectUrl, request.url));
     }
   }
 
-  // api 경로 접근 금지
-  if (pathname.startsWith("/api") && !acceptHeader.includes("application/json")) {
-    return NextResponse.redirect(new URL(request.headers.get("referer") || "/", request.url));
+  // API 경로는 미들웨어를 통과시킴
+  if (pathname.startsWith("/api")) {
+    return NextResponse.next();
   }
 
   return NextResponse.next();
