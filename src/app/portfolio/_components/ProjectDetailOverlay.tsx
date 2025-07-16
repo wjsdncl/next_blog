@@ -98,7 +98,7 @@ export default function ExpandedContent({
               <TechStack stack={project.techStack} />
 
               <div className="flex justify-end">
-                <ProjectLinks githubLink={project.githubLink} projectLink={project.projectLink} />
+                <ProjectLinks links={project.links} />
               </div>
             </div>
           </div>

@@ -111,7 +111,9 @@ export default function ProjectForm({ id }: { id?: number }) {
     // 서버로 전송할 데이터 준비
     const serverData: ServerProjectData = {
       ...formData,
+      endDate: formData.endDate || undefined,
       images: undefined,
+      techStack: formData.techStack ? formData.techStack.map((tech) => tech.name) : [],
     };
 
     // 이미지 처리 로직
