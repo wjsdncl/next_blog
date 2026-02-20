@@ -3,8 +3,8 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useRef, useEffect, Suspense } from "react";
-import { getPostList, POST_TAG } from "@/services/post.api";
-import { getUser, USER_TAG } from "@/services/user.api";
+import { getPostList, POST_KEYS } from "@/services/post.api";
+import { getUser, USER_KEYS } from "@/services/user.api";
 import cookies from "@/utils/cookies";
 import AdminWriteButton from "./AdminWriteButton";
 import BlogPostItem from "./BlogPostItem";
@@ -15,35 +15,31 @@ const BlogPostList = () => {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const searchParams = useSearchParams();
 
-  // 검색 파라미터 추출
   const searchQuery = searchParams.get("search") ?? undefined;
   const categoryQuery = searchParams.get("category") ?? undefined;
   const tagQuery = searchParams.get("tag") ?? undefined;
 
-  // 사용자 스토어 및 쿼리
   const accessToken = cookies.get("accessToken");
 
   const { data: user } = useQuery({
-    queryKey: USER_TAG,
+    queryKey: [...USER_KEYS],
     queryFn: getUser,
     enabled: !!accessToken,
     retry: 0,
     gcTime: 0,
   });
 
-  // 무한 스크롤을 통한 게시물 가져오기
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: POST_TAG.LIST("newest", searchQuery, categoryQuery, tagQuery),
-    queryFn: ({ pageParam = 0 }) =>
-      getPostList({ offset: pageParam, search: searchQuery, category: categoryQuery, tag: tagQuery }),
+    queryKey: POST_KEYS.list("newest", searchQuery, categoryQuery, tagQuery),
+    queryFn: ({ pageParam = 1 }) =>
+      getPostList({ page: pageParam, search: searchQuery, category: categoryQuery, tag: tagQuery }),
     getNextPageParam: (lastPage) => (!lastPage.isLast ? lastPage.nextPage : undefined),
-    initialPageParam: 0,
+    initialPageParam: 1,
   });
 
   const totalPosts = data?.pages[0].totalPosts;
   const remainingPosts = Math.max(0, (totalPosts ?? 0) - 10);
 
-  // 무한 스크롤 관찰자 설정
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -103,7 +99,7 @@ const BlogPostList = () => {
         )}
       </section>
 
-      <AdminWriteButton isAdmin={!!user?.isAdmin} />
+      <AdminWriteButton isOwner={user?.role === "OWNER"} />
     </>
   );
 };

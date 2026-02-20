@@ -5,10 +5,10 @@ import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
-import { COMMENT_TAG, deleteComment, editComment, getComments, writeComment } from "@/services/comment.api";
+import { COMMENT_KEYS, deleteComment, updateComment, getComments, createComment } from "@/services/comment.api";
 import useModalStore from "@/stores/ModalStore";
-import { type User } from "@/types/AuthType";
-import { type Post, type CommentRequest } from "@/types/BlogType";
+import { type User } from "@/types/authType";
+import { type Post, type CommentRequest } from "@/types/blogType";
 import toast from "@/utils/Toast";
 import CommentItem from "./CommentItem";
 
@@ -18,29 +18,26 @@ interface CommentFormInputs {
 
 export default function Comments({ post, user }: { post: Post; user?: User }) {
   const queryClient = useQueryClient();
-  const [editCommentId, setEditCommentId] = useState<number | null>(null);
-  const [replyCommentId, setReplyCommentId] = useState<number | null>(null);
+  const [editCommentId, setEditCommentId] = useState<string | null>(null);
+  const [replyCommentId, setReplyCommentId] = useState<string | null>(null);
 
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
-  const offset = (page - 1) * limit;
 
   // 댓글 데이터 가져오기
   const { data, isFetching } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: COMMENT_TAG.POST(post.id as number, offset, limit),
-    queryFn: () => getComments(post.id as number, offset, limit),
-    enabled: !!post.commentsCount,
+    queryKey: COMMENT_KEYS.list(post.id, page, limit),
+    queryFn: () => getComments(post.id, page, limit),
+    enabled: !!post.comment_count,
     retry: 0,
   });
 
   const comments = data?.comments;
   const totalCount = data?.totalCount;
 
-  // 총 페이지 수 계산
   const totalPages = Math.ceil((totalCount ?? 0) / limit);
 
-  // 댓글 작성 폼
   const {
     register,
     handleSubmit,
@@ -49,12 +46,12 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
   } = useForm<CommentFormInputs>();
 
   // 댓글 작성 mutation
-  const writeCommentMutation = useMutation({
+  const createCommentMutation = useMutation({
     mutationFn: async (body: CommentRequest) => {
-      await writeComment(body);
+      await createComment(body);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: COMMENT_TAG.ALL() });
+      queryClient.invalidateQueries({ queryKey: COMMENT_KEYS.all() });
 
       toast.success("댓글이 등록되었습니다.");
       reset();
@@ -66,12 +63,12 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
   });
 
   // 댓글 수정 mutation
-  const editCommentMutation = useMutation({
-    mutationFn: async ({ id, content }: { id: number; content: string }) => {
-      await editComment(id, content);
+  const updateCommentMutation = useMutation({
+    mutationFn: async ({ id, content }: { id: string; content: string }) => {
+      await updateComment(id, content);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: COMMENT_TAG.ALL() });
+      queryClient.invalidateQueries({ queryKey: COMMENT_KEYS.all() });
       toast.success("댓글이 수정되었습니다.");
       setEditCommentId(null);
     },
@@ -82,11 +79,11 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
 
   // 댓글 삭제 mutation
   const deleteCommentMutation = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       await deleteComment(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: COMMENT_TAG.ALL() });
+      queryClient.invalidateQueries({ queryKey: COMMENT_KEYS.all() });
       toast.success("댓글이 삭제되었습니다.");
     },
     onError: () => {
@@ -103,43 +100,41 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
 
   // 댓글 작성 함수
   const onSubmit = (data: CommentFormInputs) => {
-    if (writeCommentMutation.isPending || !post) return;
-    writeCommentMutation.mutate({
+    if (createCommentMutation.isPending || !post) return;
+    createCommentMutation.mutate({
       content: data.content,
-      postId: post.id as number,
-      userId: user?.id,
-      parentCommentId: undefined,
+      post_id: post.id,
+      parent_id: undefined,
     });
   };
 
   // 답글 작성 함수
-  const handleReply = (commentId: number) => {
+  const handleReply = (commentId: string) => {
     setReplyCommentId(replyCommentId === commentId ? null : commentId);
   };
 
   // 댓글 수정 함수
-  const handleEdit = (commentId: number) => {
+  const handleEdit = (commentId: string) => {
     setEditCommentId(commentId);
   };
 
   // 답글 작성 함수
-  const handleSubmitReply = (content: string, parentCommentId: number) => {
-    if (writeCommentMutation.isPending || !post) return;
-    writeCommentMutation.mutate({
+  const handleSubmitReply = (content: string, parentId: string) => {
+    if (createCommentMutation.isPending || !post) return;
+    createCommentMutation.mutate({
       content,
-      postId: post.id as number,
-      userId: user?.id,
-      parentCommentId,
+      post_id: post.id,
+      parent_id: parentId,
     });
   };
 
   // 수정한 댓글 등록 함수
-  const handleSubmitEdit = (content: string, commentId: number) => {
-    editCommentMutation.mutate({ id: commentId, content });
+  const handleSubmitEdit = (content: string, commentId: string) => {
+    updateCommentMutation.mutate({ id: commentId, content });
   };
 
   // 댓글 삭제 모달
-  const handleDeleteModal = (id: number) => {
+  const handleDeleteModal = (id: string) => {
     const modalId = openModal(
       <div className="flex flex-col gap-4">
         <p className="pb-8 pt-6 text-center text-2xl font-semibold">정말로 삭제하시겠습니까?</p>

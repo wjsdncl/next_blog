@@ -10,11 +10,11 @@ import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
 import components from "@/components/MarkdownComponents";
 import TagInput from "@/components/TagInput";
-import { getPost, POST_TAG, updatePost, uploadImage, writePost } from "@/services/post.api";
+import { getPost, POST_KEYS, updatePost, uploadImage, createPost } from "@/services/post.api";
 import { revalidatePosts } from "@/services/server.action";
-import { getUser, USER_TAG } from "@/services/user.api";
+import { getUser, USER_KEYS } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
-import type { PostRequest } from "@/types/BlogType";
+import type { PostRequest } from "@/types/blogType";
 import PreviewModal from "./PreviewModal";
 
 // FormValues 타입 정의
@@ -38,7 +38,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
 
   // 사용자 데이터 가져오기
   const { data: user } = useQuery({
-    queryKey: USER_TAG,
+    queryKey: [...USER_KEYS],
     queryFn: getUser,
     retry: 0,
     gcTime: 0,
@@ -47,7 +47,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
   // 포스트 데이터를 가져오는 쿼리
   const { data: post } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: POST_TAG.TITLE(slug as string),
+    queryKey: POST_KEYS.detail(slug as string),
     queryFn: () => getPost(slug as string),
     retry: 0,
     enabled: !!slug,
@@ -59,24 +59,24 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
 
   // 글 작성 mutation
   const completeWritingMutation = useMutation({
-    mutationFn: async (data: PostRequest) => writePost({ postData: data, userId: user?.id as string }),
+    mutationFn: async (data: PostRequest) => createPost(data),
     onSuccess: async () => {
       await revalidatePosts();
-      queryClient.invalidateQueries({ queryKey: POST_TAG.ALL() }); // 포스트 목록 갱신
-      queryClient.invalidateQueries({ queryKey: USER_TAG }); // 사용자 데이터 갱신
-      router.push("/blog"); // 블로그 목록 페이지로 이동
+      queryClient.invalidateQueries({ queryKey: POST_KEYS.all() });
+      queryClient.invalidateQueries({ queryKey: [...USER_KEYS] });
+      router.push("/blog");
     },
   });
 
   // 글 수정 mutation
   const updatePostMutation = useMutation({
-    mutationFn: async (data: { id: number; postData: PostRequest }) =>
-      updatePost({ id: data.id, postData: data.postData, userId: user?.id as string }),
+    mutationFn: async (data: { id: string; postData: PostRequest }) =>
+      updatePost({ id: data.id, postData: data.postData }),
     onSuccess: async () => {
       await revalidatePosts();
-      queryClient.invalidateQueries({ queryKey: POST_TAG.ALL() }); // 포스트 목록 갱신
-      queryClient.invalidateQueries({ queryKey: USER_TAG }); // 사용자 데이터 갱신
-      router.push("/blog"); // 블로그 목록 페이지로 이동
+      queryClient.invalidateQueries({ queryKey: POST_KEYS.all() });
+      queryClient.invalidateQueries({ queryKey: [...USER_KEYS] });
+      router.push("/blog");
     },
   });
 
@@ -99,11 +99,11 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       <PreviewModal
         title={data.title}
         content={data.content}
-        initialCoverImg={post?.thumbnail || firstImage}
-        onComplete={(thumbnail) => {
-          const postData = { ...data, thumbnail, userId: user?.id as string };
+        initialCoverImg={post?.cover_image || firstImage}
+        onComplete={(coverImage) => {
+          const postData: PostRequest = { ...data, cover_image: coverImage };
           slug
-            ? updatePostMutation.mutate({ id: Number(post?.id), postData })
+            ? updatePostMutation.mutate({ id: post?.id as string, postData })
             : completeWritingMutation.mutate(postData);
           closeModal(modalId);
         }}

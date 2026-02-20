@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
 import FavoriteFilled from "@/Icons/FavoriteFilled.svg";
-import { COMMENT_TAG, likeComment } from "@/services/comment.api";
-import { type User } from "@/types/AuthType";
-import { type Comment } from "@/types/BlogType";
+import { COMMENT_KEYS, toggleCommentLike } from "@/services/comment.api";
+import { type User } from "@/types/authType";
+import { type Comment } from "@/types/blogType";
 import { formatKoreanDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
 import CommentContent from "./CommentContent";
@@ -18,15 +18,15 @@ interface CommentItemProps {
   depth?: number;
   currentUser?: User;
   isLoggedIn: boolean;
-  replyCommentId: number | null;
-  editCommentId: number | null;
-  parentComment?: Comment; // 부모 댓글 정보 추가
-  onReply: (commentId: number) => void;
-  onEdit: (commentId: number, content: string) => void;
-  onDelete: (commentId: number) => void;
-  onSubmitReply: (content: string, parentCommentId: number) => void;
-  onSubmitEdit: (content: string, commentId: number) => void;
-  setEditCommentId: (id: number | null) => void;
+  replyCommentId: string | null;
+  editCommentId: string | null;
+  parentComment?: Comment;
+  onReply: (commentId: string) => void;
+  onEdit: (commentId: string, content: string) => void;
+  onDelete: (commentId: string) => void;
+  onSubmitReply: (content: string, parentId: string) => void;
+  onSubmitEdit: (content: string, commentId: string) => void;
+  setEditCommentId: (id: string | null) => void;
 }
 
 export default function CommentItem({
@@ -48,15 +48,15 @@ export default function CommentItem({
 
   const likeCommentMutation = useMutation({
     mutationKey: ["likeComment"],
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       if (!isLoggedIn) {
         toast.error("로그인이 필요한 서비스입니다.");
         return;
       }
-      await likeComment(id);
+      await toggleCommentLike(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: COMMENT_TAG.ALL() });
+      queryClient.invalidateQueries({ queryKey: COMMENT_KEYS.all() });
     },
   });
 
@@ -81,8 +81,7 @@ export default function CommentItem({
   } = useForm<CommentFormInputs>();
 
   const onReplySubmit = (data: CommentFormInputs) => {
-    // depth가 10 이상일 때는 부모 댓글의 ID를 사용
-    const targetCommentId = depth >= 10 ? (comment.parentCommentId ?? comment.id) : comment.id;
+    const targetCommentId = depth >= 10 ? (comment.parent_id ?? comment.id) : comment.id;
     onSubmitReply(data.content, targetCommentId);
     resetReplyForm();
   };
@@ -91,7 +90,6 @@ export default function CommentItem({
     onSubmitEdit(data.content, comment.id);
   };
 
-  // 들여쓰기 최대 너비 설정
   const indentationWidth = Math.min(depth, 5) * 8;
 
   const handleReplyClick = () => {
@@ -103,20 +101,20 @@ export default function CommentItem({
     <div className="flex flex-col gap-4" style={{ marginLeft: `${indentationWidth}px` }}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          {comment.user ? (
-            <p className="text-lg font-bold">{comment.user.name}</p>
+          {comment.author ? (
+            <p className="text-lg font-bold">{comment.author.username}</p>
           ) : (
             <p className="text-lg font-bold">익명</p>
           )}
-          <p className="text-base text-gray-700">{formatKoreanDate(comment.createdAt)}</p>
+          <p className="text-base text-gray-700">{formatKoreanDate(comment.created_at)}</p>
           <div className="flex items-center gap-2">
             <button onClick={handleLike} className="flex items-center gap-1 text-base text-text-primary">
-              {comment.isLiked ? (
+              {comment.is_liked ? (
                 <FavoriteFilled width={18} height={18} color="#656079" />
               ) : (
                 <FavoriteEmpty width={18} height={18} color="var(--text-primary)" />
               )}
-              {comment.likesCount}
+              {comment.like_count}
             </button>
           </div>
         </div>
@@ -127,7 +125,7 @@ export default function CommentItem({
               답글
             </button>
           )}
-          {(currentUser?.id === comment.userId || currentUser?.isAdmin) && (
+          {(currentUser?.id === comment.author_id || currentUser?.role === "OWNER") && (
             <>
               <button
                 onClick={() => onEdit(comment.id, comment.content)}

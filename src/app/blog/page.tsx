@@ -1,7 +1,7 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
-import { getPostList, POST_TAG } from "@/services/post.api";
+import { getPostList, getCategories, POST_KEYS } from "@/services/post.api";
 import ClientPage from "./_components/ClientPage";
 
 const Navigation = dynamic(() => import("./_components/Navigation"));
@@ -21,21 +21,24 @@ export default async function Page({
   const categoryQuery = searchParams.category ?? undefined;
   const tagQuery = searchParams.tag ?? undefined;
 
-  const posts = await getPostList({
-    offset: 0,
-    limit: 10,
-    search: searchQuery,
-    category: categoryQuery,
-    tag: tagQuery,
-  });
-  queryClient.setQueryData(POST_TAG.LIST("newest", searchQuery, categoryQuery, tagQuery), {
+  const [posts, categoryData] = await Promise.all([
+    getPostList({
+      page: 1,
+      limit: 10,
+      search: searchQuery,
+      category: categoryQuery,
+      tag: tagQuery,
+    }),
+    getCategories(),
+  ]);
+  queryClient.setQueryData(POST_KEYS.list("newest", searchQuery, categoryQuery, tagQuery), {
     pages: [posts],
-    pageParams: [0],
+    pageParams: [1],
   });
 
   return (
     <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 tablet:w-tablet tablet:px-0">
-      <Navigation categories={posts.categories} totalPosts={posts.totalPosts} />
+      <Navigation categories={categoryData.categories} totalPosts={categoryData.totalPosts} />
       <HydrationBoundary state={dehydrate(queryClient)}>
         <ClientPage />
       </HydrationBoundary>

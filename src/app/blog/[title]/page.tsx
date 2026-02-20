@@ -4,12 +4,13 @@ import dynamic from "next/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import components from "@/components/MarkdownComponents";
-import { getPost, POST_TAG } from "@/services/post.api";
+import { getPost, POST_KEYS } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import PostHeader from "./_components/PostHeader";
 
@@ -20,12 +21,17 @@ const Comments = dynamic(() => import("./_components/Comments/Comments"));
 export default async function Page({ params }: { params: { title: string } }) {
   const accessToken = cookies().get("accessToken");
   const title = params.title;
-  const post = await getPost(title);
+
+  let post;
+  try {
+    post = await getPost(title);
+  } catch {
+    notFound();
+  }
+
   const user = accessToken ? await getUser() : undefined;
 
-  if (post.isPrivate && user?.isAdmin === false) {
-    // 비공개 게시글인 경우
-    // 관리자가 아닌 경우에는 비공개 게시글을 보여주지 않음
+  if (post.status !== "PUBLISHED" && user?.role !== "OWNER") {
     return (
       <div className="mx-auto flex size-full grow flex-col items-center justify-center gap-20 px-5 py-8 text-lg tablet:w-tablet tablet:px-0 tablet:pb-40">
         <h1 className="text-center text-4xl font-bold">비공개 게시글입니다.</h1>
@@ -40,15 +46,7 @@ export default async function Page({ params }: { params: { title: string } }) {
   }
 
   const queryClient = new QueryClient();
-  queryClient.setQueryData(POST_TAG.TITLE(decodeURIComponent(title)), post);
-
-  if (!post) {
-    return (
-      <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
-        <h1 className="text-center text-4xl font-bold">게시글을 찾을 수 없습니다.</h1>
-      </div>
-    );
-  }
+  queryClient.setQueryData(POST_KEYS.detail(decodeURIComponent(title)), post);
 
   return (
     <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">
@@ -89,10 +87,10 @@ export default async function Page({ params }: { params: { title: string } }) {
       )}
 
       {/* 썸네일 */}
-      {post.thumbnail && (
+      {post.cover_image && (
         <div className="relative h-[400px] w-full max-w-screen-tablet">
           <Image
-            src={post.thumbnail}
+            src={post.cover_image}
             alt="coverImage"
             className="object-contain px-6"
             fill

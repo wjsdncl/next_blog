@@ -2,11 +2,11 @@ import Link from "next/link";
 import { memo } from "react";
 
 interface AdminWriteButtonProps {
-  isAdmin: boolean;
+  isOwner: boolean;
 }
 
-const AdminWriteButton = memo(({ isAdmin }: AdminWriteButtonProps) => {
-  if (!isAdmin) return null;
+const AdminWriteButton = memo(({ isOwner }: AdminWriteButtonProps) => {
+  if (!isOwner) return null;
 
   return (
     <div className="fixed bottom-[70px] right-[16px] z-40 flex h-[48px] w-[130px] items-center justify-center overflow-hidden rounded-full tablet:right-[24px] desktop:right-[calc((100%-1200px)/2)]">

@@ -3,10 +3,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
-import { deletePost, getPost, POST_TAG, updatePost } from "@/services/post.api";
+import { deletePost, getPost, POST_KEYS, updatePost } from "@/services/post.api";
 import { revalidatePosts } from "@/services/server.action";
 import useModalStore from "@/stores/ModalStore";
-import { type User } from "@/types/AuthType";
+import { type User } from "@/types/authType";
 import { formatKoreanDate } from "@/utils/FormatDate";
 import toast from "@/utils/Toast";
 import Navigation from "./Navigation";
@@ -16,7 +16,7 @@ export default function PostHeader({ title, user }: { title: string; user?: User
   const queryClient = useQueryClient();
 
   const { data: post } = useQuery({
-    queryKey: POST_TAG.TITLE(title),
+    queryKey: POST_KEYS.detail(title),
     queryFn: async () => {
       return await getPost(title);
     },
@@ -32,12 +32,12 @@ export default function PostHeader({ title, user }: { title: string; user?: User
 
   const DeletePostMutation = useMutation({
     mutationKey: ["deletePost"],
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       await deletePost(id);
     },
     onSuccess: async () => {
       await revalidatePosts();
-      queryClient.cancelQueries({ queryKey: POST_TAG.TITLE(title) });
+      queryClient.cancelQueries({ queryKey: POST_KEYS.detail(title) });
 
       toast.success("글이 삭제되었습니다.");
       router.push("/blog");
@@ -78,8 +78,8 @@ export default function PostHeader({ title, user }: { title: string; user?: User
     router.push(`/blog/write?title=${post.slug}`);
   };
 
-  const privateToggleMutation = useMutation({
-    mutationFn: async (id: number) => {
+  const statusToggleMutation = useMutation({
+    mutationFn: async (id: string) => {
       if (!post) return;
 
       await updatePost({
@@ -88,25 +88,26 @@ export default function PostHeader({ title, user }: { title: string; user?: User
           title: post.title,
           content: post.content,
           tags: post.tags.map((tag) => tag.name),
-          isPrivate: !post.isPrivate,
+          status: post.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED",
         },
-        userId: user?.id as string,
       });
     },
     onSuccess: async () => {
       toast.success("공개 상태가 변경되었습니다.");
-      queryClient.invalidateQueries({ queryKey: POST_TAG.TITLE(title) });
+      queryClient.invalidateQueries({ queryKey: POST_KEYS.detail(title) });
       await revalidatePosts();
     },
   });
 
-  const handlePrivateToggle = () => {
-    if (!user?.isAdmin || privateToggleMutation.isPending || !post) return;
+  const handleStatusToggle = () => {
+    if (user?.role !== "OWNER" || statusToggleMutation.isPending || !post) return;
 
-    privateToggleMutation.mutate(post.id);
+    statusToggleMutation.mutate(post.id);
   };
 
   if (!post) return;
+
+  const isPublished = post.status === "PUBLISHED";
 
   return (
     <div>
@@ -118,23 +119,23 @@ export default function PostHeader({ title, user }: { title: string; user?: User
       </div>
 
       <div className="flex size-full items-center justify-between pb-4">
-        <p className="grow text-base">{formatKoreanDate(post.createdAt)}</p>
+        <p className="grow text-base">{formatKoreanDate(post.created_at)}</p>
         <div className="flex items-center gap-4">
-          {user?.isAdmin && (
+          {user?.role === "OWNER" && (
             <>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-text-primary">{post.isPrivate ? "비공개" : "공개"}</span>
+                <span className="text-sm text-text-primary">{isPublished ? "공개" : "비공개"}</span>
                 <button
                   type="button"
-                  onClick={handlePrivateToggle}
+                  onClick={handleStatusToggle}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    post.isPrivate ? "bg-gray-300" : "bg-brand-primary"
+                    !isPublished ? "bg-gray-300" : "bg-brand-primary"
                   }`}
                 >
                   <span className="sr-only">공개 상태 변경</span>
                   <span
                     className={`inline-block size-[20px] rounded-full bg-white transition-transform ${
-                      post.isPrivate ? "translate-x-0" : "translate-x-6"
+                      !isPublished ? "translate-x-0" : "translate-x-6"
                     }`}
                   />
                 </button>
