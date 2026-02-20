@@ -1,7 +1,21 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { type Comment } from "@/types/blogType";
 
 const BACKEND_URL = process.env.BACKEND_URL || "https://blog-api-xhk1.onrender.com";
+
+export interface CommentResponse {
+  success: boolean;
+  data: Comment[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
 
 export async function GET(request: NextRequest) {
   try {

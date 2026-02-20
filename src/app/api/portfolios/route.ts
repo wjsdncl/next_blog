@@ -1,18 +1,19 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { type Project } from "@/types/PortfolioType";
+import { type Portfolio } from "@/types/portfolioType";
 
 const BACKEND_URL = process.env.BACKEND_URL || "https://blog-api-xhk1.onrender.com";
 
-export interface ProjectResponse {
+export interface PortfolioResponse {
   success: boolean;
-  data: Project[];
-  meta: {
-    pagination: {
-      total: number;
-      offset: number;
-      limit: number;
-    };
+  data: Portfolio[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
   };
 }
 
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const queryString = url.search;
 
-    const response = await fetch(`${BACKEND_URL}/projects${queryString}`, {
+    const response = await fetch(`${BACKEND_URL}/portfolios${queryString}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch projects" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch portfolios" }, { status: 500 });
   }
 }
 
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const response = await fetch(`${BACKEND_URL}/projects`, {
+    const response = await fetch(`${BACKEND_URL}/portfolios`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -51,6 +52,6 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create project" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create portfolio" }, { status: 500 });
   }
 }

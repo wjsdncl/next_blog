@@ -13,8 +13,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Authorization code is required" }, { status: 400 });
     }
 
-    // 백엔드에 콜백 처리 요청
-    const response = await fetch(`${BACKEND_URL}/auth/github/callback?code=${code}&state=${state || ""}`, {
+    const response = await fetch(`${BACKEND_URL}/auth/oauth/callback?code=${code}&state=${state || ""}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

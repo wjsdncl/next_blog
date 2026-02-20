@@ -3,11 +3,11 @@ import { NextResponse } from "next/server";
 
 const BACKEND_URL = process.env.BACKEND_URL || "https://blog-api-xhk1.onrender.com";
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const response = await fetch(`${BACKEND_URL}/users/${params.id}`, {
+    const response = await fetch(`${BACKEND_URL}/users/me`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

@@ -1,13 +1,19 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { type Category, type Post } from "@/types/BlogType";
+import { type Post } from "@/types/blogType";
 
 const BACKEND_URL = process.env.BACKEND_URL || "https://blog-api-xhk1.onrender.com";
 
 export interface PostResponse {
   success: boolean;
   data: Post[];
-  categories: Category[];
-  meta: { pagination: { offset: number; limit: number; total: number } };
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
