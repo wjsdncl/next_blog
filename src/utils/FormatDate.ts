@@ -3,7 +3,7 @@
  * @param dateString - 변환할 날짜
  * @returns YYYY-MM-DD 형식의 날짜 문자열 (예: "2024-01-01")
  */
-export const formatDate = (dateString: Date) => {
+export const formatDate = (dateString: Date | string) => {
   const date = new Date(dateString);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -16,7 +16,7 @@ export const formatDate = (dateString: Date) => {
  * @param dateString - 변환할 날짜
  * @returns 한국어 형식의 날짜 문자열 (예: "2024년 1월 1일")
  */
-export const formatKoreanDate = (dateString: Date) => {
+export const formatKoreanDate = (dateString: Date | string) => {
   const date = new Date(dateString);
   return date.toLocaleDateString("ko-KR", {
     year: "numeric",
@@ -32,7 +32,7 @@ export const formatKoreanDate = (dateString: Date) => {
  * @returns 한국어로 표현된 시간 차이 문자열 (예: "3일 전", "2시간 전")
  *          7일 이상 차이나는 경우 한국어 날짜 형식으로 반환 (예: "2024년 1월 1일")
  */
-export const diffDate = (dateString: Date) => {
+export const diffDate = (dateString: Date | string) => {
   const date = new Date(dateString);
   const now = new Date();
   const diff = now.getTime() - date.getTime();
