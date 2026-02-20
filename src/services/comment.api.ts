@@ -1,32 +1,32 @@
 /* eslint-disable no-console */
-import { type CommentResponse } from "@/app/api/comments/post/route";
-import { type CommentRequest } from "@/types/BlogType";
+import { type CommentResponse } from "@/app/api/comments/route";
+import { type CommentRequest } from "@/types/blogType";
 import instance from "./instance";
 
-export const COMMENT_TAG = {
-  ALL: () => ["comments"],
-  POST: (postID: number, offset: number, limit: number) => ["comments", postID, offset, limit],
+export const COMMENT_KEYS = {
+  all: () => ["comments"] as const,
+  list: (postId: string, page: number, limit: number) => ["comments", postId, page, limit] as const,
 };
 
-export const getComments = async (postID: number, offset = 0, limit = 10) => {
+export const getComments = async (postId: string, page = 1, limit = 10) => {
   try {
     const response = await instance.GET<CommentResponse>(
-      `/comments/post?postId=${postID}&offset=${offset}&limit=${limit}`
+      `/comments?post_id=${postId}&page=${page}&limit=${limit}`
     );
 
-    const { data: comments, meta } = response;
+    const { data: comments, pagination } = response;
 
     return {
       comments,
-      totalCount: meta.totalCount,
+      totalCount: pagination.total,
     };
   } catch (error) {
-    console.error(`게시글의 댓글 조회 실패 (게시글 ID: ${postID}):`, error);
+    console.error(`게시글의 댓글 조회 실패 (게시글 ID: ${postId}):`, error);
     throw error;
   }
 };
 
-export const writeComment = async (body: CommentRequest) => {
+export const createComment = async (body: CommentRequest) => {
   try {
     return await instance.POST("/comments", body);
   } catch (error) {
@@ -35,7 +35,7 @@ export const writeComment = async (body: CommentRequest) => {
   }
 };
 
-export const editComment = async (id: number, content: string) => {
+export const updateComment = async (id: string, content: string) => {
   try {
     return await instance.PATCH(`/comments/${id}`, { content });
   } catch (error) {
@@ -44,7 +44,7 @@ export const editComment = async (id: number, content: string) => {
   }
 };
 
-export const deleteComment = async (id: number) => {
+export const deleteComment = async (id: string) => {
   try {
     return await instance.DELETE(`/comments/${id}`);
   } catch (error) {
@@ -53,7 +53,7 @@ export const deleteComment = async (id: number) => {
   }
 };
 
-export const likeComment = async (id: number) => {
+export const toggleCommentLike = async (id: string) => {
   try {
     return await instance.POST(`/comments/${id}/like`);
   } catch (error) {

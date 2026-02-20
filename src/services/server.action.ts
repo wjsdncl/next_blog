@@ -2,8 +2,8 @@
 
 import { revalidateTag } from "next/cache";
 
-export async function revalidateProjects() {
-  await revalidateTag("projects");
+export async function revalidatePortfolios() {
+  await revalidateTag("portfolios");
 }
 
 export async function revalidateUser() {

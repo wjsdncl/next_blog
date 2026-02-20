@@ -1,43 +1,39 @@
 /* eslint-disable no-console */
-import { type SignInForm, type SignInResponse, type SignUpForm } from "@/types/AuthType";
+import { type OAuthResponse } from "@/types/authType";
 import instance from "./instance";
 
-// 회원가입
-export const SignUp = async (formData: SignUpForm) => {
+export const loginWithGithub = async () => {
   try {
-    return await instance.POST(`/auth/signup`, formData);
-  } catch (error) {
-    console.error("회원가입 실패:", error);
-    throw error;
-  }
-};
-
-// 로그인
-export const SignIn = async (formData: SignInForm): Promise<SignInResponse> => {
-  try {
-    return await instance.POST<SignInResponse>(`/auth/login`, formData);
-  } catch (error) {
-    console.error("로그인 실패:", error);
-    throw error;
-  }
-};
-
-// 깃허브 로그인
-export const SignInWithGithub = async () => {
-  try {
-    window.location.href = "https://blog-api-xhk1.onrender.com/auth/github";
+    window.location.href = "/api/auth/github";
   } catch (error) {
     console.error("깃허브 로그인 시도 실패:", error);
     throw error;
   }
 };
 
-// 깃허브 로그인 콜백
-export const SignInWithGithubCallback = async (code: string): Promise<SignInResponse> => {
+export const handleOAuthCallback = async (code: string): Promise<OAuthResponse> => {
   try {
-    return await instance.GET<SignInResponse>(`/auth/github/callback?code=${code}`);
+    return await instance.GET<OAuthResponse>(`/auth/github/callback?code=${code}`);
   } catch (error) {
-    console.error("깃허브 로그인 실패:", error);
+    console.error("OAuth 로그인 실패:", error);
+    throw error;
+  }
+};
+
+export const getSession = async (): Promise<OAuthResponse | null> => {
+  try {
+    return await instance.GET<OAuthResponse>("/auth/session");
+  } catch (error) {
+    console.error("세션 조회 실패:", error);
+    return null;
+  }
+};
+
+export const logout = async () => {
+  try {
+    return await instance.POST("/auth/logout");
+  } catch (error) {
+    console.error("로그아웃 실패:", error);
     throw error;
   }
 };

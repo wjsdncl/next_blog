@@ -1,15 +1,15 @@
 /* eslint-disable no-console */
-import { type User } from "@/types/AuthType";
+import { type User } from "@/types/authType";
 import instance from "./instance";
 
-export const USER_TAG = ["user"];
+export const USER_KEYS = ["user"] as const;
 
 export const getUser = async (): Promise<User | undefined> => {
   try {
     return await instance.GET<User>("/users", {
       next: {
-        revalidate: 60 * 60 * 6, // 6시간
-        tags: USER_TAG,
+        revalidate: 60 * 60 * 6,
+        tags: [...USER_KEYS],
       },
     });
   } catch (error) {
@@ -18,16 +18,15 @@ export const getUser = async (): Promise<User | undefined> => {
   }
 };
 
-export const patchUser = async (id: string, data: patchUserType): Promise<User | undefined> => {
+export const updateProfile = async (data: UpdateProfileData): Promise<User | undefined> => {
   try {
-    return await instance.PATCH<User>(`/users/${id}`, data);
+    return await instance.PATCH<User>("/users/me", data);
   } catch (error) {
-    console.error(`사용자 정보 수정 실패 (ID: ${id}):`, error);
+    console.error("사용자 정보 수정 실패:", error);
     return undefined;
   }
 };
 
-interface patchUserType {
-  name?: string;
-  isAdmin?: boolean;
+interface UpdateProfileData {
+  username?: string;
 }
