@@ -2,8 +2,8 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef, useEffect } from "react";
-import { getProjectList, PROJECT_TAG } from "@/services/Project.api";
-import type { Project } from "@/types/PortfolioType";
+import { getPortfolioList, PORTFOLIO_KEYS } from "@/services/portfolio.api";
+import type { Portfolio } from "@/types/portfolioType";
 import { formatDate } from "@/utils/FormatDate";
 import ProjectCard from "./ProjectCard";
 
@@ -11,10 +11,10 @@ export default function ProjectList({ isOwner }: { isOwner: boolean }) {
   const loadMoreRef = useRef(null);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: PROJECT_TAG.ALL(),
-    queryFn: ({ pageParam = 0 }) => getProjectList({ offset: pageParam }),
+    queryKey: PORTFOLIO_KEYS.all(),
+    queryFn: ({ pageParam = 1 }) => getPortfolioList({ page: pageParam }),
     getNextPageParam: (lastPage) => (!lastPage.isLast ? lastPage.nextPage : undefined),
-    initialPageParam: 0,
+    initialPageParam: 1,
   });
 
   useEffect(() => {
@@ -80,19 +80,17 @@ export default function ProjectList({ isOwner }: { isOwner: boolean }) {
         {data ? (
           <>
             {data.pages.map((page, pageIndex) =>
-              page.projects.map((project: Project) => (
+              page.portfolios.map((portfolio: Portfolio) => (
                 <ProjectCard
-                  key={`${pageIndex}-${project.id}`}
-                  id={project.id}
-                  title={project.title}
-                  isPersonal={project.isPersonal}
-                  date={`${formatDate(project.startDate)} ~ ${project.endDate ? formatDate(project.endDate) : "진행중"}`}
-                  description={project.description}
-                  content={project.content}
-                  summary={project.summary}
-                  techStack={project.techStack.map((tech) => tech.name)}
-                  links={project.links || []}
-                  images={project.images}
+                  key={`${pageIndex}-${portfolio.id}`}
+                  id={portfolio.id}
+                  title={portfolio.title}
+                  date={`${portfolio.start_date ? formatDate(portfolio.start_date) : ""} ~ ${portfolio.end_date ? formatDate(portfolio.end_date) : "진행중"}`}
+                  excerpt={portfolio.excerpt || ""}
+                  content={portfolio.content}
+                  techStacks={portfolio.techStacks.map((tech) => tech.name)}
+                  links={portfolio.links || []}
+                  coverImage={portfolio.cover_image}
                   isOwner={isOwner}
                 />
               ))

@@ -2,168 +2,102 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import Form from "@/components/Form";
-import { type FilePreview } from "@/components/Form";
 import { uploadImage } from "@/services/post.api";
-import { createProject, getProject, PROJECT_TAG, updateProject } from "@/services/Project.api";
-import { revalidateProjects } from "@/services/server.action";
-import { getUser, USER_TAG } from "@/services/user.api";
-import { type Project, type ProjectRequest } from "@/types/PortfolioType";
+import { createPortfolio, getPortfolio, PORTFOLIO_KEYS, updatePortfolio } from "@/services/portfolio.api";
+import { revalidatePortfolios } from "@/services/server.action";
+import { getUser, USER_KEYS } from "@/services/user.api";
+import { type PortfolioRequest } from "@/types/portfolioType";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
-// 타입 정의
-interface ProjectFormData extends Omit<Project, "images"> {
-  images?: FilePreview[];
-}
-
-type ServerProjectData = Omit<ProjectRequest, "images"> & {
-  images?: string[];
-};
-
-export default function ProjectForm({ id }: { id?: number }) {
+export default function ProjectForm({ id }: { id?: string }) {
   const queryClient = useQueryClient();
   const router = useRouter();
   const accessToken = cookies.get("accessToken");
-  const [isUploading, setIsUploading] = useState(false);
-  const [generateSummary, setGenerateSummary] = useState(true); // AI 요약 생성 여부 상태
 
   // 사용자 정보 조회
   const { data: user } = useQuery({
-    queryKey: USER_TAG,
+    queryKey: [...USER_KEYS],
     queryFn: getUser,
     enabled: !!accessToken,
     retry: 0,
   });
 
-  // 프로젝트 정보 조회 (수정 모드일 경우)
-  const { data: project } = useQuery({
+  // 포트폴리오 정보 조회 (수정 모드일 경우)
+  const { data: portfolio } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: PROJECT_TAG.DETAIL(id as number),
-    queryFn: () => getProject(id as number),
+    queryKey: PORTFOLIO_KEYS.detail(id as string),
+    queryFn: () => getPortfolio(id as string),
     enabled: !!id,
     retry: 0,
   });
 
-  // 이미지 업로드 처리 함수
-  const uploadImages = async (previews: FilePreview[]): Promise<string[]> => {
-    if (!previews || previews.length === 0) return [];
-
-    try {
-      // 이미 업로드된 이미지와 새 이미지 분리
-      const alreadyUploadedUrls: string[] = [];
-      const newFilesToUpload: FilePreview[] = [];
-
-      previews.forEach((preview) => {
-        if (preview.isUploaded && preview.previewUrl) {
-          alreadyUploadedUrls.push(preview.previewUrl);
-        } else {
-          newFilesToUpload.push(preview);
-        }
-      });
-
-      // 새 파일 업로드 처리
-      let newUploadedUrls: string[] = [];
-      if (newFilesToUpload.length > 0) {
-        const uploadPromises = newFilesToUpload.map((preview) => uploadImage(preview.file));
-        newUploadedUrls = await Promise.all(uploadPromises);
-
-        // 메모리 정리
-        newFilesToUpload.forEach((preview) => {
-          URL.revokeObjectURL(preview.previewUrl);
-        });
-      }
-
-      return [...alreadyUploadedUrls, ...newUploadedUrls];
-    } catch (error) {
-      throw new Error("이미지 업로드 중 오류가 발생했습니다.");
-    }
-  };
-
-  // 프로젝트 생성 뮤테이션
-  const createProjectMutation = useMutation({
-    mutationFn: createProject,
+  // 포트폴리오 생성 뮤테이션
+  const createPortfolioMutation = useMutation({
+    mutationFn: createPortfolio,
     onSuccess: async () => {
-      await revalidateProjects();
-      queryClient.invalidateQueries({ queryKey: PROJECT_TAG.ALL() });
+      await revalidatePortfolios();
+      queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.all() });
       router.push("/portfolio");
     },
   });
 
-  // 프로젝트 수정 뮤테이션
-  const updateProjectMutation = useMutation({
-    mutationFn: async (data: { id: number; projectData: ProjectRequest; generateSummary: boolean }) =>
-      updateProject({ id: data.id, projectData: data.projectData, generateSummary: data.generateSummary }),
+  // 포트폴리오 수정 뮤테이션
+  const updatePortfolioMutation = useMutation({
+    mutationFn: async (data: { id: string; portfolioData: PortfolioRequest }) =>
+      updatePortfolio({ id: data.id, portfolioData: data.portfolioData }),
     onSuccess: async () => {
-      await revalidateProjects();
-      queryClient.invalidateQueries({ queryKey: PROJECT_TAG.ALL() });
+      await revalidatePortfolios();
+      queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEYS.all() });
       router.push("/portfolio");
     },
   });
 
   // 폼 제출 핸들러
-  const onSubmit = async (formData: ProjectFormData) => {
-    if (createProjectMutation.isPending || updateProjectMutation.isPending || isUploading) {
+  const onSubmit = async (formData: Record<string, string | string[]>) => {
+    if (createPortfolioMutation.isPending || updatePortfolioMutation.isPending) {
       return;
     }
 
-    // 서버로 전송할 데이터 준비
-    const serverData: ServerProjectData = {
-      ...formData,
-      endDate: formData.endDate || undefined,
-      images: undefined,
-      techStack: formData.techStack ? formData.techStack.map((tech) => tech.name) : [],
+    const portfolioData: PortfolioRequest = {
+      title: formData.title as string,
+      content: formData.content as string,
+      excerpt: formData.excerpt as string,
+      start_date: formData.startDate as string,
+      end_date: (formData.endDate as string) || undefined,
+      techStacks: Array.isArray(formData.techStack) ? formData.techStack : [],
+      links: [],
     };
 
-    // 이미지 처리 로직
-    if (
-      id &&
-      project?.images &&
-      (!formData.images || (Array.isArray(formData.images) && formData.images.length === 0))
-    ) {
-      // 수정 모드에서 이미지 변경이 없으면 기존 이미지 유지
-      serverData.images = project.images;
-    } else if (formData.images && formData.images.length > 0) {
-      const newImages = formData.images.filter((img) => !img.isUploaded);
-
-      if (newImages.length > 0) {
-        // 새 이미지가 있으면 업로드 실행
-        setIsUploading(true);
-        toast.info(`${newImages.length}개 이미지 업로드 중...`);
-
-        try {
-          const imageUrls = await uploadImages(formData.images);
-          serverData.images = imageUrls;
-          setIsUploading(false);
-        } catch (error) {
-          setIsUploading(false);
-          toast.error("이미지 업로드에 실패했습니다.");
-          return;
-        }
-      } else {
-        // 기존 이미지만 있는 경우
-        const existingUrls = formData.images.filter((img) => img.isUploaded).map((img) => img.previewUrl);
-        serverData.images = existingUrls;
-      }
-    } else {
-      // 이미지가 없거나 모두 삭제된 경우
-      serverData.images = [];
+    // GitHub/프로젝트 링크 처리
+    if (formData.githubLink) {
+      portfolioData.links = portfolioData.links || [];
+      portfolioData.links.push({ type: "github", url: formData.githubLink as string });
+    }
+    if (formData.projectLink) {
+      portfolioData.links = portfolioData.links || [];
+      portfolioData.links.push({ type: "live", url: formData.projectLink as string });
     }
 
-    // 프로젝트 생성 또는 수정 요청 전송
+    // 커버 이미지 처리
+    if (formData.coverImageFile) {
+      try {
+        const imageUrl = await uploadImage(formData.coverImageFile as unknown as File);
+        portfolioData.cover_image = imageUrl;
+      } catch (error) {
+        toast.error("이미지 업로드에 실패했습니다.");
+        return;
+      }
+    }
+
     toast.promise(
       id
-        ? updateProjectMutation.mutateAsync({
-            id: Number(id),
-            projectData: serverData as ProjectRequest,
-            generateSummary,
+        ? updatePortfolioMutation.mutateAsync({
+            id,
+            portfolioData,
           })
-        : createProjectMutation.mutateAsync({
-            projectData: serverData as ProjectRequest,
-            userId: user?.id as string,
-            generateSummary,
-          }),
+        : createPortfolioMutation.mutateAsync(portfolioData),
       {
         loading: "포트폴리오 작성 중...",
         success: "포트폴리오 작성 완료",
@@ -173,16 +107,16 @@ export default function ProjectForm({ id }: { id?: number }) {
   };
 
   // 기존 데이터 있을 때 폼 초기값 설정
-  const defaultValues = project
+  const defaultValues = portfolio
     ? {
-        ...project,
-        images: project.images
-          ? project.images.map((url) => ({
-              file: new File([], "placeholder", { type: "image/jpeg" }),
-              previewUrl: url,
-              isUploaded: true,
-            }))
-          : undefined,
+        title: portfolio.title,
+        excerpt: portfolio.excerpt || "",
+        content: portfolio.content,
+        startDate: portfolio.start_date || "",
+        endDate: portfolio.end_date || "",
+        techStack: portfolio.techStacks?.map((tech) => tech.name) || [],
+        githubLink: portfolio.links?.find((l) => l.type === "github")?.url || "",
+        projectLink: portfolio.links?.find((l) => l.type === "live")?.url || "",
       }
     : undefined;
 
@@ -201,15 +135,6 @@ export default function ProjectForm({ id }: { id?: number }) {
             />
           </div>
           <Form.Error name="title" />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label className="text-lg font-medium" htmlFor="isPersonal">
-            개인
-          </label>
-          <div className="h-10">
-            <Form.Checkbox label="isPersonal" />
-          </div>
         </div>
 
         <div className="flex gap-4">
@@ -250,28 +175,16 @@ export default function ProjectForm({ id }: { id?: number }) {
       <div className="pb-4" />
 
       <div className="flex flex-col gap-2">
-        <label className="text-lg font-medium" htmlFor="description">
+        <label className="text-lg font-medium" htmlFor="excerpt">
           프로젝트 설명
         </label>
         <Form.Textarea
-          label="description"
+          label="excerpt"
           placeholder="프로젝트 설명을 입력해주세요."
           rows={2}
           validation={{ required: "프로젝트 설명을 입력해주세요." }}
         />
-        <Form.Error name="description" />
-      </div>
-
-      <div className="pt-4" />
-
-      <div className="flex flex-col gap-2">
-        <label className="text-lg font-medium" htmlFor="images">
-          프로젝트 이미지
-        </label>
-        <Form.FileInput label="images" multiple={true} accept="image/*" />
-        <p className="text-sm text-gray-500">
-          * 프로젝트의 주요 이미지를 선택해주세요. 이미지는 포트폴리오 작성 시 함께 업로드됩니다. (최대 10개)
-        </p>
+        <Form.Error name="excerpt" />
       </div>
 
       <div className="pt-4" />
@@ -292,21 +205,6 @@ export default function ProjectForm({ id }: { id?: number }) {
           />
         </div>
         <Form.Error name="content" />
-
-        {/* AI 요약 생성 옵션 */}
-        <div className="mt-2 flex items-center gap-2">
-          <label className="inline-flex cursor-pointer items-center">
-            <input
-              type="checkbox"
-              className="peer sr-only"
-              checked={generateSummary}
-              onChange={() => setGenerateSummary(!generateSummary)}
-            />
-            <div className="peer relative h-6 w-11 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none rtl:peer-checked:after:-translate-x-full" />
-            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">AI 요약 생성</span>
-          </label>
-          <div className="text-xs text-gray-500">(내용 기반으로 자동 요약을 생성합니다)</div>
-        </div>
       </div>
 
       <div className="pt-4" />
@@ -363,7 +261,7 @@ export default function ProjectForm({ id }: { id?: number }) {
       <div className="pt-4" />
 
       <div className="mx-96 flex items-center justify-end">
-        <Form.Submit text={isUploading ? "이미지 업로드 중..." : "포트폴리오 작성하기"} disabled={isUploading} />
+        <Form.Submit text="포트폴리오 작성하기" />
       </div>
     </Form>
   );

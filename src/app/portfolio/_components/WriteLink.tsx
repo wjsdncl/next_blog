@@ -2,14 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { getUser, USER_TAG } from "@/services/user.api";
+import { getUser, USER_KEYS } from "@/services/user.api";
 import cookies from "@/utils/cookies";
 
 export default function WriteLink() {
   const accessToken = cookies.get("accessToken");
 
   const { data: user } = useQuery({
-    queryKey: USER_TAG,
+    queryKey: [...USER_KEYS],
     queryFn: getUser,
     enabled: !!accessToken,
     retry: 0,

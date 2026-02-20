@@ -7,30 +7,24 @@ import removeMarkdown from "remove-markdown";
 import { useShallow } from "zustand/shallow";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useModalStore from "@/stores/ModalStore";
+import { type PortfolioLink } from "@/types/portfolioType";
 import DeleteConfirmationModal from "./ProjectDeleteModal";
 import ExpandedContent from "./ProjectDetailOverlay";
 import { ProjectLinks, TechStack } from "./ProjectMeta";
 
 export interface ProjectCardProps {
-  id: number;
+  id: string;
   title: string;
-  isPersonal?: boolean;
   date: string;
-  description: string;
+  excerpt: string;
   content: string;
-  summary: string[];
-  techStack: string[];
-  links: Array<{
-    id: number;
-    title: string; // "GitHub", "Demo", "Design" 등
-    url: string;
-    icon: string | null;
-  }>;
+  techStacks: string[];
+  links: PortfolioLink[];
   isOwner?: boolean;
-  images?: string[];
+  coverImage?: string | null;
 }
 
-const useProjectActions = (projectId: number) => {
+const useProjectActions = (projectId: string) => {
   const router = useRouter();
   const { openModal, closeModal } = useModalStore(
     useShallow((state) => ({ openModal: state.openModal, closeModal: state.closeModal }))
@@ -78,10 +72,6 @@ export default function ProjectCard(project: ProjectCardProps) {
       <div className="flex flex-col gap-2 tablet:flex-row tablet:items-center">
         <div className="flex flex-1 items-end gap-2">
           <h2 className="text-3xl font-semibold">{project.title}</h2>
-
-          <span className="pb-1 text-sm font-semibold text-brand-tertiary tablet:hidden">
-            {`(${project.isPersonal ? "개인 프로젝트" : "팀 프로젝트"})`}
-          </span>
         </div>
 
         <div className="flex items-center gap-1">
@@ -103,26 +93,15 @@ export default function ProjectCard(project: ProjectCardProps) {
 
       <div className="flex items-center gap-2">
         <p className="font-medium text-gray-800">{project.date}</p>
-        <span className="hidden text-sm font-semibold text-brand-tertiary tablet:inline">
-          {`(${project.isPersonal ? "개인 프로젝트" : "팀 프로젝트"})`}
-        </span>
       </div>
 
       <hr className="border-t-2 border-gray-400" />
 
       <div>
-        <p className="mb-3 line-clamp-5 text-lg font-medium">{project.description}</p>
-        <ul className="hidden list-disc tablet:block">
-          <span className="text-lg font-medium">AI 기반 핵심 요약</span>
-          {project.summary.map((item, index) => (
-            <li key={index} className="ml-5">
-              {removeMarkdown(item)}
-            </li>
-          ))}
-        </ul>
+        <p className="mb-3 line-clamp-5 text-lg font-medium">{project.excerpt}</p>
       </div>
 
-      <TechStack stack={project.techStack} />
+      <TechStack stack={project.techStacks} />
       <ProjectLinks links={project.links} />
 
       {isExpanded &&

@@ -2,8 +2,6 @@ import ReactMarkdown from "react-markdown";
 import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
-import removeMarkdown from "remove-markdown";
-import ImageCarousel from "@/components/ImageCarousel";
 import components from "@/components/MarkdownComponents";
 import { type ProjectCardProps } from "./ProjectCard";
 import { ProjectLinks, TechStack } from "./ProjectMeta";
@@ -39,46 +37,19 @@ export default function ExpandedContent({
                   닫기
                 </button>
               </div>
-              <p className="pb-3 font-medium text-gray-800">
-                {project.date}{" "}
-                <span className="text-sm font-semibold text-brand-tertiary">
-                  ({project.isPersonal ? "개인 프로젝트" : "팀 프로젝트"})
-                </span>
-              </p>
+              <p className="pb-3 font-medium text-gray-800">{project.date}</p>
               <hr className="border-t-2 border-gray-400" />
             </div>
 
             <div className="mb-6">
-              <div className="mb-4">
-                <h3 className="mb-2 text-2xl font-semibold"># AI 기반 핵심 요약</h3>
-                <ul className="ml-5 list-disc">
-                  {project.summary.map((item, index) => (
-                    <li key={index} className="ml-5">
-                      {removeMarkdown(item)}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {project.excerpt && (
+                <div className="mb-4">
+                  <h3 className="mb-2 text-2xl font-semibold"># 프로젝트 설명</h3>
+                  <p className="text-lg font-medium">{project.excerpt}</p>
+                </div>
+              )}
 
               <hr className="my-6 border-t-2 border-gray-400" />
-
-              <div className="mb-4">
-                <h3 className="mb-2 text-2xl font-semibold"># 프로젝트 설명</h3>
-                <p className="text-lg font-medium">{project.description}</p>
-              </div>
-
-              {project.images && project.images.length > 0 && (
-                <>
-                  <hr className="my-6 border-t-2 border-gray-400" />
-                  <div className="mb-4">
-                    <ImageCarousel
-                      images={project.images}
-                      slidesPerView={window.innerWidth > 768 ? 2 : 1}
-                      className="mb-4"
-                    />
-                  </div>
-                </>
-              )}
 
               <div className="">
                 <h3 className="mb-2 text-2xl font-semibold"># 상세 내용</h3>
@@ -95,7 +66,7 @@ export default function ExpandedContent({
             </div>
 
             <div className="flex flex-col gap-4">
-              <TechStack stack={project.techStack} />
+              <TechStack stack={project.techStacks} />
 
               <div className="flex justify-end">
                 <ProjectLinks links={project.links} />

@@ -1,19 +1,21 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
-import { getProject, PROJECT_TAG } from "@/services/Project.api";
-import { getUser, USER_TAG } from "@/services/user.api";
+import { getPortfolio, PORTFOLIO_KEYS } from "@/services/portfolio.api";
+import { getUser, USER_KEYS } from "@/services/user.api";
 import ProjectForm from "./_components/ProjectForm";
 
-export default async function PortfolioWritePage({ searchParams }: { searchParams: { id: number } }) {
+export default async function PortfolioWritePage({ searchParams }: { searchParams: { id: string } }) {
   const queryClient = new QueryClient();
 
-  const [project, user] = await Promise.all([searchParams.id ? getProject(searchParams.id) : undefined, getUser()]);
+  const [portfolio, user] = await Promise.all([
+    searchParams.id ? getPortfolio(searchParams.id) : undefined,
+    getUser(),
+  ]);
 
-  queryClient.setQueryData(PROJECT_TAG.DETAIL(searchParams.id), project);
-  queryClient.setQueryData(USER_TAG, user);
+  queryClient.setQueryData(PORTFOLIO_KEYS.detail(searchParams.id), portfolio);
+  queryClient.setQueryData([...USER_KEYS], user);
 
-  // 관리자가 아니면 로그인 페이지로 이동
-  if (!user?.isAdmin) {
+  if (user?.role !== "OWNER") {
     redirect("/login");
   }
 
