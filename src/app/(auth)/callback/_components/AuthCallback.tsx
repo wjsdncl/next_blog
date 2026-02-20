@@ -4,9 +4,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { SignInWithGithubCallback } from "@/services/auth.api";
+import { handleOAuthCallback } from "@/services/auth.api";
 import { revalidateUser } from "@/services/server.action";
-import { USER_TAG } from "@/services/user.api";
+import { USER_KEYS } from "@/services/user.api";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
@@ -18,11 +18,11 @@ export default function AuthCallback({ code }: { code: string }) {
   };
 
   useQuery({
-    queryKey: USER_TAG,
+    queryKey: [...USER_KEYS],
     queryFn: () => {
       const id = toast.loading("GitHub 계정으로 로그인 중...");
 
-      return SignInWithGithubCallback(code)
+      return handleOAuthCallback(code)
         .then((result) => {
           toast.updateToast(id, "로그인에 성공했습니다.", "success", 2000);
 

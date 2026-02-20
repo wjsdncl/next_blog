@@ -10,7 +10,7 @@ import Github from "@/Icons/Github.svg";
 import Mail from "@/Icons/Mail.svg";
 import { revalidateUser } from "@/services/server.action";
 import useModalStore from "@/stores/ModalStore";
-import { type User } from "@/types/AuthType";
+import { type User } from "@/types/authType";
 import cn from "@/utils/cn";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";

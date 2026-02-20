@@ -1,11 +1,11 @@
 "use client";
 
 import Github from "@/Icons/Github.svg";
-import { SignInWithGithub } from "@/services/auth.api";
+import { loginWithGithub } from "@/services/auth.api";
 
 export default function GithubAuth() {
   const handleSignInWithGithub = async () => {
-    await SignInWithGithub();
+    await loginWithGithub();
   };
 
   return (
