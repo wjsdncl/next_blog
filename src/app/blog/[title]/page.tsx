@@ -131,10 +131,10 @@ export async function generateMetadata({ params }: { params: { title: string } }
 
   try {
     return {
-      title: `${decodedTitle} | JMJ's Devlog`,
+      title: `${decodedTitle} | wjdalswo Devlog`,
       description: `${decodedTitle}에 대한 블로그 게시글`,
       openGraph: {
-        title: `${decodedTitle} | JMJ's Devlog`,
+        title: `${decodedTitle} | wjdalswo Devlog`,
         description: `${decodedTitle}에 대한 블로그 게시글`,
         url: `https://wjsdncl-dev-hub.vercel.app/blog/${params.title}`,
         type: "article",
@@ -149,7 +149,7 @@ export async function generateMetadata({ params }: { params: { title: string } }
     };
   } catch (error) {
     return {
-      title: "블로그 게시글을 찾을 수 없습니다. | JMJ's Devlog",
+      title: "블로그 게시글을 찾을 수 없습니다. | wjdalswo Devlog",
       description: "블로그 게시글을 찾을 수 없습니다.",
     };
   }

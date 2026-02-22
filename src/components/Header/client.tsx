@@ -183,7 +183,7 @@ export default function ClientHeader({ user }: { user?: User }) {
                     `text-nowrap font-medium transition-all ${isSticky ? "text-2xl" : "text-4xl tablet:text-6xl"}`
                   )}
                 >
-                  JMJ&apos;s Devlog
+                  wjdalswo Devlog
                 </span>
               </Link>
 

@@ -49,11 +49,11 @@ export default async function Page({
 export async function generateMetadata(): Promise<Metadata> {
   try {
     return {
-      title: "블로그 게시글 목록 | JMJ's Devlog",
-      description: "JMJ의 개발 블로그 게시글 목록입니다.",
+      title: "블로그 게시글 목록 | wjdalswo Devlog",
+      description: "wjdalswo의 개발 블로그 게시글 목록입니다.",
       openGraph: {
-        title: "블로그 게시글 목록 | JMJ's Devlog",
-        description: "JMJ의 개발 블로그 게시글 목록입니다.",
+        title: "블로그 게시글 목록 | wjdalswo Devlog",
+        description: "wjdalswo의 개발 블로그 게시글 목록입니다.",
         url: `https://wjsdncl-dev-hub.vercel.app/blog/`,
         type: "website",
       },
