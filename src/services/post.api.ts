@@ -1,8 +1,22 @@
 /* eslint-disable no-console */
 
-import { type PostResponse } from "@/app/api/posts/route";
 import { type PostRequest, type Post } from "@/types/blogType";
 import instance from "./instance";
+
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+interface PostResponse {
+  success: boolean;
+  data: Post[];
+  pagination: Pagination;
+}
 
 export const CATEGORY_KEYS = {
   all: () => ["categories"] as const,

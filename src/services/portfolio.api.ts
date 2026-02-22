@@ -1,7 +1,21 @@
 /* eslint-disable no-console */
-import { type PortfolioResponse } from "@/app/api/portfolios/route";
 import { type Portfolio, type PortfolioRequest } from "@/types/portfolioType";
 import instance from "./instance";
+
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+interface PortfolioResponse {
+  success: boolean;
+  data: Portfolio[];
+  pagination: Pagination;
+}
 
 export const PORTFOLIO_KEYS = {
   all: () => ["portfolios"] as const,

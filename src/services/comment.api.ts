@@ -1,7 +1,21 @@
 /* eslint-disable no-console */
-import { type CommentResponse } from "@/app/api/comments/route";
-import { type CommentRequest } from "@/types/blogType";
+import { type Comment, type CommentRequest } from "@/types/blogType";
 import instance from "./instance";
+
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+interface CommentResponse {
+  success: boolean;
+  data: Comment[];
+  pagination: Pagination;
+}
 
 export const COMMENT_KEYS = {
   all: () => ["comments"] as const,
