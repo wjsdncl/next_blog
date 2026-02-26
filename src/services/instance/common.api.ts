@@ -29,7 +29,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export const serverApiFetch = async <T = any>({ url, options }: { url: string; options: RequestInit }): Promise<T> => {
-  const backendUrl = process.env.BACKEND_URL || "https://blog-api-xhk1.onrender.com";
+  const backendUrl = process.env.BACKEND_URL || "https://api.wjdalswo.xyz";
   const response = await fetch(`${backendUrl}${url}`, options);
   return handleResponse<T>(response);
 };
