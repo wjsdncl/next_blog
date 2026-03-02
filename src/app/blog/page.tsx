@@ -1,11 +1,13 @@
+export const dynamic = "force-dynamic";
+
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { type Metadata } from "next";
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 import { getPostList, getCategories, POST_KEYS } from "@/services/post.api";
 import { type Post } from "@/types/blogType";
 import ClientPage from "./_components/ClientPage";
 
-const Navigation = dynamic(() => import("./_components/Navigation"));
+const Navigation = nextDynamic(() => import("./_components/Navigation"));
 
 export default async function Page({
   searchParams,
