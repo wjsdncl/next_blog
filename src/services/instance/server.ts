@@ -5,8 +5,8 @@ import { cookies } from "next/headers";
 import { serverApiFetch } from "./common.api";
 
 const getServerTokens = () => {
-  const accessToken = cookies().get("accessToken")?.value;
-  const refreshToken = cookies().get("refreshToken")?.value;
+  const accessToken = cookies().get("access_token")?.value;
+  const refreshToken = cookies().get("refresh_token")?.value;
   return { accessToken, refreshToken };
 };
 

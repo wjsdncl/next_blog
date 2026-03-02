@@ -1,19 +1,9 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import cookies from "@/utils/cookies";
 import { clientApiFetch } from "./common.api";
 
-const getClientTokens = () => {
-  return {
-    accessToken: cookies.get("accessToken"),
-    refreshToken: cookies.get("refreshToken"),
-  };
-};
-
 export async function GET<T = any>(url: string, options?: RequestInit): Promise<T> {
-  const { accessToken, refreshToken } = getClientTokens();
-
   return clientApiFetch<T>({
     url,
     options: {
@@ -21,15 +11,12 @@ export async function GET<T = any>(url: string, options?: RequestInit): Promise<
       method: "GET",
       headers: {
         ...options?.headers,
-        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        ...(refreshToken && { "X-Refresh-Token": refreshToken }),
       },
     },
   });
 }
 
 export async function POST<T = any>(url: string, body?: object | FormData, options?: RequestInit): Promise<T> {
-  const { accessToken, refreshToken } = getClientTokens();
   const isFormData = body instanceof FormData;
 
   return clientApiFetch<T>({
@@ -41,16 +28,12 @@ export async function POST<T = any>(url: string, body?: object | FormData, optio
       headers: {
         ...(!isFormData && { "Content-Type": "application/json" }),
         ...options?.headers,
-        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        ...(refreshToken && { "X-Refresh-Token": refreshToken }),
       },
     },
   });
 }
 
 export async function PATCH<T = any>(url: string, body?: object, options?: RequestInit): Promise<T> {
-  const { accessToken, refreshToken } = getClientTokens();
-
   return clientApiFetch<T>({
     url,
     options: {
@@ -60,16 +43,12 @@ export async function PATCH<T = any>(url: string, body?: object, options?: Reque
       headers: {
         "Content-Type": "application/json",
         ...options?.headers,
-        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        ...(refreshToken && { "X-Refresh-Token": refreshToken }),
       },
     },
   });
 }
 
 export async function DELETE<T = any>(url: string, body?: object, options?: RequestInit): Promise<T> {
-  const { accessToken, refreshToken } = getClientTokens();
-
   return clientApiFetch<T>({
     url,
     options: {
@@ -79,8 +58,6 @@ export async function DELETE<T = any>(url: string, body?: object, options?: Requ
       headers: {
         "Content-Type": "application/json",
         ...options?.headers,
-        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        ...(refreshToken && { "X-Refresh-Token": refreshToken }),
       },
     },
   });

@@ -1,13 +1,36 @@
+import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 
 const BACKEND_URL = process.env.BACKEND_URL || "https://blog-api-xhk1.onrender.com";
 
 function getAuthHeaders(request: NextRequest): Record<string, string> {
   const headers: Record<string, string> = {};
+
+  // 1. 클라이언트가 보낸 헤더 우선
   const authorization = request.headers.get("Authorization");
   const refreshToken = request.headers.get("X-Refresh-Token");
-  if (authorization) headers["Authorization"] = authorization;
-  if (refreshToken) headers["X-Refresh-Token"] = refreshToken;
+
+  if (authorization) {
+    headers["Authorization"] = authorization;
+  }
+  if (refreshToken) {
+    headers["X-Refresh-Token"] = refreshToken;
+  }
+
+  // 2. 헤더가 없으면 httpOnly 쿠키에서 읽어서 변환
+  if (!headers["Authorization"]) {
+    const cookieStore = cookies();
+    const accessToken = cookieStore.get("access_token")?.value;
+    const refreshTokenCookie = cookieStore.get("refresh_token")?.value;
+
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+    if (refreshTokenCookie && !headers["X-Refresh-Token"]) {
+      headers["X-Refresh-Token"] = refreshTokenCookie;
+    }
+  }
+
   return headers;
 }
 
@@ -49,7 +72,13 @@ async function proxyRequest(request: NextRequest, { params }: { params: { path: 
 
   const responseHeaders = new Headers();
   response.headers.forEach((value, key) => {
-    if (!["transfer-encoding", "connection", "keep-alive"].includes(key.toLowerCase())) {
+    if (["transfer-encoding", "connection", "keep-alive"].includes(key.toLowerCase())) {
+      return;
+    }
+    // set-cookie는 여러 개일 수 있으므로 append 사용
+    if (key.toLowerCase() === "set-cookie") {
+      responseHeaders.append(key, value);
+    } else {
       responseHeaders.set(key, value);
     }
   });
