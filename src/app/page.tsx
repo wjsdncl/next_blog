@@ -8,10 +8,17 @@ import cn from "@/utils/cn";
 import { diffDate } from "@/utils/FormatDate";
 
 export default async function Page() {
-  const [popularPosts, recentPosts] = await Promise.all([
-    (await getPostList({ limit: 4, order: "like" })).posts,
-    (await getPostList({ limit: 4, order: "newest" })).posts,
-  ]);
+  let popularPosts: Post[] = [];
+  let recentPosts: Post[] = [];
+
+  try {
+    [popularPosts, recentPosts] = await Promise.all([
+      getPostList({ limit: 4, order: "like" }).then((res) => res.posts),
+      getPostList({ limit: 4, order: "newest" }).then((res) => res.posts),
+    ]);
+  } catch {
+    // 백엔드 다운 시 빈 배열 fallback
+  }
 
   return (
     <div className="mx-auto flex size-full flex-col justify-between px-6 py-4 tablet:w-tablet tablet:max-w-none desktop:w-desktop desktop:px-0">

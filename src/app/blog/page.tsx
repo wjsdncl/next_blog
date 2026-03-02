@@ -2,6 +2,7 @@ import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { getPostList, getCategories, POST_KEYS } from "@/services/post.api";
+import { type Post } from "@/types/blogType";
 import ClientPage from "./_components/ClientPage";
 
 const Navigation = dynamic(() => import("./_components/Navigation"));
@@ -21,16 +22,24 @@ export default async function Page({
   const categoryQuery = searchParams.category ?? undefined;
   const tagQuery = searchParams.tag ?? undefined;
 
-  const [posts, categoryData] = await Promise.all([
-    getPostList({
-      page: 1,
-      limit: 10,
-      search: searchQuery,
-      category: categoryQuery,
-      tag: tagQuery,
-    }),
-    getCategories(),
-  ]);
+  let posts = { posts: [] as Post[], totalPosts: 0, isLast: true, nextPage: 2 };
+  let categoryData = { categories: {} as Record<string, number>, totalPosts: 0 };
+
+  try {
+    [posts, categoryData] = await Promise.all([
+      getPostList({
+        page: 1,
+        limit: 10,
+        search: searchQuery,
+        category: categoryQuery,
+        tag: tagQuery,
+      }),
+      getCategories(),
+    ]);
+  } catch {
+    // 백엔드 다운 시 빈 배열 fallback
+  }
+
   queryClient.setQueryData(POST_KEYS.list("newest", searchQuery, categoryQuery, tagQuery), {
     pages: [posts],
     pageParams: [1],
