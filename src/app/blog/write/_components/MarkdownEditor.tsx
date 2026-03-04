@@ -36,7 +36,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
   const title = watch("title");
   const markdown = watch("content");
 
-  // 사용자 데이터 가져오기
   const { data: user } = useQuery({
     queryKey: [...USER_KEYS],
     queryFn: getUser,
@@ -44,7 +43,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     gcTime: 0,
   });
 
-  // 포스트 데이터를 가져오는 쿼리
   const { data: post } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: POST_KEYS.detail(slug as string),
@@ -57,7 +55,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     useShallow((state) => ({ openModal: state.openModal, closeModal: state.closeModal }))
   );
 
-  // 글 작성 mutation
   const completeWritingMutation = useMutation({
     mutationFn: async (data: PostRequest) => createPost(data),
     onSuccess: async () => {
@@ -68,7 +65,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     },
   });
 
-  // 글 수정 mutation
   const updatePostMutation = useMutation({
     mutationFn: async (data: { id: string; postData: PostRequest }) =>
       updatePost({ id: data.id, postData: data.postData }),
@@ -80,7 +76,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     },
   });
 
-  // 기존 포스트 데이터 불러오기
   useEffect(() => {
     if (slug && post) {
       setValue("title", post.title);
@@ -90,7 +85,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     }
   }, [post, setValue, slug]);
 
-  // 글 작성 완료
   const completeWriting = (data: FormValues) => {
     if (completeWritingMutation.isPending || updatePostMutation.isPending) return;
     const firstImage = markdown.match(/!\[.*?\]\((.*?)\)/)?.[1] || "";
@@ -111,7 +105,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     );
   };
 
-  // 이미지 업로드
   const handleImageUpload = async (file: File, tempText: string) => {
     setValue("content", `${watch("content")}${tempText}`);
     try {
@@ -123,7 +116,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     }
   };
 
-  // 이미지 드래그 앤 드랍
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
@@ -132,7 +124,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     }
   };
 
-  // 이미지 붙여넣기
   const handlePaste = (event: React.ClipboardEvent) => {
     const items = event.clipboardData.items;
     for (let i = 0; i < items.length; i++) {
@@ -147,11 +138,9 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     }
   };
 
-  // 스크롤 동기화를 위한 ref 추가
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
-  // 스크롤 동기화 함수
   const handleEditorScroll = useCallback(() => {
     if (!editorRef.current || !previewRef.current) return;
 
@@ -166,9 +155,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
 
   return (
     <form onSubmit={handleSubmit(completeWriting)} className="flex h-dvh w-full">
-      {/* 작성 부분 */}
       <div className="flex max-w-[50%] basis-1/2 flex-col bg-background-primary">
-        {/* 제목 입력 부분 */}
         <div className="flex size-full flex-col gap-4 p-[64px_40px_10px]">
           <Controller
             name="category"
@@ -242,7 +229,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
           />
         </div>
 
-        {/* 버튼 부분 */}
         <div className="flex w-full items-center justify-between bg-gray-200 px-4 py-3">
           <button
             onClick={() => router.push("/blog")}
@@ -259,7 +245,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
         </div>
       </div>
 
-      {/* 프리뷰 부분 */}
       <div
         ref={previewRef}
         className="flex max-w-[50%] basis-1/2 flex-col gap-4 overflow-y-auto bg-gray-100 p-[64px_40px_40px] scrollbar:w-2 scrollbar:rounded-full scrollbar:bg-gray-200 scrollbar-thumb:rounded-full scrollbar-thumb:bg-gray-300"

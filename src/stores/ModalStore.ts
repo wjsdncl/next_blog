@@ -1,3 +1,4 @@
+/** 모달 Zustand 스토어 — 여러 모달 스택 지원 (auto-increment ID) */
 import { create } from "zustand";
 
 interface Modal {

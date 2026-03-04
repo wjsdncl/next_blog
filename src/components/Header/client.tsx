@@ -15,12 +15,10 @@ import cn from "@/utils/cn";
 import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
-// 헤더의 기본 높이와 스크롤 임계값 설정
 const HEADER_HEIGHT = 200;
 const SCROLL_THRESHOLD = 0.9;
 
 export default function ClientHeader({ user }: { user?: User }) {
-  // 헤더의 고정 상태와 표시 여부를 관리하는 상태
   const [isSticky, setIsSticky] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -36,7 +34,6 @@ export default function ClientHeader({ user }: { user?: User }) {
     }))
   );
 
-  // 스크롤 이벤트 처리를 위한 useEffect
   useEffect(() => {
     const handleScroll = () => {
       const header = headerRef.current;
@@ -58,9 +55,7 @@ export default function ClientHeader({ user }: { user?: User }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 로그아웃 처리 함수
   const handleLogout = async () => {
-    // 로그아웃 처리
     cookies.remove("accessToken");
     cookies.remove("refreshToken");
     queryClient.clear();
@@ -69,7 +64,6 @@ export default function ClientHeader({ user }: { user?: User }) {
     router.push("/");
   };
 
-  // 로그아웃 모달 표시 함수
   const openLogoutModal = () => {
     const modalId = openModal(
       <>
@@ -96,14 +90,12 @@ export default function ClientHeader({ user }: { user?: User }) {
     );
   };
 
-  // 이메일 클립보드 복사 처리 함수
   const handleEmailClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText("wjsdncl2222@gmail.com");
     toast.success("이메일 주소가 복사되었습니다.");
   };
 
-  // 로그인/로그아웃 버튼 렌더링 함수
   const renderAuthButton = (textSize: string) =>
     user ? (
       <button onClick={openLogoutModal} className={cn(`${textSize} text-nowrap font-medium text-text-primary`)}>
@@ -115,7 +107,6 @@ export default function ClientHeader({ user }: { user?: User }) {
       </Link>
     );
 
-  // 소셜 링크 렌더링 함수
   const renderSocialLinks = () => (
     <>
       <Link
@@ -169,13 +160,11 @@ export default function ClientHeader({ user }: { user?: User }) {
             }`
           )}
         >
-          {/* 헤더 내용을 감싸는 컨테이너 */}
           <div
             className={cn(
               `flex px-5 tablet:px-0 desktop:px-5 ${isSticky ? "flex-row items-center" : "flex-col gap-6"}`
             )}
           >
-            {/* 로고 섹션 */}
             <section className={cn(`${isSticky ? "mr-8" : "flex w-full justify-between"}`)}>
               <Link href="/" className="z-20" scroll={true} onClick={() => window.scrollTo(0, 0)}>
                 <span
@@ -190,7 +179,6 @@ export default function ClientHeader({ user }: { user?: User }) {
               {!isSticky && renderAuthButton("text-lg")}
             </section>
 
-            {/* 네비게이션 섹션 */}
             <section className={cn(`${isSticky ? "hidden flex-1 tablet:flex" : "flex w-full justify-between"}`)}>
               <nav>
                 <ul

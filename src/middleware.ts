@@ -1,12 +1,18 @@
+/**
+ * Next.js 미들웨어 — 인증 상태 기반 라우트 리다이렉션
+ *
+ * 로그인 상태: login/signup 접근 시 홈으로
+ * 비로그인 상태: 인증 필요 페이지 접근 시 로그인으로
+ */
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// 로그인 상태일 때 리디렉션 맵
+/** 로그인 상태에서 접근 차단할 경로 → 리다이렉트 대상 */
 const authMap = new Map<RegExp, string>([[/^\/(login|signup)/, "/"]]);
 
-// 비로그인 상태일 때 리디렉션 맵
+/** 비로그인 상태에서 접근 차단할 경로 → 리다이렉트 대상 */
 const guestMap = new Map<RegExp, string>([
-  [/^\/(get-started|create-team|join-team)/, "/login"], // team 관련 경로
+  [/^\/(get-started|create-team|join-team)/, "/login"],
 ]);
 
 export const middleware = (request: NextRequest) => {

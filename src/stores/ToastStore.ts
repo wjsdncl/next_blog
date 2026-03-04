@@ -1,3 +1,9 @@
+/**
+ * 토스트 Zustand 스토어
+ *
+ * addToast: duration 지정 시 자동 제거, 미지정(loading) 시 수동 제거 필요
+ * updateToast: loading → success/error 전환 시 사용
+ */
 import { create } from "zustand";
 
 export type ToastType = "success" | "warning" | "error" | "info" | "loading";

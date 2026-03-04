@@ -1,3 +1,10 @@
+/**
+ * API 프록시 (Catch-all Route)
+ *
+ * 클라이언트 → /api/* → 백엔드로 프록시.
+ * httpOnly 쿠키(access_token, refresh_token)를 읽어 Authorization 헤더로 변환.
+ * 응답의 set-cookie는 append로 처리 (여러 쿠키 동시 전달).
+ */
 import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 

@@ -1,3 +1,9 @@
+/**
+ * 서버 사이드 API 인스턴스
+ *
+ * Next.js cookies()로 httpOnly 쿠키(access_token, refresh_token)를 읽어
+ * Authorization / X-Refresh-Token 헤더로 변환하여 백엔드에 전달.
+ */
 "use server";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

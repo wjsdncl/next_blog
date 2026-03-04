@@ -1,3 +1,10 @@
+/**
+ * Cohere AI 텍스트 요약 (Server Action)
+ *
+ * 입력 텍스트를 한국어 3문장으로 요약.
+ * 문장 분리 시 영문 약어(e.g. Next.js)의 마침표를 보존하기 위해
+ * 임시로 @ 치환 후 분리하는 전처리 적용.
+ */
 "use server";
 
 import { CohereClientV2 } from "cohere-ai";

@@ -1,3 +1,10 @@
+/**
+ * React Markdown 커스텀 렌더러
+ *
+ * code: 언어 지정 시 SyntaxHighlighter(oneDark), 미지정 시 인라인 코드
+ * img: alt 텍스트에 {width}x{height} 포함 시 해당 크기로 렌더링
+ *      예: ![설명{600x400}](url) → 600×400px
+ */
 import Image from "next/image";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -7,6 +14,7 @@ interface ImageSize {
   height: number;
 }
 
+/** alt 텍스트에서 {width}x{height} 패턴 추출 */
 const parseImageSize = (alt?: string): ImageSize | null => {
   const match = alt?.match(/{(\d+)x(\d+)}/);
   if (!match) return null;

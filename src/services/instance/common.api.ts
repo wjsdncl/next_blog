@@ -1,3 +1,9 @@
+/**
+ * API 공통 모듈
+ *
+ * serverApiFetch: SSR에서 백엔드 직접 호출 (BACKEND_URL 환경변수)
+ * clientApiFetch: CSR에서 /api 프록시 경유 (Next.js API Route)
+ */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export class ApiError extends Error {

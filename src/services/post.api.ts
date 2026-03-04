@@ -1,3 +1,9 @@
+/**
+ * 게시글 API 서비스
+ *
+ * Query Key 규칙: POST_KEYS.list(order, search, category, tag) / POST_KEYS.detail(slug)
+ * 캐시: next.revalidate(30분) + tags 기반 ISR
+ */
 /* eslint-disable no-console */
 
 import { type PostRequest, type Post } from "@/types/blogType";

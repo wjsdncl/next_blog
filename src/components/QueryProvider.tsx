@@ -1,3 +1,9 @@
+/**
+ * TanStack Query 프로바이더
+ *
+ * SSR: 요청마다 새 QueryClient 생성 (메모리 누수 방지)
+ * CSR: 싱글톤 QueryClient 재사용 (상태 유지)
+ */
 "use client";
 
 import { isServer, QueryClient, QueryClientProvider } from "@tanstack/react-query";

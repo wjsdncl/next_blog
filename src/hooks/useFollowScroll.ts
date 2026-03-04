@@ -1,3 +1,10 @@
+/**
+ * 스크롤 추적 사이드바 훅 (데스크탑 전용)
+ *
+ * startFollowPosition 이상 스크롤 시 요소가 부드럽게 따라옴.
+ * damping(0~1): 낮을수록 느리게 추적 (0.1 = 목표 거리의 10%씩 이동).
+ * requestAnimationFrame 기반 60fps 애니메이션.
+ */
 import { useRef, useEffect, useState, useCallback } from "react";
 import useDeviceSize from "./useDeviceSize";
 

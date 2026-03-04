@@ -1,3 +1,9 @@
+/**
+ * 토스트 알림 파사드
+ *
+ * Zustand 스토어를 직접 접근하지 않고 이 모듈을 통해 사용.
+ * promise(): loading → 성공/실패로 자동 전환되는 패턴 지원.
+ */
 import useToastStore, { type ToastType } from "@/stores/ToastStore";
 
 const toast = {

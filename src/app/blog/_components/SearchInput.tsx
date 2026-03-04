@@ -11,9 +11,9 @@ export default function SearchInput() {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("search") ?? undefined; // 검색어 추출
-  const categoryQuery = searchParams.get("category") ?? undefined; // 카테고리 추출
-  const tagQuery = searchParams.get("tag") ?? undefined; // 태그 추출
+  const searchQuery = searchParams.get("search") ?? undefined;
+  const categoryQuery = searchParams.get("category") ?? undefined;
+  const tagQuery = searchParams.get("tag") ?? undefined;
 
   const handleIconClick = () => {
     if (inputRef.current) {
