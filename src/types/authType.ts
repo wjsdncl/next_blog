@@ -9,9 +9,3 @@ export interface User {
   created_at: string;
   updated_at: string;
 }
-
-export interface OAuthResponse {
-  user: User;
-  accessToken: string;
-  refreshToken: string;
-}

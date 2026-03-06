@@ -114,7 +114,7 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
   };
 
   // 댓글 수정 함수
-  const handleEdit = (commentId: string) => {
+  const handleEdit = (commentId: string, _content: string) => {
     setEditCommentId(commentId);
   };
 
