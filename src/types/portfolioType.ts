@@ -26,7 +26,6 @@ export interface Portfolio {
   status: PublishStatus;
   view_count: number;
   order: number;
-  category_id: string | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;

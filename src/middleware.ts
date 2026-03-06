@@ -11,9 +11,7 @@ import type { NextRequest } from "next/server";
 const authMap = new Map<RegExp, string>([[/^\/(login|signup)/, "/"]]);
 
 /** 비로그인 상태에서 접근 차단할 경로 → 리다이렉트 대상 */
-const guestMap = new Map<RegExp, string>([
-  [/^\/(get-started|create-team|join-team)/, "/login"],
-]);
+const guestMap = new Map<RegExp, string>();
 
 export const middleware = (request: NextRequest) => {
   const { pathname } = request.nextUrl;
