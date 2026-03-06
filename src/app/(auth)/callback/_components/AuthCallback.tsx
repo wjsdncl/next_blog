@@ -12,13 +12,13 @@ export default function AuthCallback({ provider }: { provider: string }) {
     const handleLogin = async () => {
       if (!provider) {
         toast.error("로그인 처리 중 오류가 발생했습니다.");
-        router.push("/");
+        router.replace("/");
         return;
       }
 
-      toast.success("로그인에 성공했습니다.", 2000);
       await revalidateUser();
-      router.push("/");
+      toast.success("로그인에 성공했습니다.", 2000);
+      router.replace("/");
     };
 
     handleLogin();
