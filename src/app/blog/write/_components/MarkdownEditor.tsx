@@ -11,7 +11,7 @@ import { useShallow } from "zustand/shallow";
 import components from "@/components/MarkdownComponents";
 import TagInput from "@/components/TagInput";
 import { getPost, POST_KEYS, updatePost, uploadImage, createPost } from "@/services/post.api";
-import { revalidatePosts } from "@/services/server.action";
+import { revalidatePosts } from "@/services/actions/revalidate.action";
 import { getUser, USER_KEYS } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import type { PostRequest } from "@/types/blogType";

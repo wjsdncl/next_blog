@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deletePortfolio, PORTFOLIO_KEYS } from "@/services/portfolio.api";
-import { revalidatePortfolios } from "@/services/server.action";
+import { revalidatePortfolios } from "@/services/actions/revalidate.action";
 import toast from "@/utils/Toast";
 
 export default function DeleteConfirmationModal({ projectId, onClose }: { projectId: string; onClose: () => void }) {

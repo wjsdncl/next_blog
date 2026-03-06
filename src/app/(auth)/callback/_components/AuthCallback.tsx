@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { revalidateUser } from "@/services/server.action";
+import { revalidateUser } from "@/services/actions/revalidate.action";
 import toast from "@/utils/Toast";
 
 export default function AuthCallback({ provider }: { provider: string }) {

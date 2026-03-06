@@ -9,7 +9,7 @@ import Copy from "@/Icons/Copy.svg";
 import Github from "@/Icons/Github.svg";
 import Mail from "@/Icons/Mail.svg";
 import { POST } from "@/services/instance/client";
-import { revalidateUser } from "@/services/server.action";
+import { revalidateUser } from "@/services/actions/revalidate.action";
 import useModalStore from "@/stores/ModalStore";
 import { type User } from "@/types/authType";
 import cn from "@/utils/cn";

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Form from "@/components/Form";
 import { uploadImage } from "@/services/post.api";
 import { createPortfolio, getPortfolio, PORTFOLIO_KEYS, updatePortfolio } from "@/services/portfolio.api";
-import { revalidatePortfolios } from "@/services/server.action";
+import { revalidatePortfolios } from "@/services/actions/revalidate.action";
 import { type PortfolioRequest } from "@/types/portfolioType";
 import toast from "@/utils/Toast";
 

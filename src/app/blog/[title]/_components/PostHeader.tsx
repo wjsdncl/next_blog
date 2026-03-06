@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import { deletePost, getPost, POST_KEYS, updatePost } from "@/services/post.api";
-import { revalidatePosts } from "@/services/server.action";
+import { revalidatePosts } from "@/services/actions/revalidate.action";
 import useModalStore from "@/stores/ModalStore";
 import { type User } from "@/types/authType";
 import { formatKoreanDate } from "@/utils/FormatDate";
