@@ -55,7 +55,7 @@ export default function ProjectForm({ id }: { id?: string }) {
       excerpt: formData.excerpt as string,
       start_date: formData.startDate as string,
       end_date: (formData.endDate as string) || undefined,
-      techStacks: Array.isArray(formData.techStack) ? formData.techStack : [],
+      tech_stack_ids: Array.isArray(formData.techStack) ? formData.techStack : [],
       links: [],
     };
 

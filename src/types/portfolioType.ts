@@ -44,7 +44,7 @@ export interface PortfolioRequest {
   start_date?: string;
   end_date?: string;
   status?: PublishStatus;
-  techStacks: string[];
+  tech_stack_ids?: string[];
   links?: Array<{
     type: string;
     url: string;

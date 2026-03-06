@@ -125,7 +125,7 @@ export default function CommentItem({
               답글
             </button>
           )}
-          {(currentUser?.id === comment.author_id || currentUser?.role === "OWNER") && (
+          {(currentUser?.id === comment.author?.id || currentUser?.role === "OWNER") && (
             <>
               <button
                 onClick={() => onEdit(comment.id, comment.content)}

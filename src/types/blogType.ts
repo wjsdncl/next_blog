@@ -11,7 +11,6 @@ export interface Post {
   view_count: number;
   like_count: number;
   comment_count: number;
-  category_id: string | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;
@@ -45,7 +44,6 @@ export interface Category {
   order: number;
   post_count: number;
   created_at: string;
-  updated_at: string;
 }
 
 export interface Tag {
@@ -53,7 +51,6 @@ export interface Tag {
   name: string;
   slug: string;
   created_at: string;
-  updated_at: string;
 }
 
 export interface CategoryCounts {
@@ -64,11 +61,9 @@ export interface Comment {
   id: string;
   content: string;
   post_id: string;
-  author_id: string;
   parent_id: string | null;
   like_count: number;
   is_liked: boolean;
-  deleted_at: string | null;
   created_at: string;
   updated_at: string;
   author: {
