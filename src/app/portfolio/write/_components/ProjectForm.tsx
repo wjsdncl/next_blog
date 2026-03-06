@@ -6,23 +6,12 @@ import Form from "@/components/Form";
 import { uploadImage } from "@/services/post.api";
 import { createPortfolio, getPortfolio, PORTFOLIO_KEYS, updatePortfolio } from "@/services/portfolio.api";
 import { revalidatePortfolios } from "@/services/server.action";
-import { getUser, USER_KEYS } from "@/services/user.api";
 import { type PortfolioRequest } from "@/types/portfolioType";
-import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
 export default function ProjectForm({ id }: { id?: string }) {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const accessToken = cookies.get("accessToken");
-
-  // 사용자 정보 조회
-  const { data: user } = useQuery({
-    queryKey: [...USER_KEYS],
-    queryFn: getUser,
-    enabled: !!accessToken,
-    retry: 0,
-  });
 
   // 포트폴리오 정보 조회 (수정 모드일 경우)
   const { data: portfolio } = useQuery({

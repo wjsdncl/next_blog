@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { useRef, useEffect, Suspense } from "react";
 import { getPostList, POST_KEYS } from "@/services/post.api";
 import { getUser, USER_KEYS } from "@/services/user.api";
-import cookies from "@/utils/cookies";
 import AdminWriteButton from "./AdminWriteButton";
 import BlogPostItem from "./BlogPostItem";
 import SearchInput from "./SearchInput";
@@ -19,12 +18,9 @@ const BlogPostList = () => {
   const categoryQuery = searchParams.get("category") ?? undefined;
   const tagQuery = searchParams.get("tag") ?? undefined;
 
-  const accessToken = cookies.get("accessToken");
-
   const { data: user } = useQuery({
     queryKey: [...USER_KEYS],
     queryFn: getUser,
-    enabled: !!accessToken,
     retry: 0,
     gcTime: 0,
   });

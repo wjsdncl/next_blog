@@ -7,8 +7,8 @@ import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
 import FavoriteFilled from "@/Icons/FavoriteFilled.svg";
 import Share from "@/Icons/Share.svg";
 import { getPost, likePost, POST_KEYS } from "@/services/post.api";
+import { getUser, USER_KEYS } from "@/services/user.api";
 import type { Post } from "@/types/blogType";
-import cookies from "@/utils/cookies";
 import toast from "@/utils/Toast";
 
 const SCROLL_THRESHOLD = 200;
@@ -25,7 +25,11 @@ export default function Navigation({ title }: { title: string }) {
     },
   });
 
-  const accessToken = cookies.get("accessToken");
+  const { data: user } = useQuery({
+    queryKey: [...USER_KEYS],
+    queryFn: getUser,
+    retry: 0,
+  });
 
   const likePostMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -78,7 +82,7 @@ export default function Navigation({ title }: { title: string }) {
   };
 
   const handleLike = () => {
-    if (!accessToken) {
+    if (!user) {
       toast.error("로그인 후 이용할 수 있습니다.");
       return;
     }

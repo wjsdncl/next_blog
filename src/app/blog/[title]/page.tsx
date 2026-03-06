@@ -19,7 +19,7 @@ const GenerateTOC = dynamic(() => import("./_components/GenerateTOC"));
 const Comments = dynamic(() => import("./_components/Comments/Comments"));
 
 export default async function Page({ params }: { params: { title: string } }) {
-  const accessToken = cookies().get("accessToken");
+  const accessToken = cookies().get("access_token");
   const title = params.title;
 
   let post;

@@ -17,7 +17,7 @@ const guestMap = new Map<RegExp, string>([
 
 export const middleware = (request: NextRequest) => {
   const { pathname } = request.nextUrl;
-  const accessToken = request.cookies.get("accessToken");
+  const accessToken = request.cookies.get("access_token");
   const map = accessToken ? authMap : guestMap;
 
   for (const [regex, redirectUrl] of map.entries()) {

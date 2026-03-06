@@ -8,7 +8,7 @@ import WriteLink from "./_components/WriteLink";
 export default async function Page() {
   const queryClient = new QueryClient();
 
-  const accessToken = cookies().get("accessToken");
+  const accessToken = cookies().get("access_token");
 
   const [portfolio, user] = await Promise.all([
     getPortfolioList({ page: 1, limit: 10 }).catch(() => ({ portfolios: [], isLast: true, nextPage: 2 })),
