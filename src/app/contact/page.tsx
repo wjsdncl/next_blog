@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 "use client";
 
-import Form from "@/components/form/Form";
+import Form from "@/components/ui/Form";
 
 export default function Page() {
   return (

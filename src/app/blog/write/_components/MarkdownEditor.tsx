@@ -9,7 +9,7 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
 import components from "@/components/content/MarkdownComponents";
-import TagInput from "@/components/form/TagInput";
+import TagInput from "@/components/ui/TagInput";
 import { getPost, POST_KEYS, updatePost, uploadImage, createPost } from "@/services/post.api";
 import { revalidatePosts } from "@/services/actions/revalidate.action";
 import { getUser, USER_KEYS } from "@/services/user.api";

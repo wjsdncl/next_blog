@@ -12,7 +12,7 @@ import {
   Controller,
   type DefaultValues,
 } from "react-hook-form";
-import { default as Tag } from "@/components/form/TagInput";
+import { default as Tag } from "@/components/ui/TagInput";
 import EyeClose from "@/Icons/EyeClose.svg";
 import EyeOpen from "@/Icons/EyeOpen.svg";
 import cn from "@/utils/cn";
