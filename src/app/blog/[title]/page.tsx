@@ -22,14 +22,12 @@ export default async function Page({ params }: { params: { title: string } }) {
   const accessToken = cookies().get("access_token");
   const title = params.title;
 
-  let post;
-  try {
-    post = await getPost(title);
-  } catch {
-    notFound();
-  }
+  const [post, user] = await Promise.all([
+    getPost(title).catch(() => null),
+    accessToken ? getUser() : undefined,
+  ]);
 
-  const user = accessToken ? await getUser() : undefined;
+  if (!post) notFound();
 
   if (post.status !== "PUBLISHED" && user?.role !== "OWNER") {
     return (

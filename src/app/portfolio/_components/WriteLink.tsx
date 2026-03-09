@@ -1,18 +1,12 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { getUser, USER_KEYS } from "@/services/user.api";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function WriteLink() {
-  const { data: user } = useQuery({
-    queryKey: [...USER_KEYS],
-    queryFn: getUser,
-    retry: 0,
-    staleTime: 1000 * 60 * 5,
-  });
+  const { isOwner } = useAuth();
 
-  if (user?.role !== "OWNER") return null;
+  if (!isOwner) return null;
 
   return (
     <Link

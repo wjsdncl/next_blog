@@ -1,21 +1,19 @@
+export const revalidate = 3600;
+
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import { cookies } from "next/headers";
+import { publicInstance } from "@/services/instance";
 import { getPortfolioList, PORTFOLIO_KEYS } from "@/services/portfolio.api";
-import { getUser, USER_KEYS } from "@/services/user.api";
 import ProjectList from "./_components/ProjectList";
 import WriteLink from "./_components/WriteLink";
 
 export default async function Page() {
   const queryClient = new QueryClient();
 
-  const accessToken = cookies().get("access_token");
-
-  const [portfolio, user] = await Promise.all([
-    getPortfolioList({ page: 1, limit: 10 }).catch(() => ({ portfolios: [], isLast: true, nextPage: 2 })),
-    accessToken ? getUser() : undefined,
-  ]);
-
-  if (user) queryClient.setQueryData([...USER_KEYS], user);
+  const portfolio = await getPortfolioList({ page: 1, limit: 10 }, publicInstance).catch(() => ({
+    portfolios: [],
+    isLast: true,
+    nextPage: 2,
+  }));
 
   queryClient.setQueryData(PORTFOLIO_KEYS.all(), {
     pages: [portfolio],
@@ -31,7 +29,7 @@ export default async function Page() {
       <div className="pt-8" />
 
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <ProjectList isOwner={user?.role === "OWNER"} />
+        <ProjectList />
         <div className="fixed bottom-[100px] right-[16px] z-40 flex items-center justify-center overflow-hidden rounded-full tablet:right-[24px] desktop:right-[calc((100%-1200px)/2)]">
           <WriteLink />
         </div>

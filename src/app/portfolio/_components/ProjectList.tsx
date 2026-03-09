@@ -7,7 +7,7 @@ import type { Portfolio } from "@/types/portfolioType";
 import { formatDate } from "@/utils/FormatDate";
 import ProjectCard from "./ProjectCard";
 
-export default function ProjectList({ isOwner }: { isOwner: boolean }) {
+export default function ProjectList() {
   const loadMoreRef = useRef(null);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
@@ -91,7 +91,6 @@ export default function ProjectList({ isOwner }: { isOwner: boolean }) {
                   techStacks={portfolio.techStacks.map((tech) => tech.name)}
                   links={portfolio.links || []}
                   coverImage={portfolio.cover_image}
-                  isOwner={isOwner}
                 />
               ))
             )}

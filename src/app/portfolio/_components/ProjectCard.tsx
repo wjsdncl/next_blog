@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import removeMarkdown from "remove-markdown";
 import { useShallow } from "zustand/shallow";
+import { useAuth } from "@/hooks/useAuth";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useModalStore from "@/stores/ModalStore";
 import { type PortfolioLink } from "@/types/portfolioType";
@@ -20,7 +21,6 @@ export interface ProjectCardProps {
   content: string;
   techStacks: string[];
   links: PortfolioLink[];
-  isOwner?: boolean;
   coverImage?: string | null;
 }
 
@@ -42,6 +42,7 @@ const useProjectActions = (projectId: string) => {
 };
 
 export default function ProjectCard(project: ProjectCardProps) {
+  const { isOwner } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
   const articleRef = useRef<HTMLElement>(null);
   const [coords, setCoords] = useState({ top: 0, width: 0 });
@@ -78,7 +79,7 @@ export default function ProjectCard(project: ProjectCardProps) {
           <button onClick={handleExpand} className="p-1 font-semibold text-brand-tertiary">
             자세히 보기
           </button>
-          {project.isOwner && (
+          {isOwner && (
             <>
               <button onClick={handleEdit} className="p-1 font-semibold text-brand-tertiary">
                 수정

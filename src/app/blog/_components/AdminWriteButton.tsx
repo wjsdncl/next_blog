@@ -1,11 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { memo } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
-interface AdminWriteButtonProps {
-  isOwner: boolean;
-}
+const AdminWriteButton = memo(() => {
+  const { isOwner } = useAuth();
 
-const AdminWriteButton = memo(({ isOwner }: AdminWriteButtonProps) => {
   if (!isOwner) return null;
 
   return (

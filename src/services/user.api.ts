@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
+import { cache } from "react";
 import { type User } from "@/types/authType";
 import instance from "./instance";
 
 export const USER_KEYS = ["user"] as const;
 
-export const getUser = async (): Promise<User | undefined> => {
+const fetchUser = async (): Promise<User | undefined> => {
   try {
     const response = await instance.GET<{ success: boolean; data: User }>("/users/me", {
       next: {
@@ -18,3 +19,5 @@ export const getUser = async (): Promise<User | undefined> => {
     return undefined;
   }
 };
+
+export const getUser = cache(fetchUser);

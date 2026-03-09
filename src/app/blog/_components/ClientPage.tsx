@@ -1,10 +1,9 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useRef, useEffect, Suspense } from "react";
 import { getPostList, POST_KEYS } from "@/services/post.api";
-import { getUser, USER_KEYS } from "@/services/user.api";
 import AdminWriteButton from "./AdminWriteButton";
 import BlogPostItem from "./BlogPostItem";
 import SearchInput from "./SearchInput";
@@ -17,13 +16,6 @@ const BlogPostList = () => {
   const searchQuery = searchParams.get("search") ?? undefined;
   const categoryQuery = searchParams.get("category") ?? undefined;
   const tagQuery = searchParams.get("tag") ?? undefined;
-
-  const { data: user } = useQuery({
-    queryKey: [...USER_KEYS],
-    queryFn: getUser,
-    retry: 0,
-    staleTime: 1000 * 60 * 5,
-  });
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: POST_KEYS.list("newest", searchQuery, categoryQuery, tagQuery),
@@ -95,7 +87,7 @@ const BlogPostList = () => {
         )}
       </section>
 
-      <AdminWriteButton isOwner={user?.role === "OWNER"} />
+      <AdminWriteButton />
     </>
   );
 };

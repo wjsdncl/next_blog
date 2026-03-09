@@ -1,9 +1,10 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 1800;
 
 import Image from "next/image";
 import Link from "next/link";
 import removeMarkdown from "remove-markdown";
 import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
+import { publicInstance } from "@/services/instance";
 import { getPostList } from "@/services/post.api";
 import { type Post } from "@/types/blogType";
 import cn from "@/utils/cn";
@@ -15,8 +16,8 @@ export default async function Page() {
 
   try {
     [popularPosts, recentPosts] = await Promise.all([
-      getPostList({ limit: 4, order: "like" }).then((res) => res.posts),
-      getPostList({ limit: 4, order: "newest" }).then((res) => res.posts),
+      getPostList({ limit: 4, order: "like" }, publicInstance).then((res) => res.posts),
+      getPostList({ limit: 4, order: "newest" }, publicInstance).then((res) => res.posts),
     ]);
   } catch {
     // 백엔드 다운 시 빈 배열 fallback
