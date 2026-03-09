@@ -42,7 +42,7 @@ export const getComments = async (postId: string, page = 1, limit = 10) => {
 
 export const createComment = async (body: CommentRequest) => {
   try {
-    return await instance.POST("/comments", body);
+    return await instance.POST<{ success: boolean; data: Comment }>("/comments", body);
   } catch (error) {
     console.error("댓글 작성 실패:", error);
     throw error;
@@ -51,7 +51,7 @@ export const createComment = async (body: CommentRequest) => {
 
 export const updateComment = async (id: string, content: string) => {
   try {
-    return await instance.PATCH(`/comments/${id}`, { content });
+    return await instance.PATCH<{ success: boolean; data: Comment }>(`/comments/${id}`, { content });
   } catch (error) {
     console.error(`댓글 수정 실패 (ID: ${id}):`, error);
     throw error;
@@ -60,7 +60,7 @@ export const updateComment = async (id: string, content: string) => {
 
 export const deleteComment = async (id: string) => {
   try {
-    return await instance.DELETE(`/comments/${id}`);
+    return await instance.DELETE<{ success: boolean }>(`/comments/${id}`);
   } catch (error) {
     console.error(`댓글 삭제 실패 (ID: ${id}):`, error);
     throw error;
@@ -69,7 +69,7 @@ export const deleteComment = async (id: string) => {
 
 export const toggleCommentLike = async (id: string) => {
   try {
-    return await instance.POST(`/comments/${id}/like`);
+    return await instance.POST<{ success: boolean }>(`/comments/${id}/like`);
   } catch (error) {
     console.error(`댓글 좋아요 실패 (ID: ${id}):`, error);
     throw error;

@@ -137,7 +137,7 @@ export const getPost = async (slug: string) => {
 
 export const deletePost = async (id: string) => {
   try {
-    return await instance.DELETE(`/posts/${id}`);
+    return await instance.DELETE<{ success: boolean }>(`/posts/${id}`);
   } catch (error) {
     console.error(`게시글 삭제 실패 (ID: ${id}):`, error);
     throw error;
@@ -146,7 +146,7 @@ export const deletePost = async (id: string) => {
 
 export const createPost = async (postData: PostRequest) => {
   try {
-    return await instance.POST("/posts", postData);
+    return await instance.POST<{ success: boolean; data: Post }>("/posts", postData);
   } catch (error) {
     console.error("게시글 작성 실패:", error);
     throw error;
@@ -155,7 +155,7 @@ export const createPost = async (postData: PostRequest) => {
 
 export const updatePost = async ({ id, postData }: { id: string; postData: PostRequest }) => {
   try {
-    return await instance.PATCH(`/posts/${id}`, postData);
+    return await instance.PATCH<{ success: boolean; data: Post }>(`/posts/${id}`, postData);
   } catch (error) {
     console.error(`게시글 수정 실패 (ID: ${id}):`, error);
     throw error;
@@ -164,7 +164,7 @@ export const updatePost = async ({ id, postData }: { id: string; postData: PostR
 
 export const likePost = async (id: string, signal: AbortSignal) => {
   try {
-    return await instance.POST(`/posts/${id}/like`, undefined, { signal });
+    return await instance.POST<{ success: boolean }>(`/posts/${id}/like`, undefined, { signal });
   } catch (error) {
     console.error(`게시글 좋아요 실패 (ID: ${id}):`, error);
     throw error;

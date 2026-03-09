@@ -62,7 +62,8 @@ export const getPortfolioList = async ({
 
 export const getPortfolio = async (id: string): Promise<Portfolio> => {
   try {
-    return await instance.GET<Portfolio>(`/portfolios/${id}`);
+    const response = await instance.GET<{ success: boolean; data: Portfolio }>(`/portfolios/${id}`);
+    return response.data;
   } catch (error) {
     console.error(`포트폴리오 조회 실패 (ID: ${id}):`, error);
     throw error;
@@ -71,7 +72,7 @@ export const getPortfolio = async (id: string): Promise<Portfolio> => {
 
 export const createPortfolio = async (portfolioData: PortfolioRequest) => {
   try {
-    return await instance.POST<Portfolio>("/portfolios", portfolioData);
+    return await instance.POST<{ success: boolean; data: Portfolio }>("/portfolios", portfolioData);
   } catch (error) {
     console.error("포트폴리오 생성 실패:", error);
     throw error;
@@ -80,16 +81,16 @@ export const createPortfolio = async (portfolioData: PortfolioRequest) => {
 
 export const updatePortfolio = async ({ id, portfolioData }: { id: string; portfolioData: PortfolioRequest }) => {
   try {
-    return await instance.PATCH(`/portfolios/${id}`, portfolioData);
+    return await instance.PATCH<{ success: boolean; data: Portfolio }>(`/portfolios/${id}`, portfolioData);
   } catch (error) {
     console.error(`포트폴리오 수정 실패 (ID: ${id}):`, error);
     throw error;
   }
 };
 
-export const deletePortfolio = async (id: string): Promise<void> => {
+export const deletePortfolio = async (id: string) => {
   try {
-    return await instance.DELETE(`/portfolios/${id}`);
+    return await instance.DELETE<{ success: boolean }>(`/portfolios/${id}`);
   } catch (error) {
     console.error(`포트폴리오 삭제 실패 (ID: ${id}):`, error);
     throw error;
