@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import LoadingOverlay from "@/components/feedback/LoadingOverlay";
 import { revalidateUser } from "@/services/actions/revalidate.action";
 import toast from "@/utils/Toast";
 
@@ -24,5 +25,5 @@ export default function AuthCallback({ provider }: { provider: string }) {
     handleLogin();
   }, [provider, router]);
 
-  return null;
+  return <LoadingOverlay />;
 }
