@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Form from "@/components/ui/Form";
 import { uploadImage } from "@/services/post.api";
-import { createPortfolio, getPortfolio, PORTFOLIO_KEYS, updatePortfolio } from "@/services/portfolio.api";
+import { createPortfolio, getPortfolio, PORTFOLIO_KEYS, updatePortfolio, resolveTechStackIds } from "@/services/portfolio.api";
 import { revalidatePortfolios } from "@/services/actions/revalidate.action";
 import { type PortfolioRequest } from "@/types/portfolioType";
 import toast from "@/utils/Toast";
@@ -49,13 +49,17 @@ export default function ProjectForm({ id }: { id?: string }) {
       return;
     }
 
+    // 기술 스택 name → ID 변환 (없는 스택은 자동 생성)
+    const techStackNames = Array.isArray(formData.techStack) ? formData.techStack : [];
+    const tech_stack_ids = await resolveTechStackIds(techStackNames);
+
     const portfolioData: PortfolioRequest = {
       title: formData.title as string,
       content: formData.content as string,
       excerpt: formData.excerpt as string,
       start_date: formData.startDate as string,
       end_date: (formData.endDate as string) || undefined,
-      tech_stack_ids: Array.isArray(formData.techStack) ? formData.techStack : [],
+      tech_stack_ids,
       links: [],
     };
 

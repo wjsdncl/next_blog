@@ -10,7 +10,8 @@ import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
 import components from "@/components/content/MarkdownComponents";
 import TagInput from "@/components/ui/TagInput";
-import { getPost, POST_KEYS, updatePost, uploadImage, createPost } from "@/services/post.api";
+import { getPost, POST_KEYS, updatePost, uploadImage, createPost, getCategoryList } from "@/services/post.api";
+import { resolveTagIds } from "@/services/tag.api";
 import { revalidatePosts } from "@/services/actions/revalidate.action";
 import { getUser, USER_KEYS } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
@@ -85,9 +86,20 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     }
   }, [post, setValue, slug]);
 
-  const completeWriting = (data: FormValues) => {
+  const completeWriting = async (data: FormValues) => {
     if (completeWritingMutation.isPending || updatePostMutation.isPending) return;
     const firstImage = markdown.match(/!\[.*?\]\((.*?)\)/)?.[1] || "";
+
+    // 카테고리 name → ID 변환
+    let category_id: string | undefined;
+    if (data.category) {
+      const categories = await getCategoryList();
+      const found = categories.find((c) => c.name === data.category);
+      if (found) category_id = found.id;
+    }
+
+    // 태그 name → ID 변환 (없는 태그는 자동 생성)
+    const tag_ids = await resolveTagIds(data.tags);
 
     const modalId = openModal(
       <PreviewModal
@@ -95,7 +107,13 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
         content={data.content}
         initialCoverImg={post?.cover_image || firstImage}
         onComplete={(coverImage) => {
-          const postData: PostRequest = { ...data, cover_image: coverImage };
+          const postData: PostRequest = {
+            title: data.title,
+            content: data.content,
+            category_id,
+            tag_ids,
+            cover_image: coverImage,
+          };
           slug
             ? updatePostMutation.mutate({ id: post?.id as string, postData })
             : completeWritingMutation.mutate(postData);

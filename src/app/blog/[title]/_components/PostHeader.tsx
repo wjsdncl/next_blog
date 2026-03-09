@@ -87,7 +87,6 @@ export default function PostHeader({ title, user }: { title: string; user?: User
         postData: {
           title: post.title,
           content: post.content,
-          tags: post.tags.map((tag) => tag.name),
           status: post.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED",
         },
       });
