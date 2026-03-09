@@ -11,7 +11,7 @@ export default function WriteLink() {
     retry: 0,
   });
 
-  if (!user) return null;
+  if (user?.role !== "OWNER") return null;
 
   return (
     <Link
