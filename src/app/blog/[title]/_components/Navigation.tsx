@@ -29,6 +29,7 @@ export default function Navigation({ title }: { title: string }) {
     queryKey: [...USER_KEYS],
     queryFn: getUser,
     retry: 0,
+    staleTime: 1000 * 60 * 5,
   });
 
   const likePostMutation = useMutation({

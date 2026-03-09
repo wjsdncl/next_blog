@@ -32,10 +32,10 @@ export default async function Page() {
 
       <HydrationBoundary state={dehydrate(queryClient)}>
         <ProjectList isOwner={user?.role === "OWNER"} />
+        <div className="fixed bottom-[100px] right-[16px] z-40 flex items-center justify-center overflow-hidden rounded-full tablet:right-[24px] desktop:right-[calc((100%-1200px)/2)]">
+          <WriteLink />
+        </div>
       </HydrationBoundary>
-      <div className="fixed bottom-[100px] right-[16px] z-40 flex items-center justify-center overflow-hidden rounded-full tablet:right-[24px] desktop:right-[calc((100%-1200px)/2)]">
-        <WriteLink />
-      </div>
     </div>
   );
 }

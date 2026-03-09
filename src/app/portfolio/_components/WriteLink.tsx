@@ -9,6 +9,7 @@ export default function WriteLink() {
     queryKey: [...USER_KEYS],
     queryFn: getUser,
     retry: 0,
+    staleTime: 1000 * 60 * 5,
   });
 
   if (user?.role !== "OWNER") return null;

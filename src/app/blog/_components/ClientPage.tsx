@@ -22,7 +22,7 @@ const BlogPostList = () => {
     queryKey: [...USER_KEYS],
     queryFn: getUser,
     retry: 0,
-    gcTime: 0,
+    staleTime: 1000 * 60 * 5,
   });
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
