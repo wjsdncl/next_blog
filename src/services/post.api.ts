@@ -30,7 +30,7 @@ export const CATEGORY_KEYS = {
 
 interface CategoriesResponse {
   success: boolean;
-  data: Array<{ id: string; name: string; slug: string; post_count: number; order: number }>;
+  data: Array<{ id: string; name: string; post_count: number; order: number }>;
   totalPostCount: number;
 }
 
@@ -46,7 +46,7 @@ export const getCategories = async (): Promise<{ categories: Record<string, numb
     const categories = res.data.reduce(
       (acc, cat) => {
         if (cat.post_count > 0) {
-          acc[cat.slug] = cat.post_count;
+          acc[cat.name] = cat.post_count;
         }
         return acc;
       },
@@ -58,6 +58,11 @@ export const getCategories = async (): Promise<{ categories: Record<string, numb
     console.error("카테고리 목록 조회 실패:", error);
     return { categories: {}, totalPosts: 0 };
   }
+};
+
+export const getCategoryList = async (): Promise<Array<{ id: string; name: string }>> => {
+  const res = await instance.GET<CategoriesResponse>("/categories");
+  return res.data.map(({ id, name }) => ({ id, name }));
 };
 
 export const POST_KEYS = {

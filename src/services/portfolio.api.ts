@@ -17,6 +17,50 @@ interface PortfolioResponse {
   pagination: Pagination;
 }
 
+interface TechStackItem {
+  id: string;
+  name: string;
+  category: string | null;
+}
+
+export const getTechStackList = async (): Promise<TechStackItem[]> => {
+  try {
+    const res = await instance.GET<{ success: boolean; data: { items: TechStackItem[] } }>("/tech-stacks");
+    return res.data.items;
+  } catch (error) {
+    console.error("기술 스택 목록 조회 실패:", error);
+    return [];
+  }
+};
+
+export const createTechStack = async (name: string): Promise<TechStackItem> => {
+  const res = await instance.POST<{ success: boolean; data: TechStackItem }>("/tech-stacks", { name });
+  return res.data;
+};
+
+export const resolveTechStackIds = async (names: string[]): Promise<string[]> => {
+  if (names.length === 0) return [];
+
+  const existingStacks = await getTechStackList();
+  const ids: string[] = [];
+
+  for (const name of names) {
+    const existing = existingStacks.find((t) => t.name === name);
+    if (existing) {
+      ids.push(existing.id);
+    } else {
+      try {
+        const created = await createTechStack(name);
+        ids.push(created.id);
+      } catch (error) {
+        console.error(`기술 스택 생성 실패 (${name}):`, error);
+      }
+    }
+  }
+
+  return ids;
+};
+
 export const PORTFOLIO_KEYS = {
   all: () => ["portfolios"] as const,
   detail: (id: string) => ["portfolios", id] as const,
