@@ -1,4 +1,4 @@
-import { type PublishStatus, type Category, type Tag } from "./blogType";
+import { type PublishStatus } from "./blogType";
 
 export interface PortfolioLink {
   id: string;
@@ -29,8 +29,15 @@ export interface Portfolio {
   published_at: string | null;
   created_at: string;
   updated_at: string;
-  category?: Category;
-  tags: Tag[];
+  category?: {
+    id: string;
+    name: string;
+  };
+  tags: Array<{
+    id: string;
+    name: string;
+    slug: string;
+  }>;
   techStacks: TechStack[];
   links: PortfolioLink[];
 }
@@ -43,10 +50,14 @@ export interface PortfolioRequest {
   start_date?: string;
   end_date?: string;
   status?: PublishStatus;
+  order?: number;
+  category_id?: string;
+  tag_ids?: string[];
   tech_stack_ids?: string[];
   links?: Array<{
     type: string;
     url: string;
     label?: string;
+    order?: number;
   }>;
 }

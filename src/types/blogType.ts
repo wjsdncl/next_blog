@@ -18,7 +18,6 @@ export interface Post {
   category: {
     id: string;
     name: string;
-    slug: string;
   } | null;
   tags: Array<{
     id: string;
@@ -33,8 +32,8 @@ export interface PostRequest {
   excerpt?: string;
   cover_image?: string;
   status?: PublishStatus;
-  category?: string;
-  tags: string[];
+  category_id?: string;
+  tag_ids?: string[];
 }
 
 export interface Category {
@@ -69,7 +68,7 @@ export interface Comment {
   author: {
     id: string;
     username: string;
-    role: string;
+    role: "USER" | "OWNER";
   };
   replies: Comment[];
 }
