@@ -8,8 +8,7 @@ import { useShallow } from "zustand/shallow";
 import Copy from "@/Icons/Copy.svg";
 import Github from "@/Icons/Github.svg";
 import Mail from "@/Icons/Mail.svg";
-import { POST } from "@/services/instance/client";
-import { revalidateUser } from "@/services/actions/revalidate.action";
+import { logoutUser } from "@/services/actions/revalidate.action";
 import useModalStore from "@/stores/ModalStore";
 import { type User } from "@/types/authType";
 import cn from "@/utils/cn";
@@ -56,13 +55,8 @@ export default function ClientHeader({ user }: { user?: User }) {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      await POST("/auth/logout");
-    } catch {
-      // 로그아웃 API 실패해도 클라이언트 상태는 초기화
-    }
+    await logoutUser();
     queryClient.clear();
-    await revalidateUser();
     toast.success("로그아웃 되었습니다.");
     router.push("/");
   };
