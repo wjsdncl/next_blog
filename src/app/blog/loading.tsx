@@ -1,7 +1,7 @@
 "use client";
 
-import GlobalLoading from "@/components/GlobalLoading";
+import LoadingOverlay from "@/components/feedback/LoadingOverlay";
 
 export default function Loading() {
-  return <GlobalLoading />;
+  return <LoadingOverlay />;
 }

@@ -5,13 +5,12 @@ import localFont from "next/font/local";
 
 import "@/styles/globals.css";
 
-import Header from "@/components/Header";
-import QueryProvider from "@/components/QueryProvider";
-import ThemeProvider from "@/components/ThemeProvider";
+import Header from "@/components/layout/Header";
+import QueryProvider from "@/components/providers/QueryProvider";
 
-const Footer = dynamic(() => import("@/components/Footer"));
-const Modal = dynamic(() => import("@/components/Modal"));
-const Toaster = dynamic(() => import("@/components/Toaster"));
+const Footer = dynamic(() => import("@/components/layout/Footer"));
+const Modal = dynamic(() => import("@/components/layout/Modal"));
+const Toaster = dynamic(() => import("@/components/feedback/Toaster"));
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
@@ -51,17 +50,15 @@ export default async function RootLayout({ children }: Readonly<React.PropsWithC
   return (
     <html lang="ko" className={`${pretendard.variable} dark`}>
       <body className="size-full min-h-dvh bg-background-primary font-pretendard text-text-primary">
-        <ThemeProvider>
-          <QueryProvider>
-            <Header />
-            <main className="flex h-full min-h-[calc(100dvh-166px-56px)] flex-col tablet:min-h-[calc(100dvh-186px-56px)]">
-              {children}
-            </main>
-            <Footer />
-            <Modal />
-            <Toaster />
-          </QueryProvider>
-        </ThemeProvider>
+        <QueryProvider>
+          <Header />
+          <main className="flex h-full min-h-[calc(100dvh-166px-56px)] flex-col tablet:min-h-[calc(100dvh-186px-56px)]">
+            {children}
+          </main>
+          <Footer />
+          <Modal />
+          <Toaster />
+        </QueryProvider>
       </body>
     </html>
   );

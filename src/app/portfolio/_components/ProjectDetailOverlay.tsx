@@ -2,7 +2,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeSlug from "rehype-slug";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
-import components from "@/components/MarkdownComponents";
+import components from "@/components/content/MarkdownComponents";
 import { type ProjectCardProps } from "./ProjectCard";
 import { ProjectLinks, TechStack } from "./ProjectMeta";
 

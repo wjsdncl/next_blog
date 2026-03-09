@@ -1,6 +1,6 @@
 import { HashLoader } from "react-spinners";
 
-export default function GlobalLoading() {
+export default function LoadingOverlay() {
   return (
     <div>
       <div className="bg-white/80 fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm">

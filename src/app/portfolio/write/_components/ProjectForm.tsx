@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import Form from "@/components/Form";
+import Form from "@/components/form/Form";
 import { uploadImage } from "@/services/post.api";
 import { createPortfolio, getPortfolio, PORTFOLIO_KEYS, updatePortfolio } from "@/services/portfolio.api";
 import { revalidatePortfolios } from "@/services/actions/revalidate.action";
