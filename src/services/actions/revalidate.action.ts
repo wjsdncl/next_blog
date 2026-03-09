@@ -16,7 +16,15 @@ export async function revalidatePosts() {
 }
 
 export async function logoutUser() {
-  cookies().delete("access_token");
-  cookies().delete("refresh_token");
+  const cookieStore = cookies();
+  const isProduction = process.env.NODE_ENV === "production";
+
+  const deleteOptions = {
+    path: "/",
+    ...(isProduction && { domain: ".wjdalswo.xyz" }),
+  };
+
+  cookieStore.delete({ name: "access_token", ...deleteOptions });
+  cookieStore.delete({ name: "refresh_token", ...deleteOptions });
   await revalidateTag("user");
 }
