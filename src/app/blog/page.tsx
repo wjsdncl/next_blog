@@ -3,7 +3,9 @@ export const dynamic = "force-dynamic";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { type Metadata } from "next";
 import nextDynamic from "next/dynamic";
+import { cookies } from "next/headers";
 import { getPostList, getCategories, POST_KEYS } from "@/services/post.api";
+import { getUser, USER_KEYS } from "@/services/user.api";
 import { type Post } from "@/types/blogType";
 import ClientPage from "./_components/ClientPage";
 
@@ -19,6 +21,7 @@ export default async function Page({
   };
 }) {
   const queryClient = new QueryClient();
+  const accessToken = cookies().get("access_token");
 
   const searchQuery = searchParams.search ?? undefined;
   const categoryQuery = searchParams.category ?? undefined;
@@ -40,6 +43,11 @@ export default async function Page({
     ]);
   } catch {
     // 백엔드 다운 시 빈 배열 fallback
+  }
+
+  if (accessToken) {
+    const user = await getUser();
+    queryClient.setQueryData([...USER_KEYS], user);
   }
 
   queryClient.setQueryData(POST_KEYS.list("newest", searchQuery, categoryQuery, tagQuery), {

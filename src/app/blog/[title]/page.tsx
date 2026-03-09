@@ -11,7 +11,7 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import components from "@/components/content/MarkdownComponents";
 import { getPost, POST_KEYS } from "@/services/post.api";
-import { getUser } from "@/services/user.api";
+import { getUser, USER_KEYS } from "@/services/user.api";
 import PostHeader from "./_components/PostHeader";
 
 const Navigation = dynamic(() => import("./_components/Navigation"));
@@ -47,6 +47,7 @@ export default async function Page({ params }: { params: { title: string } }) {
 
   const queryClient = new QueryClient();
   queryClient.setQueryData(POST_KEYS.detail(decodeURIComponent(title)), post);
+  if (user) queryClient.setQueryData([...USER_KEYS], user);
 
   return (
     <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 text-lg tablet:w-tablet tablet:px-0">

@@ -1,7 +1,7 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { cookies } from "next/headers";
 import { getPortfolioList, PORTFOLIO_KEYS } from "@/services/portfolio.api";
-import { getUser } from "@/services/user.api";
+import { getUser, USER_KEYS } from "@/services/user.api";
 import ProjectList from "./_components/ProjectList";
 import WriteLink from "./_components/WriteLink";
 
@@ -14,6 +14,8 @@ export default async function Page() {
     getPortfolioList({ page: 1, limit: 10 }).catch(() => ({ portfolios: [], isLast: true, nextPage: 2 })),
     accessToken ? getUser() : undefined,
   ]);
+
+  if (user) queryClient.setQueryData([...USER_KEYS], user);
 
   queryClient.setQueryData(PORTFOLIO_KEYS.all(), {
     pages: [portfolio],
