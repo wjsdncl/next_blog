@@ -8,7 +8,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import useDeviceSize from "./useDeviceSize";
 
-export default function useFollowScroll<T extends HTMLElement>(startFollowPosition = 200, damping = 0.1) {
+export default function useFollowScroll<T extends HTMLElement>(startFollowPosition = 200, damping = 0.1, topOffset = 0) {
   const elementRef = useRef<T | null>(null);
   const targetPosition = useRef(0);
   const currentPosition = useRef(0);
@@ -53,7 +53,7 @@ export default function useFollowScroll<T extends HTMLElement>(startFollowPositi
       if (initialPosition !== null) {
         targetPosition.current =
           window.scrollY >= startFollowPosition
-            ? window.scrollY - startFollowPosition + initialPosition
+            ? window.scrollY - startFollowPosition + initialPosition + topOffset
             : initialPosition;
 
         requestAnimationFrame(updatePosition);
@@ -67,7 +67,7 @@ export default function useFollowScroll<T extends HTMLElement>(startFollowPositi
     return () => {
       window.removeEventListener("scroll", optimizedHandleScroll);
     };
-  }, [deviceSize, initialPosition, startFollowPosition, updatePosition]);
+  }, [deviceSize, initialPosition, startFollowPosition, topOffset, updatePosition]);
 
   return elementRef;
 }

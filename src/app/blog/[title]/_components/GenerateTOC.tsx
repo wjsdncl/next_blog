@@ -7,6 +7,7 @@ interface GenerateTOCProps {
   content: string;
 }
 const SCROLL_THRESHOLD = 200;
+const HEADER_OFFSET = 60;
 
 const OBSERVER_OPTIONS = {
   rootMargin: "0px 0px -70% 0px",
@@ -36,7 +37,7 @@ const generateUniqueId = (text: string, idCountMap: Map<string, number>): string
 
 export default function GenerateTOC({ content }: GenerateTOCProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const tocRef = useFollowScroll<HTMLDivElement>(SCROLL_THRESHOLD);
+  const tocRef = useFollowScroll<HTMLDivElement>(SCROLL_THRESHOLD, 0.1, HEADER_OFFSET);
   const idCountMap = useRef(new Map<string, number>()).current;
 
   const headings = useMemo(() => content.match(/^#{1,3}\s+([^#\n]+)$/gm) || [], [content]);
@@ -125,7 +126,7 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
     <nav
       ref={tocRef}
       aria-label="목차"
-      className="mb-4 border-l-2 border-gray-400 py-2 pl-1 pt-[72px] text-[15px] font-light text-gray-800"
+      className="mb-4 border-l-2 border-gray-400 py-2 pl-1 text-[15px] font-light text-gray-800"
     >
       <h2 className="sr-only">글 목차</h2>
       <ul>

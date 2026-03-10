@@ -1,35 +1,20 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useEffect } from "react";
-import useFollowScroll from "@/hooks/useFollowScroll";
-import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
-import FavoriteFilled from "@/Icons/FavoriteFilled.svg";
-import Share from "@/Icons/Share.svg";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
 import { getPost, likePost, POST_KEYS } from "@/services/post.api";
-import { getUser, USER_KEYS } from "@/services/user.api";
 import type { Post } from "@/types/blogType";
 import toast from "@/utils/toast";
 
-const SCROLL_THRESHOLD = 200;
-
-export default function Navigation({ title }: { title: string }) {
-  const navRef = useFollowScroll<HTMLElement>(SCROLL_THRESHOLD);
+export default function usePostActions(title: string) {
   const abortControllerRef = useRef<AbortController | null>(null);
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const { data: post } = useQuery({
     queryKey: POST_KEYS.detail(title),
-    queryFn: async () => {
-      return await getPost(title);
-    },
-  });
-
-  const { data: user } = useQuery({
-    queryKey: [...USER_KEYS],
-    queryFn: getUser,
-    retry: 0,
-    staleTime: 1000 * 60 * 5,
+    queryFn: () => getPost(title),
   });
 
   const likePostMutation = useMutation({
@@ -77,7 +62,7 @@ export default function Navigation({ title }: { title: string }) {
     try {
       await navigator.clipboard.writeText(decodeURIComponent(window.location.href));
       toast.success("링크가 클립보드에 복사되었습니다.");
-    } catch (err) {
+    } catch {
       toast.error("링크 복사에 실패했습니다.");
     }
   };
@@ -101,24 +86,5 @@ export default function Navigation({ title }: { title: string }) {
     };
   }, []);
 
-  return (
-    <nav
-      ref={navRef}
-      className="flex items-center gap-2 rounded-full border-gray-300 pt-[72px] text-text-primary desktop:flex-col desktop:border-2 desktop:px-3 desktop:py-4"
-    >
-      <button type="button" aria-label="like-btn" onClick={handleLike} className="size-5 desktop:size-8">
-        {post?.is_liked ? (
-          <FavoriteFilled width={"100%"} height={"100%"} color="#656079" />
-        ) : (
-          <FavoriteEmpty width={"100%"} height={"100%"} color="var(--text-primary)" />
-        )}
-      </button>
-
-      <p className="font-medium">{post?.like_count}</p>
-
-      <button type="button" aria-label="share-btn" onClick={handleShare} className="size-5 desktop:size-8">
-        <Share width={"100%"} height={"100%"} color="var(--text-primary)" />
-      </button>
-    </nav>
-  );
+  return { post, handleLike, handleShare };
 }

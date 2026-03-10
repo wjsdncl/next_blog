@@ -9,7 +9,7 @@ import useModalStore from "@/stores/ModalStore";
 import { type User } from "@/types/authType";
 import { formatKoreanDate } from "@/utils/formatDate";
 import toast from "@/utils/toast";
-import Navigation from "./Navigation";
+import MobileNavigation from "./MobileNavigation";
 
 export default function PostHeader({ title, user }: { title: string; user?: User }) {
   const router = useRouter();
@@ -114,7 +114,9 @@ export default function PostHeader({ title, user }: { title: string; user?: User
         {/* 제목 */}
         <p className="pb-6 text-[50px] font-bold leading-[52px] text-text-primary">{post.title}</p>
 
-        <Navigation title={title} />
+        <div className="desktop:hidden">
+          <MobileNavigation title={title} />
+        </div>
       </div>
 
       <div className="flex size-full items-center justify-between pb-4">
