@@ -16,7 +16,7 @@ export default function Navigation({ totalPosts, categories: categoryCounts }: N
   return (
     <nav
       ref={navRef}
-      className="-left-32 top-28 flex flex-col gap-2 text-text-primary desktop:absolute desktop:w-[110px] desktop:overflow-hidden"
+      className="top-28 flex flex-col gap-2 text-text-primary desktop:absolute desktop:w-[110px] desktop:overflow-hidden"
     >
       <span className="text-2xl font-bold">카테고리</span>
 
