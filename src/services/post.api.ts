@@ -67,6 +67,20 @@ export const getCategoryList = async (): Promise<Array<{ id: string; name: strin
   return res.data.map(({ id, name }) => ({ id, name }));
 };
 
+export const createCategory = async (name: string): Promise<{ id: string; name: string }> => {
+  const res = await instance.POST<{ success: boolean; data: { id: string; name: string } }>("/categories", { name });
+  return res.data;
+};
+
+export const resolveCategoryId = async (categoryName: string): Promise<string> => {
+  const categories = await getCategoryList();
+  const found = categories.find((c) => c.name === categoryName);
+  if (found) return found.id;
+
+  const created = await createCategory(categoryName);
+  return created.id;
+};
+
 export const POST_KEYS = {
   all: () => ["posts"] as const,
   list: (order: "oldest" | "newest" | "like" = "newest", search?: string, category?: string, tag?: string) => {

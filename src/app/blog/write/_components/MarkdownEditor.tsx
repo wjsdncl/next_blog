@@ -10,7 +10,7 @@ import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
 import components from "@/components/content/MarkdownComponents";
 import TagInput from "@/components/ui/TagInput";
-import { getPost, POST_KEYS, updatePost, uploadImage, createPost, getCategoryList } from "@/services/post.api";
+import { getPost, POST_KEYS, updatePost, uploadImage, createPost, resolveCategoryId } from "@/services/post.api";
 import { resolveTagIds } from "@/services/tag.api";
 import { revalidatePosts } from "@/services/actions/revalidate.action";
 import { getUser, USER_KEYS } from "@/services/user.api";
@@ -90,13 +90,8 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     if (completeWritingMutation.isPending || updatePostMutation.isPending) return;
     const firstImage = markdown.match(/!\[.*?\]\((.*?)\)/)?.[1] || "";
 
-    // 카테고리 name → ID 변환
-    let category_id: string | undefined;
-    if (data.category) {
-      const categories = await getCategoryList();
-      const found = categories.find((c) => c.name === data.category);
-      if (found) category_id = found.id;
-    }
+    // 카테고리 name → ID 변환 (없는 카테고리는 자동 생성)
+    const category_id = data.category ? await resolveCategoryId(data.category) : undefined;
 
     // 태그 name → ID 변환 (없는 태그는 자동 생성)
     const tag_ids = await resolveTagIds(data.tags);
