@@ -10,43 +10,22 @@ import ClientPage from "./_components/ClientPage";
 
 const Navigation = nextDynamic(() => import("./_components/Navigation"));
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: {
-    search: string;
-    category: string;
-    tag: string;
-  };
-}) {
+export default async function Page() {
   const queryClient = new QueryClient();
-
-  const searchQuery = searchParams.search ?? undefined;
-  const categoryQuery = searchParams.category ?? undefined;
-  const tagQuery = searchParams.tag ?? undefined;
 
   let posts = { posts: [] as Post[], totalPosts: 0, isLast: true, nextPage: 2 };
   let categoryData = { categories: {} as Record<string, number>, totalPosts: 0 };
 
   try {
     [posts, categoryData] = await Promise.all([
-      getPostList(
-        {
-          page: 1,
-          limit: 10,
-          search: searchQuery,
-          category: categoryQuery,
-          tag: tagQuery,
-        },
-        publicInstance
-      ),
+      getPostList({ page: 1, limit: 10 }, publicInstance),
       getCategories(publicInstance),
     ]);
   } catch {
     // 백엔드 다운 시 빈 배열 fallback
   }
 
-  queryClient.setQueryData(POST_KEYS.list("newest", searchQuery, categoryQuery, tagQuery), {
+  queryClient.setQueryData(POST_KEYS.list("newest"), {
     pages: [posts],
     pageParams: [1],
   });
