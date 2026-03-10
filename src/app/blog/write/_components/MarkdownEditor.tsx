@@ -105,6 +105,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
           const postData: PostRequest = {
             title: data.title,
             content: data.content,
+            status: "PUBLISHED",
             category_id,
             tag_ids,
             cover_image: coverImage || undefined,
