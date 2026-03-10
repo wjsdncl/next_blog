@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Github from "@/Icons/Github.svg";
 import LoadingOverlay from "@/components/feedback/LoadingOverlay";
+import Github from "@/Icons/Github.svg";
 import { loginWithGithub } from "@/services/auth.api";
 
 export default function GithubAuth() {

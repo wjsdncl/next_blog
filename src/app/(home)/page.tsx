@@ -63,7 +63,9 @@ const PostSection = ({ posts }: { posts: Post[] }) => (
             <h3 className="line-clamp-1 text-2xl font-semibold text-gray-800">{post.title}</h3>
             {(post.excerpt || post.content) && (
               <p
-                className={cn(`mb-4 mt-2 text-sm text-gray-700 ${post.cover_image ? "line-clamp-2" : "line-clamp-[9]"}`)}
+                className={cn(
+                  `mb-4 mt-2 text-sm text-gray-700 ${post.cover_image ? "line-clamp-2" : "line-clamp-[9]"}`
+                )}
               >
                 {removeMarkdown((post.excerpt || post.content || "").slice(0, 500))}
               </p>
