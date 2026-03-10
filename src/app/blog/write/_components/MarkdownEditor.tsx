@@ -107,7 +107,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
             content: data.content,
             category_id,
             tag_ids,
-            cover_image: coverImage,
+            cover_image: coverImage || undefined,
           };
           slug
             ? updatePostMutation.mutate({ id: post?.id as string, postData })
