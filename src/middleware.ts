@@ -24,12 +24,17 @@ export const middleware = (request: NextRequest) => {
     }
   }
 
-  // API 경로는 미들웨어를 통과시킴
-  if (pathname.startsWith("/api")) {
-    return NextResponse.next();
+  const response = NextResponse.next();
+
+  // access_token 존재 여부를 non-httpOnly 쿠키로 미러링
+  // → 클라이언트에서 /me 호출 여부를 판단하는 플래그
+  if (accessToken) {
+    response.cookies.set("is_logged_in", "true", { path: "/", httpOnly: false });
+  } else {
+    response.cookies.delete("is_logged_in");
   }
 
-  return NextResponse.next();
+  return response;
 };
 
 export const config = {

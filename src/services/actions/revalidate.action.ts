@@ -28,5 +28,6 @@ export async function logoutUser() {
 
   cookieStore.delete({ name: "access_token", ...deleteOptions });
   cookieStore.delete({ name: "refresh_token", ...deleteOptions });
+  cookieStore.delete({ name: "is_logged_in", ...deleteOptions });
   await revalidateTag("user");
 }
