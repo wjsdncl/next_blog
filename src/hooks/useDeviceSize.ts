@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { throttle } from "@/utils/DelayManager";
+import { throttle } from "@/utils/delayManager";
 
 /**
  * 디바이스 사이즈를 반환하는 함수

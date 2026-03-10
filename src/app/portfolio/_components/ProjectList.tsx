@@ -4,7 +4,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef, useEffect } from "react";
 import { getPortfolioList, PORTFOLIO_KEYS } from "@/services/portfolio.api";
 import type { Portfolio } from "@/types/portfolioType";
-import { formatDate } from "@/utils/FormatDate";
+import { formatDate } from "@/utils/formatDate";
 import ProjectCard from "./ProjectCard";
 
 export default function ProjectList() {

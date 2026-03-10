@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState, useCallback } from "react";
 import Category from "@/Icons/Category.svg";
 import SearchIcon from "@/Icons/Search.svg";
-import { debounce } from "@/utils/DelayManager";
+import { debounce } from "@/utils/delayManager";
 
 export default function SearchInput() {
   const [isFocused, setIsFocused] = useState(false);

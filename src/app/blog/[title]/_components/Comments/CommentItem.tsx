@@ -5,8 +5,8 @@ import FavoriteFilled from "@/Icons/FavoriteFilled.svg";
 import { COMMENT_KEYS, toggleCommentLike } from "@/services/comment.api";
 import { type User } from "@/types/authType";
 import { type Comment } from "@/types/blogType";
-import { formatKoreanDate } from "@/utils/FormatDate";
-import toast from "@/utils/Toast";
+import { formatKoreanDate } from "@/utils/formatDate";
+import toast from "@/utils/toast";
 import CommentContent from "./CommentContent";
 
 interface CommentFormInputs {

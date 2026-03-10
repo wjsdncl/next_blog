@@ -2,7 +2,7 @@
 
 import { useShallow } from "zustand/shallow";
 import Close from "@/Icons/Close.svg";
-import { Check, Info, Loading } from "@/Icons/Toast";
+import { Check, Info, Loading } from "@/components/feedback/ToastIcons";
 import useToastStore from "@/stores/ToastStore";
 
 function Toaster() {

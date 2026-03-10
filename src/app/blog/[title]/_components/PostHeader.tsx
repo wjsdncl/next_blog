@@ -7,8 +7,8 @@ import { deletePost, getPost, POST_KEYS, updatePost } from "@/services/post.api"
 import { revalidatePosts } from "@/services/actions/revalidate.action";
 import useModalStore from "@/stores/ModalStore";
 import { type User } from "@/types/authType";
-import { formatKoreanDate } from "@/utils/FormatDate";
-import toast from "@/utils/Toast";
+import { formatKoreanDate } from "@/utils/formatDate";
+import toast from "@/utils/toast";
 import Navigation from "./Navigation";
 
 export default function PostHeader({ title, user }: { title: string; user?: User }) {

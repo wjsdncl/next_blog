@@ -4,7 +4,7 @@ import { memo } from "react";
 import removeMarkdown from "remove-markdown";
 import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
 import { type Post } from "@/types/blogType";
-import { diffDate } from "@/utils/FormatDate";
+import { diffDate } from "@/utils/formatDate";
 
 interface BlogPostItemProps {
   blog: Post;

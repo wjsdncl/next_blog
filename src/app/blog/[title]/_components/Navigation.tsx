@@ -9,7 +9,7 @@ import Share from "@/Icons/Share.svg";
 import { getPost, likePost, POST_KEYS } from "@/services/post.api";
 import { getUser, USER_KEYS } from "@/services/user.api";
 import type { Post } from "@/types/blogType";
-import toast from "@/utils/Toast";
+import toast from "@/utils/toast";
 
 const SCROLL_THRESHOLD = 200;
 

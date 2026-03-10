@@ -8,7 +8,7 @@ import { publicInstance } from "@/services/instance";
 import { getPostList } from "@/services/post.api";
 import { type Post } from "@/types/blogType";
 import cn from "@/utils/cn";
-import { diffDate } from "@/utils/FormatDate";
+import { diffDate } from "@/utils/formatDate";
 
 export default async function Page() {
   let popularPosts: Post[] = [];

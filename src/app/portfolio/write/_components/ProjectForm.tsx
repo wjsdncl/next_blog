@@ -7,7 +7,7 @@ import { uploadImage } from "@/services/post.api";
 import { createPortfolio, getPortfolio, PORTFOLIO_KEYS, updatePortfolio, resolveTechStackIds } from "@/services/portfolio.api";
 import { revalidatePortfolios } from "@/services/actions/revalidate.action";
 import { type PortfolioRequest } from "@/types/portfolioType";
-import toast from "@/utils/Toast";
+import toast from "@/utils/toast";
 
 export default function ProjectForm({ id }: { id?: string }) {
   const queryClient = useQueryClient();

@@ -12,7 +12,7 @@ import Mail from "@/Icons/Mail.svg";
 import { logoutUser } from "@/services/actions/revalidate.action";
 import useModalStore from "@/stores/ModalStore";
 import cn from "@/utils/cn";
-import toast from "@/utils/Toast";
+import toast from "@/utils/toast";
 
 const HEADER_HEIGHT = 200;
 const SCROLL_THRESHOLD = 0.9;

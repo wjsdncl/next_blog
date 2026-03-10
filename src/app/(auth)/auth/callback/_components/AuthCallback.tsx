@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import LoadingOverlay from "@/components/feedback/LoadingOverlay";
 import { revalidateUser } from "@/services/actions/revalidate.action";
-import toast from "@/utils/Toast";
+import toast from "@/utils/toast";
 
 export default function AuthCallback({ provider }: { provider: string }) {
   const router = useRouter();

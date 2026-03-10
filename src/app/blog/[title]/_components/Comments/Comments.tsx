@@ -9,7 +9,7 @@ import { COMMENT_KEYS, deleteComment, updateComment, getComments, createComment 
 import useModalStore from "@/stores/ModalStore";
 import { type User } from "@/types/authType";
 import { type Post, type CommentRequest } from "@/types/blogType";
-import toast from "@/utils/Toast";
+import toast from "@/utils/toast";
 import CommentItem from "./CommentItem";
 
 interface CommentFormInputs {
