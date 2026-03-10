@@ -104,7 +104,7 @@ export default function Navigation({ title }: { title: string }) {
   return (
     <nav
       ref={navRef}
-      className="-left-28 top-28 flex items-center gap-2 rounded-full border-gray-300 text-text-primary desktop:absolute desktop:flex-col desktop:overflow-hidden desktop:border-2 desktop:px-3 desktop:py-4"
+      className="flex items-center gap-2 rounded-full border-gray-300 pt-[72px] text-text-primary desktop:flex-col desktop:border-2 desktop:px-3 desktop:py-4"
     >
       <button type="button" aria-label="like-btn" onClick={handleLike} className="size-5 desktop:size-8">
         {post?.is_liked ? (

@@ -8,16 +8,13 @@ interface NavigationProps {
   categories: Record<string, number>;
 }
 
-const SCROLL_THRESHOLD = 200;
+const SCROLL_THRESHOLD = 200; // 스크롤 임계값 (픽셀 단위, 높을수록 스크롤에 덜 민감)
 
 export default function Navigation({ totalPosts, categories: categoryCounts }: NavigationProps) {
   const navRef = useFollowScroll<HTMLElement>(SCROLL_THRESHOLD);
 
   return (
-    <nav
-      ref={navRef}
-      className="top-28 flex flex-col gap-2 text-text-primary desktop:absolute desktop:w-[110px] desktop:overflow-hidden"
-    >
+    <nav ref={navRef} className="flex flex-col gap-2 pt-[72px] text-text-primary">
       <span className="text-2xl font-bold">카테고리</span>
 
       <ul className="flex gap-2 overflow-x-auto text-lg font-medium desktop:flex-col desktop:overflow-visible">

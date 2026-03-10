@@ -31,11 +31,19 @@ export default async function Page() {
   });
 
   return (
-    <div className="relative mx-auto flex size-full flex-col justify-between px-5 py-8 tablet:w-tablet tablet:px-0 desktop:w-desktop">
-      <Navigation categories={categoryData.categories} totalPosts={categoryData.totalPosts} />
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <ClientPage />
-      </HydrationBoundary>
+    <div className="mx-auto flex size-full justify-center gap-8 px-5 py-8 desktop:w-desktop">
+      <aside className="hidden shrink-0 desktop:block desktop:w-[130px]">
+        <Navigation categories={categoryData.categories} totalPosts={categoryData.totalPosts} />
+      </aside>
+      <div className="w-full min-w-0 tablet:w-tablet desktop:flex-1">
+        {/* 모바일/태블릿에서는 nav를 콘텐츠 위에 표시 */}
+        <div className="mb-4 desktop:hidden">
+          <Navigation categories={categoryData.categories} totalPosts={categoryData.totalPosts} />
+        </div>
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <ClientPage />
+        </HydrationBoundary>
+      </div>
     </div>
   );
 }

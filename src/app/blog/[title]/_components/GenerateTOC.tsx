@@ -125,7 +125,7 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
     <nav
       ref={tocRef}
       aria-label="목차"
-      className="absolute left-[800px] top-28 mb-4 hidden w-[185px] border-l-2 border-gray-400 py-2 pl-1 text-[15px] font-light text-gray-800 desktop:block"
+      className="mb-4 border-l-2 border-gray-400 py-2 pl-1 pt-[72px] text-[15px] font-light text-gray-800"
     >
       <h2 className="sr-only">글 목차</h2>
       <ul>
