@@ -24,7 +24,7 @@ async function tryRefresh(refreshToken: string): Promise<string | null> {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Cookie: `refresh_token=${refreshToken}`,
+        Cookie: `${TOKEN_NAMES.REFRESH}=${refreshToken}`,
       },
       body: JSON.stringify({}),
     });

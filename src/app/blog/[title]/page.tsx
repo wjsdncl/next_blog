@@ -21,10 +21,7 @@ const Comments = dynamic(() => import("./_components/Comments/Comments"));
 export default async function Page({ params }: { params: { title: string } }) {
   const title = params.title;
 
-  const [post, user] = await Promise.all([
-    getPost(title).catch(() => null),
-    getUser(),
-  ]);
+  const [post, user] = await Promise.all([getPost(title).catch(() => null), getUser()]);
 
   if (!post) notFound();
 
