@@ -2,6 +2,7 @@
 
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
+import { TOKEN_NAMES } from "@/utils/token";
 
 export async function revalidatePortfolios() {
   await revalidateTag("portfolios");
@@ -26,8 +27,8 @@ export async function logoutUser() {
     ...(isProduction && { domain: ".wjdalswo.xyz" }),
   };
 
-  cookieStore.delete({ name: "access_token", ...deleteOptions });
-  cookieStore.delete({ name: "refresh_token", ...deleteOptions });
-  cookieStore.delete({ name: "is_logged_in", ...deleteOptions });
+  cookieStore.delete({ name: TOKEN_NAMES.ACCESS, ...deleteOptions });
+  cookieStore.delete({ name: TOKEN_NAMES.REFRESH, ...deleteOptions });
+  cookieStore.delete({ name: TOKEN_NAMES.LOGGED_IN, ...deleteOptions });
   await revalidateTag("user");
 }

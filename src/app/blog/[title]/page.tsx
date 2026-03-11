@@ -1,7 +1,6 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -20,13 +19,11 @@ const GenerateTOC = dynamic(() => import("./_components/GenerateTOC"));
 const Comments = dynamic(() => import("./_components/Comments/Comments"));
 
 export default async function Page({ params }: { params: { title: string } }) {
-  const accessToken = cookies().get("access_token");
-  const refreshToken = cookies().get("refresh_token");
   const title = params.title;
 
   const [post, user] = await Promise.all([
     getPost(title).catch(() => null),
-    accessToken || refreshToken ? getUser() : undefined,
+    getUser(),
   ]);
 
   if (!post) notFound();

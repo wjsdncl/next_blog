@@ -2,10 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getUser, USER_KEYS } from "@/services/user.api";
+import { TOKEN_NAMES } from "@/utils/token";
 
 function hasLoginCookie(): boolean {
   if (typeof document === "undefined") return false;
-  return document.cookie.split("; ").some((c) => c.startsWith("is_logged_in="));
+  return document.cookie.split("; ").some((c) => c.startsWith(`${TOKEN_NAMES.LOGGED_IN}=`));
 }
 
 export function useAuth() {

@@ -9,15 +9,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { cookies } from "next/headers";
+import { getTokens, TOKEN_NAMES } from "@/utils/token";
 import { serverApiFetch } from "./common.api";
 
 const BACKEND_URL = process.env.BACKEND_URL || "https://api.wjdalswo.xyz";
-
-const getServerTokens = () => {
-  const accessToken = cookies().get("access_token")?.value;
-  const refreshToken = cookies().get("refresh_token")?.value;
-  return { accessToken, refreshToken };
-};
 
 /**
  * access_token이 없고 refresh_token만 있을 때 토큰 갱신.
@@ -45,8 +40,8 @@ async function tryRefresh(refreshToken: string): Promise<string | null> {
       const [name, ...rest] = nameValue.split("=");
       const cookieValue = rest.join("=");
 
-      if (name === "access_token" || name === "refresh_token") {
-        const maxAge = name === "access_token" ? 60 * 15 : 60 * 60 * 24 * 7;
+      if (name === TOKEN_NAMES.ACCESS || name === TOKEN_NAMES.REFRESH) {
+        const maxAge = name === TOKEN_NAMES.ACCESS ? 60 * 15 : 60 * 60 * 24 * 7;
         cookieStore.set(name, cookieValue, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
@@ -57,7 +52,7 @@ async function tryRefresh(refreshToken: string): Promise<string | null> {
       }
     }
 
-    const newAccessToken = cookieStore.get("access_token")?.value;
+    const newAccessToken = cookieStore.get(TOKEN_NAMES.ACCESS)?.value;
     return newAccessToken || null;
   } catch {
     return null;
@@ -65,7 +60,7 @@ async function tryRefresh(refreshToken: string): Promise<string | null> {
 }
 
 async function getAuthHeaders(): Promise<Record<string, string>> {
-  const tokens = getServerTokens();
+  const tokens = await getTokens();
   let accessToken = tokens.accessToken;
   const refreshToken = tokens.refreshToken;
 

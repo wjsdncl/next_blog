@@ -6,20 +6,12 @@
  * access_token 만료 시 refresh_token으로 자동 갱신 후 재시도.
  * 응답의 set-cookie는 append로 처리 (여러 쿠키 동시 전달).
  */
-import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import { getTokens, TOKEN_NAMES } from "@/utils/token";
 
 const BACKEND_URL = process.env.BACKEND_URL || "https://blog-api-xhk1.onrender.com";
 
-function getTokensFromCookies(): { accessToken?: string; refreshToken?: string } {
-  const cookieStore = cookies();
-  return {
-    accessToken: cookieStore.get("access_token")?.value,
-    refreshToken: cookieStore.get("refresh_token")?.value,
-  };
-}
-
-function getAuthHeaders(request: NextRequest): Record<string, string> {
+async function getAuthHeaders(request: NextRequest): Promise<Record<string, string>> {
   const headers: Record<string, string> = {};
 
   // 1. 클라이언트가 보낸 헤더 우선
@@ -35,7 +27,7 @@ function getAuthHeaders(request: NextRequest): Record<string, string> {
 
   // 2. 헤더가 없으면 httpOnly 쿠키에서 읽어서 변환
   if (!headers["Authorization"]) {
-    const tokens = getTokensFromCookies();
+    const tokens = await getTokens();
 
     if (tokens.accessToken) {
       headers["Authorization"] = `Bearer ${tokens.accessToken}`;
@@ -71,7 +63,7 @@ async function tryRefreshTokens(refreshToken: string): Promise<{
   const setCookieHeaders = response.headers.getSetCookie();
 
   // set-cookie에서 새 access_token 추출
-  const accessTokenCookie = setCookieHeaders.find((c) => c.startsWith("access_token="));
+  const accessTokenCookie = setCookieHeaders.find((c) => c.startsWith(`${TOKEN_NAMES.ACCESS}=`));
   if (!accessTokenCookie) return null;
 
   const accessToken = accessTokenCookie.split("=")[1].split(";")[0];
@@ -109,14 +101,14 @@ async function proxyRequest(request: NextRequest, { params }: { params: { path: 
   const queryString = request.nextUrl.search;
   const targetUrl = `${BACKEND_URL}/${path}${queryString}`;
 
-  const authHeaders = getAuthHeaders(request);
+  const authHeaders = await getAuthHeaders(request);
   const contentType = request.headers.get("Content-Type");
   const isFormData = contentType?.includes("multipart/form-data");
 
   // access_token 없고 refresh_token만 있으면 갱신 시도
   let refreshSetCookies: string[] | undefined;
   if (!authHeaders["Authorization"]) {
-    const tokens = getTokensFromCookies();
+    const tokens = await getTokens();
     if (tokens.refreshToken) {
       const refreshResult = await tryRefreshTokens(tokens.refreshToken);
       if (refreshResult) {

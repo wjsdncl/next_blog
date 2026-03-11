@@ -6,6 +6,7 @@
  */
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { TOKEN_NAMES } from "@/utils/token";
 
 /** 로그인 상태에서 접근 차단할 경로 → 리다이렉트 대상 */
 const authMap = new Map<RegExp, string>([[/^\/(login|signup)/, "/"]]);
@@ -15,8 +16,8 @@ const guestMap = new Map<RegExp, string>();
 
 export const middleware = (request: NextRequest) => {
   const { pathname } = request.nextUrl;
-  const accessToken = request.cookies.get("access_token");
-  const refreshToken = request.cookies.get("refresh_token");
+  const accessToken = request.cookies.get(TOKEN_NAMES.ACCESS);
+  const refreshToken = request.cookies.get(TOKEN_NAMES.REFRESH);
 
   // access_token 또는 refresh_token 중 하나라도 있으면 인증 상태로 판단
   // (refresh_token만 있으면 프록시/SSR에서 자동 갱신됨)
@@ -41,9 +42,9 @@ export const middleware = (request: NextRequest) => {
   };
 
   if (isAuthenticated) {
-    response.cookies.set("is_logged_in", "true", cookieOptions);
+    response.cookies.set(TOKEN_NAMES.LOGGED_IN, "true", cookieOptions);
   } else {
-    response.cookies.delete({ name: "is_logged_in", ...cookieOptions });
+    response.cookies.delete({ name: TOKEN_NAMES.LOGGED_IN, ...cookieOptions });
   }
 
   return response;

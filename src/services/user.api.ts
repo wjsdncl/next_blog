@@ -6,6 +6,11 @@ import instance from "./instance";
 export const USER_KEYS = ["user"] as const;
 
 const fetchUser = async (): Promise<User | undefined> => {
+  if (typeof window === "undefined") {
+    const { hasTokens } = await import("@/utils/token");
+    if (!(await hasTokens())) return undefined;
+  }
+
   try {
     const response = await instance.GET<{ success: boolean; data: User }>("/users/me", {
       next: {
