@@ -2,15 +2,14 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
 import { getPost, likePost, POST_KEYS } from "@/services/post.api";
+import type { User } from "@/types/authType";
 import type { Post } from "@/types/blogType";
 import toast from "@/utils/toast";
 
-export default function usePostActions(title: string) {
+export default function usePostActions(title: string, user?: User) {
   const abortControllerRef = useRef<AbortController | null>(null);
   const queryClient = useQueryClient();
-  const { user } = useAuth();
 
   const { data: post } = useQuery({
     queryKey: POST_KEYS.detail(title),

@@ -10,7 +10,7 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import components from "@/components/content/MarkdownComponents";
 import { getPost, POST_KEYS } from "@/services/post.api";
-import { getUser, USER_KEYS } from "@/services/user.api";
+import { getUser } from "@/services/user.api";
 import PostHeader from "./_components/PostHeader";
 
 const DesktopNavigation = dynamic(() => import("./_components/DesktopNavigation"));
@@ -41,14 +41,13 @@ export default async function Page({ params }: { params: { title: string } }) {
 
   const queryClient = new QueryClient();
   queryClient.setQueryData(POST_KEYS.detail(decodeURIComponent(title)), post);
-  if (user) queryClient.setQueryData([...USER_KEYS], user);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="mx-auto flex size-full justify-center gap-6 px-5 py-8 desktop:w-desktop">
         {/* 좌측 사이드바: 좋아요/공유 (데스크탑) */}
         <aside className="hidden h-fit shrink-0 desktop:flex desktop:w-[140px] desktop:justify-end">
-          <DesktopNavigation title={decodeURIComponent(title)} />
+          <DesktopNavigation title={decodeURIComponent(title)} user={user} />
         </aside>
 
         {/* 메인 콘텐츠 */}
@@ -114,7 +113,7 @@ export default async function Page({ params }: { params: { title: string } }) {
           {/* 모바일 네비게이션 */}
           <div className="mb-10 mt-20 flex w-full items-center justify-end gap-2 desktop:hidden">
             <hr className="grow-[5] rounded-l-full border-2 border-gray-300" />
-            <MobileNavigation title={decodeURIComponent(title)} />
+            <MobileNavigation title={decodeURIComponent(title)} user={user} />
             <hr className="w-5 rounded-r-full border-2 border-gray-300" />
           </div>
 

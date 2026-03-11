@@ -1,10 +1,9 @@
-export const revalidate = 1800;
-
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { type Metadata } from "next";
 import nextDynamic from "next/dynamic";
 import { publicInstance } from "@/services/instance";
 import { getPostList, getCategories, POST_KEYS } from "@/services/post.api";
+import { getUser } from "@/services/user.api";
 import { type Post } from "@/types/blogType";
 import ClientPage from "./_components/ClientPage";
 
@@ -12,6 +11,8 @@ const Navigation = nextDynamic(() => import("./_components/Navigation"));
 
 export default async function Page() {
   const queryClient = new QueryClient();
+  const user = await getUser();
+  const isOwner = user?.role === "OWNER";
 
   let posts = { posts: [] as Post[], totalPosts: 0, isLast: true, nextPage: 2 };
   let categoryData = { categories: {} as Record<string, number>, totalPosts: 0 };
@@ -41,7 +42,7 @@ export default async function Page() {
           <Navigation categories={categoryData.categories} totalPosts={categoryData.totalPosts} />
         </div>
         <HydrationBoundary state={dehydrate(queryClient)}>
-          <ClientPage />
+          <ClientPage isOwner={isOwner} />
         </HydrationBoundary>
       </div>
     </div>

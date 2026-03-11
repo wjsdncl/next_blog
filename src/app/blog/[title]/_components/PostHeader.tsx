@@ -115,7 +115,7 @@ export default function PostHeader({ title, user }: { title: string; user?: User
         <p className="pb-6 text-[50px] font-bold leading-[52px] text-text-primary">{post.title}</p>
 
         <div className="desktop:hidden">
-          <MobileNavigation title={title} />
+          <MobileNavigation title={title} user={user} />
         </div>
       </div>
 

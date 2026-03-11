@@ -1,11 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth";
 
-export default function WriteLink() {
-  const { isOwner } = useAuth();
-
+export default function WriteLink({ isOwner }: { isOwner: boolean }) {
   if (!isOwner) return null;
 
   return (

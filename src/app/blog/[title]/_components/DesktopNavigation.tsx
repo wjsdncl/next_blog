@@ -4,14 +4,15 @@ import useFollowScroll from "@/hooks/useFollowScroll";
 import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
 import FavoriteFilled from "@/Icons/FavoriteFilled.svg";
 import Share from "@/Icons/Share.svg";
+import { type User } from "@/types/authType";
 import usePostActions from "./usePostActions";
 
 const SCROLL_THRESHOLD = 200;
 const HEADER_OFFSET = 60;
 
-export default function DesktopNavigation({ title }: { title: string }) {
+export default function DesktopNavigation({ title, user }: { title: string; user?: User }) {
   const navRef = useFollowScroll<HTMLElement>(SCROLL_THRESHOLD, 0.1, HEADER_OFFSET);
-  const { post, handleLike, handleShare } = usePostActions(title);
+  const { post, handleLike, handleShare } = usePostActions(title, user);
 
   return (
     <nav

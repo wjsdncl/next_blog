@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useShallow } from "zustand/shallow";
-import { useAuth } from "@/hooks/useAuth";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useModalStore from "@/stores/ModalStore";
 import { type PortfolioLink } from "@/types/portfolioType";
@@ -21,6 +20,7 @@ export interface ProjectCardProps {
   techStacks: string[];
   links: PortfolioLink[];
   coverImage?: string | null;
+  isOwner: boolean;
 }
 
 const useProjectActions = (projectId: string) => {
@@ -41,7 +41,7 @@ const useProjectActions = (projectId: string) => {
 };
 
 export default function ProjectCard(project: ProjectCardProps) {
-  const { isOwner } = useAuth();
+  const { isOwner } = project;
   const [isExpanded, setIsExpanded] = useState(false);
   const articleRef = useRef<HTMLElement>(null);
   const [coords, setCoords] = useState({ top: 0, width: 0 });

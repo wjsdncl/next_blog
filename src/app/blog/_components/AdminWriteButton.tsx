@@ -2,11 +2,8 @@
 
 import Link from "next/link";
 import { memo } from "react";
-import { useAuth } from "@/hooks/useAuth";
 
-const AdminWriteButton = memo(() => {
-  const { isOwner } = useAuth();
-
+const AdminWriteButton = memo(({ isOwner }: { isOwner: boolean }) => {
   if (!isOwner) return null;
 
   return (

@@ -1,5 +1,3 @@
-export const revalidate = 1800;
-
 import Image from "next/image";
 import Link from "next/link";
 import removeMarkdown from "remove-markdown";

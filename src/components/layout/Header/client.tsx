@@ -5,20 +5,19 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useShallow } from "zustand/shallow";
-import { useAuth } from "@/hooks/useAuth";
 import Copy from "@/Icons/Copy.svg";
 import Github from "@/Icons/Github.svg";
 import Mail from "@/Icons/Mail.svg";
 import { logoutUser } from "@/services/actions/revalidate.action";
 import useModalStore from "@/stores/ModalStore";
+import { type User } from "@/types/authType";
 import cn from "@/utils/cn";
 import toast from "@/utils/toast";
 
 const HEADER_HEIGHT = 200;
 const SCROLL_THRESHOLD = 0.9;
 
-export default function ClientHeader() {
-  const { user } = useAuth();
+export default function ClientHeader({ user }: { user?: User }) {
   const [isSticky, setIsSticky] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const headerRef = useRef<HTMLDivElement>(null);

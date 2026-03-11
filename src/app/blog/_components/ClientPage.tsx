@@ -9,7 +9,7 @@ import BlogPostItem from "./BlogPostItem";
 import SearchInput from "./SearchInput";
 import { SkeletonPostItem } from "./SkeletonComponents";
 
-const BlogPostList = () => {
+const BlogPostList = ({ isOwner }: { isOwner: boolean }) => {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const searchParams = useSearchParams();
 
@@ -87,15 +87,15 @@ const BlogPostList = () => {
         )}
       </section>
 
-      <AdminWriteButton />
+      <AdminWriteButton isOwner={isOwner} />
     </>
   );
 };
 
-export default function ClientPage() {
+export default function ClientPage({ isOwner }: { isOwner: boolean }) {
   return (
     <Suspense>
-      <BlogPostList />
+      <BlogPostList isOwner={isOwner} />
     </Suspense>
   );
 }

@@ -3,10 +3,11 @@
 import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
 import FavoriteFilled from "@/Icons/FavoriteFilled.svg";
 import Share from "@/Icons/Share.svg";
+import { type User } from "@/types/authType";
 import usePostActions from "./usePostActions";
 
-export default function MobileNavigation({ title }: { title: string }) {
-  const { post, handleLike, handleShare } = usePostActions(title);
+export default function MobileNavigation({ title, user }: { title: string; user?: User }) {
+  const { post, handleLike, handleShare } = usePostActions(title, user);
 
   return (
     <nav className="flex items-center gap-2 text-text-primary">
