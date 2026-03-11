@@ -1,6 +1,7 @@
 /**
- * Next.js 미들웨어 — 인증 상태 기반 라우트 리다이렉션
+ * Next.js 미들웨어 — 인증 상태 기반 라우트 리다이렉션 + 토큰 갱신
  *
+ * 토큰 갱신: access_token 없고 refresh_token만 있을 때 백엔드에 갱신 요청
  * 로그인 상태: login/signup 접근 시 홈으로
  * 비로그인 상태: 인증 필요 페이지 접근 시 로그인으로
  */
@@ -8,19 +9,87 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { TOKEN_NAMES } from "@/utils/token";
 
+const BACKEND_URL = process.env.BACKEND_URL || "https://api.wjdalswo.xyz";
+
 /** 로그인 상태에서 접근 차단할 경로 → 리다이렉트 대상 */
 const authMap = new Map<RegExp, string>([[/^\/(login|signup)/, "/"]]);
 
 /** 비로그인 상태에서 접근 차단할 경로 → 리다이렉트 대상 */
 const guestMap = new Map<RegExp, string>();
 
-export const middleware = (request: NextRequest) => {
+/**
+ * refresh_token으로 백엔드에 갱신 요청.
+ * 성공 시 새 access_token 값과 백엔드의 set-cookie 헤더 배열을 반환.
+ */
+async function refreshTokens(
+  refreshToken: string
+): Promise<{ accessToken: string; setCookieHeaders: string[] } | null> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `${TOKEN_NAMES.REFRESH}=${refreshToken}`,
+      },
+      body: JSON.stringify({}),
+    });
+
+    if (!response.ok) return null;
+
+    const setCookieHeaders = response.headers.getSetCookie();
+    const accessCookie = setCookieHeaders.find((c) => c.startsWith(`${TOKEN_NAMES.ACCESS}=`));
+    if (!accessCookie) return null;
+
+    const accessToken = accessCookie.split("=")[1].split(";")[0];
+    return { accessToken, setCookieHeaders };
+  } catch {
+    return null;
+  }
+}
+
+export const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
   const accessToken = request.cookies.get(TOKEN_NAMES.ACCESS);
   const refreshToken = request.cookies.get(TOKEN_NAMES.REFRESH);
 
-  // access_token 또는 refresh_token 중 하나라도 있으면 인증 상태로 판단
-  // (refresh_token만 있으면 프록시/SSR에서 자동 갱신됨)
+  const isProduction = process.env.NODE_ENV === "production";
+  const loggedInCookieOptions = {
+    path: "/",
+    httpOnly: false,
+    ...(isProduction && { domain: ".wjdalswo.xyz" }),
+  };
+
+  // ── 토큰 갱신: access_token 없고 refresh_token만 있을 때 ──
+  if (!accessToken && refreshToken) {
+    const result = await refreshTokens(refreshToken.value);
+
+    if (result) {
+      // 요청 헤더에 새 access_token 주입 → 서버 컴포넌트에서 cookies()로 읽을 수 있도록
+      const requestHeaders = new Headers(request.headers);
+      const existing = request.headers.get("cookie") || "";
+      requestHeaders.set("cookie", `${existing}; ${TOKEN_NAMES.ACCESS}=${result.accessToken}`);
+
+      const response = NextResponse.next({ request: { headers: requestHeaders } });
+
+      // 백엔드의 set-cookie를 그대로 브라우저에 전달
+      for (const cookie of result.setCookieHeaders) {
+        response.headers.append("set-cookie", cookie);
+      }
+
+      response.cookies.set(TOKEN_NAMES.LOGGED_IN, "true", loggedInCookieOptions);
+
+      // 리다이렉트 체크 (갱신 성공 → 로그인 상태이므로 authMap 적용)
+      for (const [regex, redirectUrl] of authMap.entries()) {
+        if (regex.test(pathname)) {
+          return NextResponse.redirect(new URL(redirectUrl, request.url));
+        }
+      }
+
+      return response;
+    }
+  }
+
+  // ── 기존 리다이렉트 로직 ──
   const isAuthenticated = !!accessToken || !!refreshToken;
   const map = isAuthenticated ? authMap : guestMap;
 
@@ -32,25 +101,15 @@ export const middleware = (request: NextRequest) => {
 
   const response = NextResponse.next();
 
-  // 인증 상태를 non-httpOnly 쿠키로 미러링
-  // → 클라이언트에서 /me 호출 여부를 판단하는 플래그
-  const isProduction = process.env.NODE_ENV === "production";
-  const cookieOptions = {
-    path: "/",
-    httpOnly: false,
-    ...(isProduction && { domain: ".wjdalswo.xyz" }),
-  };
-
   if (isAuthenticated) {
-    response.cookies.set(TOKEN_NAMES.LOGGED_IN, "true", cookieOptions);
+    response.cookies.set(TOKEN_NAMES.LOGGED_IN, "true", loggedInCookieOptions);
   } else {
-    response.cookies.delete({ name: TOKEN_NAMES.LOGGED_IN, ...cookieOptions });
+    response.cookies.delete({ name: TOKEN_NAMES.LOGGED_IN, ...loggedInCookieOptions });
   }
 
   return response;
 };
 
 export const config = {
-  // 다음과 같은 경로를 제외하고 모든 경로에 미들웨어를 적용합니다.
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico|images|icons).*)", "/api/:path*"],
 };
