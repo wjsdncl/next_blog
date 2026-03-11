@@ -7,10 +7,7 @@ import ProjectForm from "./_components/ProjectForm";
 export default async function PortfolioWritePage({ searchParams }: { searchParams: { id: string } }) {
   const queryClient = new QueryClient();
 
-  const [portfolio, user] = await Promise.all([
-    searchParams.id ? getPortfolio(searchParams.id) : undefined,
-    getUser(),
-  ]);
+  const [portfolio, user] = await Promise.all([searchParams.id ? getPortfolio(searchParams.id) : undefined, getUser()]);
 
   queryClient.setQueryData(PORTFOLIO_KEYS.detail(searchParams.id), portfolio);
   queryClient.setQueryData([...USER_KEYS], user);

@@ -10,10 +10,10 @@ import remarkGfm from "remark-gfm";
 import { useShallow } from "zustand/shallow";
 import components from "@/components/content/MarkdownComponents";
 import TagInput from "@/components/ui/TagInput";
+import { revalidatePosts } from "@/services/actions/revalidate.action";
 import { getPost, POST_KEYS, updatePost, uploadImage, createPost, resolveCategoryId } from "@/services/post.api";
 import { resolveTagIds } from "@/services/tag.api";
-import { revalidatePosts } from "@/services/actions/revalidate.action";
-import { getUser, USER_KEYS } from "@/services/user.api";
+import { USER_KEYS } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import type { PostRequest } from "@/types/blogType";
 import PreviewModal from "./PreviewModal";
@@ -36,13 +36,6 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
 
   const title = watch("title");
   const markdown = watch("content");
-
-  const { data: user } = useQuery({
-    queryKey: [...USER_KEYS],
-    queryFn: getUser,
-    retry: 0,
-    staleTime: 1000 * 60 * 5,
-  });
 
   const { data: post } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps

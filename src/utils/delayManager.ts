@@ -1,4 +1,5 @@
 /** 지연 시간 내 마지막 호출만 실행 */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const debounce = <T extends (...args: any[]) => void>(fn: T, delay: number) => {
   let timeout: ReturnType<typeof setTimeout>;
 
@@ -11,6 +12,7 @@ const debounce = <T extends (...args: any[]) => void>(fn: T, delay: number) => {
 };
 
 /** 지정 시간 간격 내 최대 1회만 실행 */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const throttle = <T extends (...args: any[]) => void>(fn: T, limit: number) => {
   let lastRan: number | null = null;
   let timeout: ReturnType<typeof setTimeout> | null = null;

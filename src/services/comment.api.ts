@@ -24,9 +24,7 @@ export const COMMENT_KEYS = {
 
 export const getComments = async (postId: string, page = 1, limit = 10) => {
   try {
-    const response = await instance.GET<CommentResponse>(
-      `/comments?post_id=${postId}&page=${page}&limit=${limit}`
-    );
+    const response = await instance.GET<CommentResponse>(`/comments?post_id=${postId}&page=${page}&limit=${limit}`);
 
     const { data: comments, pagination } = response;
 

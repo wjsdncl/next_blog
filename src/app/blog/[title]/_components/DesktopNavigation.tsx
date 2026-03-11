@@ -14,7 +14,10 @@ export default function DesktopNavigation({ title }: { title: string }) {
   const { post, handleLike, handleShare } = usePostActions(title);
 
   return (
-    <nav ref={navRef} className="flex flex-col items-center gap-2 rounded-full border-2 border-gray-300 px-3 py-4 text-text-primary">
+    <nav
+      ref={navRef}
+      className="flex flex-col items-center gap-2 rounded-full border-2 border-gray-300 px-3 py-4 text-text-primary"
+    >
       <button type="button" aria-label="좋아요" onClick={handleLike} className="size-8">
         {post?.is_liked ? (
           <FavoriteFilled width="100%" height="100%" color="#656079" />

@@ -22,7 +22,7 @@ interface CommentItemProps {
   editCommentId: string | null;
   parentComment?: Comment;
   onReply: (commentId: string) => void;
-  onEdit: (commentId: string, content: string) => void;
+  onEdit: (commentId: string) => void;
   onDelete: (commentId: string) => void;
   onSubmitReply: (content: string, parentId: string) => void;
   onSubmitEdit: (content: string, commentId: string) => void;
@@ -127,10 +127,7 @@ export default function CommentItem({
           )}
           {(currentUser?.id === comment.author?.id || currentUser?.role === "OWNER") && (
             <>
-              <button
-                onClick={() => onEdit(comment.id, comment.content)}
-                className="text-base text-gray-500 hover:text-gray-700"
-              >
+              <button onClick={() => onEdit(comment.id)} className="text-base text-gray-500 hover:text-gray-700">
                 수정
               </button>
               <button onClick={() => onDelete(comment.id)} className="text-base text-gray-500 hover:text-gray-700">

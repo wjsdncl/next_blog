@@ -99,10 +99,10 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
   );
 
   // 댓글 작성 함수
-  const onSubmit = (data: CommentFormInputs) => {
+  const onSubmit = (formInput: CommentFormInputs) => {
     if (createCommentMutation.isPending || !post) return;
     createCommentMutation.mutate({
-      content: data.content,
+      content: formInput.content,
       post_id: post.id,
       parent_id: undefined,
     });
@@ -114,7 +114,7 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
   };
 
   // 댓글 수정 함수
-  const handleEdit = (commentId: string, _content: string) => {
+  const handleEdit = (commentId: string) => {
     setEditCommentId(commentId);
   };
 

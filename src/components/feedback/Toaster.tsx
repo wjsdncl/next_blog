@@ -1,8 +1,8 @@
 "use client";
 
 import { useShallow } from "zustand/shallow";
-import Close from "@/Icons/Close.svg";
 import { Check, Info, Loading } from "@/components/feedback/ToastIcons";
+import Close from "@/Icons/Close.svg";
 import useToastStore from "@/stores/ToastStore";
 
 function Toaster() {

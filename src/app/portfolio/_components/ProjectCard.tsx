@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import removeMarkdown from "remove-markdown";
 import { useShallow } from "zustand/shallow";
 import { useAuth } from "@/hooks/useAuth";
 import useDeviceSize from "@/hooks/useDeviceSize";

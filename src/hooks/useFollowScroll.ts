@@ -8,7 +8,11 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import useDeviceSize from "./useDeviceSize";
 
-export default function useFollowScroll<T extends HTMLElement>(startFollowPosition = 200, damping = 0.1, topOffset = 0) {
+export default function useFollowScroll<T extends HTMLElement>(
+  startFollowPosition = 200,
+  damping = 0.1,
+  topOffset = 0
+) {
   const elementRef = useRef<T | null>(null);
   const targetPosition = useRef(0);
   const currentPosition = useRef(0);
