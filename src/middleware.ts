@@ -17,13 +17,18 @@ const authMap = new Map<RegExp, string>([[/^\/(login|signup)/, "/"]]);
 /** 비로그인 상태에서 접근 차단할 경로 → 리다이렉트 대상 */
 const guestMap = new Map<RegExp, string>();
 
+/** set-cookie 헤더에서 쿠키 값을 추출 */
+function extractCookieValue(setCookieHeaders: string[], name: string): string | null {
+  const header = setCookieHeaders.find((c) => c.startsWith(`${name}=`));
+  if (!header) return null;
+  return header.split("=")[1].split(";")[0];
+}
+
 /**
  * refresh_token으로 백엔드에 갱신 요청.
- * 성공 시 새 access_token 값과 백엔드의 set-cookie 헤더 배열을 반환.
+ * 성공 시 새 access_token과 refresh_token 값을 반환.
  */
-async function refreshTokens(
-  refreshToken: string
-): Promise<{ accessToken: string; setCookieHeaders: string[] } | null> {
+async function refreshTokens(refreshToken: string): Promise<{ accessToken: string; newRefreshToken: string } | null> {
   try {
     const response = await fetch(`${BACKEND_URL}/auth/refresh`, {
       method: "POST",
@@ -37,11 +42,12 @@ async function refreshTokens(
     if (!response.ok) return null;
 
     const setCookieHeaders = response.headers.getSetCookie();
-    const accessCookie = setCookieHeaders.find((c) => c.startsWith(`${TOKEN_NAMES.ACCESS}=`));
-    if (!accessCookie) return null;
+    const accessToken = extractCookieValue(setCookieHeaders, TOKEN_NAMES.ACCESS);
+    const newRefreshToken = extractCookieValue(setCookieHeaders, TOKEN_NAMES.REFRESH);
 
-    const accessToken = accessCookie.split("=")[1].split(";")[0];
-    return { accessToken, setCookieHeaders };
+    if (!accessToken || !newRefreshToken) return null;
+
+    return { accessToken, newRefreshToken };
   } catch {
     return null;
   }
@@ -71,10 +77,24 @@ export const middleware = async (request: NextRequest) => {
 
       const response = NextResponse.next({ request: { headers: requestHeaders } });
 
-      // 백엔드의 set-cookie를 그대로 브라우저에 전달
-      for (const cookie of result.setCookieHeaders) {
-        response.headers.append("set-cookie", cookie);
-      }
+      // 모든 쿠키를 cookies API로 통일 설정 (headers.append와 혼용 시 덮어쓰기 문제 방지)
+      const tokenCookieOptions = {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "lax" as const,
+        path: "/",
+        ...(isProduction && { domain: ".wjdalswo.xyz" }),
+      };
+
+      response.cookies.set(TOKEN_NAMES.ACCESS, result.accessToken, {
+        ...tokenCookieOptions,
+        maxAge: 60 * 15,
+      });
+
+      response.cookies.set(TOKEN_NAMES.REFRESH, result.newRefreshToken, {
+        ...tokenCookieOptions,
+        maxAge: 60 * 60 * 24 * 7,
+      });
 
       response.cookies.set(TOKEN_NAMES.LOGGED_IN, "true", loggedInCookieOptions);
 
