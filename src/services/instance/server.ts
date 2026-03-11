@@ -104,7 +104,7 @@ export async function POST<T = any>(url: string, body?: object, options?: Reques
     options: {
       ...options,
       method: "POST",
-      body: isFormData ? body : JSON.stringify(body),
+      body: isFormData ? body : JSON.stringify(body ?? {}),
       headers: {
         ...(!isFormData && { "Content-Type": "application/json" }),
         ...options?.headers,

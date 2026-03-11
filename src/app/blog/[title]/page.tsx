@@ -23,10 +23,7 @@ export default async function Page({ params }: { params: { title: string } }) {
   const accessToken = cookies().get("access_token");
   const title = params.title;
 
-  const [post, user] = await Promise.all([
-    getPost(title).catch(() => null),
-    accessToken ? getUser() : undefined,
-  ]);
+  const [post, user] = await Promise.all([getPost(title).catch(() => null), accessToken ? getUser() : undefined]);
 
   if (!post) notFound();
 
@@ -105,7 +102,11 @@ export default async function Page({ params }: { params: { title: string } }) {
 
           {/* 본문 */}
           <div className="prose text-lg prose-headings:text-text-primary prose-strong:text-text-primary prose-ul:text-text-primary prose-li:p-0">
-            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeSlug]} components={components}>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm, remarkBreaks]}
+              rehypePlugins={[rehypeSlug]}
+              components={components}
+            >
               {post.content}
             </ReactMarkdown>
           </div>
