@@ -16,7 +16,12 @@ const guestMap = new Map<RegExp, string>();
 export const middleware = (request: NextRequest) => {
   const { pathname } = request.nextUrl;
   const accessToken = request.cookies.get("access_token");
-  const map = accessToken ? authMap : guestMap;
+  const refreshToken = request.cookies.get("refresh_token");
+
+  // access_token 또는 refresh_token 중 하나라도 있으면 인증 상태로 판단
+  // (refresh_token만 있으면 프록시/SSR에서 자동 갱신됨)
+  const isAuthenticated = !!accessToken || !!refreshToken;
+  const map = isAuthenticated ? authMap : guestMap;
 
   for (const [regex, redirectUrl] of map.entries()) {
     if (regex.test(pathname)) {
@@ -26,12 +31,19 @@ export const middleware = (request: NextRequest) => {
 
   const response = NextResponse.next();
 
-  // access_token 존재 여부를 non-httpOnly 쿠키로 미러링
+  // 인증 상태를 non-httpOnly 쿠키로 미러링
   // → 클라이언트에서 /me 호출 여부를 판단하는 플래그
-  if (accessToken) {
-    response.cookies.set("is_logged_in", "true", { path: "/", httpOnly: false });
+  const isProduction = process.env.NODE_ENV === "production";
+  const cookieOptions = {
+    path: "/",
+    httpOnly: false,
+    ...(isProduction && { domain: ".wjdalswo.xyz" }),
+  };
+
+  if (isAuthenticated) {
+    response.cookies.set("is_logged_in", "true", cookieOptions);
   } else {
-    response.cookies.delete("is_logged_in");
+    response.cookies.delete({ name: "is_logged_in", ...cookieOptions });
   }
 
   return response;

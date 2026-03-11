@@ -31,16 +31,17 @@ async function tryRefresh(refreshToken: string): Promise<string | null> {
         "Content-Type": "application/json",
         Cookie: `refresh_token=${refreshToken}`,
       },
+      body: JSON.stringify({}),
     });
 
     if (!response.ok) return null;
 
     // set-cookie에서 새 토큰 추출 후 Next.js 쿠키에 반영
     const cookieStore = cookies();
-    response.headers.forEach((value, key) => {
-      if (key.toLowerCase() !== "set-cookie") return;
+    const setCookieHeaders = response.headers.getSetCookie();
 
-      const [nameValue] = value.split(";");
+    for (const setCookie of setCookieHeaders) {
+      const [nameValue] = setCookie.split(";");
       const [name, ...rest] = nameValue.split("=");
       const cookieValue = rest.join("=");
 
@@ -54,7 +55,7 @@ async function tryRefresh(refreshToken: string): Promise<string | null> {
           maxAge,
         });
       }
-    });
+    }
 
     const newAccessToken = cookieStore.get("access_token")?.value;
     return newAccessToken || null;
@@ -122,9 +123,9 @@ export async function PATCH<T = any>(url: string, body?: object, options?: Reque
     options: {
       ...options,
       method: "PATCH",
-      body: JSON.stringify(body),
+      ...(body !== undefined && { body: JSON.stringify(body) }),
       headers: {
-        "Content-Type": "application/json",
+        ...(body !== undefined && { "Content-Type": "application/json" }),
         ...options?.headers,
         ...authHeaders,
       },
@@ -142,7 +143,7 @@ export async function DELETE<T = any>(url: string, body?: object, options?: Requ
       method: "DELETE",
       ...(body && { body: JSON.stringify(body) }),
       headers: {
-        "Content-Type": "application/json",
+        ...(body && { "Content-Type": "application/json" }),
         ...options?.headers,
         ...authHeaders,
       },

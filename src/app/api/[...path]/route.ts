@@ -63,16 +63,12 @@ async function tryRefreshTokens(refreshToken: string): Promise<{
       "Content-Type": "application/json",
       Cookie: `refresh_token=${refreshToken}`,
     },
+    body: JSON.stringify({}),
   });
 
   if (!response.ok) return null;
 
-  const setCookieHeaders: string[] = [];
-  response.headers.forEach((value, key) => {
-    if (key.toLowerCase() === "set-cookie") {
-      setCookieHeaders.push(value);
-    }
-  });
+  const setCookieHeaders = response.headers.getSetCookie();
 
   // set-cookie에서 새 access_token 추출
   const accessTokenCookie = setCookieHeaders.find((c) => c.startsWith("access_token="));
@@ -85,16 +81,18 @@ async function tryRefreshTokens(refreshToken: string): Promise<{
 function buildResponseHeaders(response: Response, extraSetCookies?: string[]): Headers {
   const responseHeaders = new Headers();
 
+  // set-cookie 이외의 헤더 복사
   response.headers.forEach((value, key) => {
-    if (["transfer-encoding", "connection", "keep-alive"].includes(key.toLowerCase())) {
+    if (["transfer-encoding", "connection", "keep-alive", "set-cookie"].includes(key.toLowerCase())) {
       return;
     }
-    if (key.toLowerCase() === "set-cookie") {
-      responseHeaders.append(key, value);
-    } else {
-      responseHeaders.set(key, value);
-    }
+    responseHeaders.set(key, value);
   });
+
+  // set-cookie는 getSetCookie()로 개별 처리 (forEach 합침 방지)
+  for (const cookie of response.headers.getSetCookie()) {
+    responseHeaders.append("set-cookie", cookie);
+  }
 
   // refresh로 받은 set-cookie도 클라이언트에 전달
   if (extraSetCookies) {

@@ -45,9 +45,9 @@ export async function PATCH<T = any>(url: string, body?: object, options?: Reque
     options: {
       ...options,
       method: "PATCH",
-      body: JSON.stringify(body),
+      ...(body !== undefined && { body: JSON.stringify(body) }),
       headers: {
-        "Content-Type": "application/json",
+        ...(body !== undefined && { "Content-Type": "application/json" }),
         ...options?.headers,
       },
     },
@@ -62,7 +62,7 @@ export async function DELETE<T = any>(url: string, body?: object, options?: Requ
       method: "DELETE",
       ...(body && { body: JSON.stringify(body) }),
       headers: {
-        "Content-Type": "application/json",
+        ...(body && { "Content-Type": "application/json" }),
         ...options?.headers,
       },
     },

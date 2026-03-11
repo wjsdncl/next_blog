@@ -21,9 +21,13 @@ const Comments = dynamic(() => import("./_components/Comments/Comments"));
 
 export default async function Page({ params }: { params: { title: string } }) {
   const accessToken = cookies().get("access_token");
+  const refreshToken = cookies().get("refresh_token");
   const title = params.title;
 
-  const [post, user] = await Promise.all([getPost(title).catch(() => null), accessToken ? getUser() : undefined]);
+  const [post, user] = await Promise.all([
+    getPost(title).catch(() => null),
+    accessToken || refreshToken ? getUser() : undefined,
+  ]);
 
   if (!post) notFound();
 
