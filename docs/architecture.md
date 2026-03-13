@@ -2,22 +2,22 @@
 
 ## 라우팅 구조
 
-| 경로 | 설명 | 렌더링 |
-|------|------|--------|
-| `/` | 홈페이지 | Server |
-| `/blog` | 게시글 목록 (무한 스크롤) | Server + Client |
-| `/blog/[title]` | 게시글 상세 (slug) | Server + Client |
-| `/blog/write` | 게시글 작성/수정 (OWNER) | Client |
-| `/portfolio` | 포트폴리오 목록 | Server + Client |
-| `/portfolio/write` | 포트폴리오 작성/수정 (OWNER) | Client |
-| `/about` | 소개 | Server |
-| `/contact` | 연락처 | Server |
-| `/sitemap` | 사이트맵 | Server |
-| `/(auth)/login` | GitHub OAuth 로그인 | Client |
-| `/(auth)/signup` | 회원가입 | Client |
-| `/(auth)/auth/callback` | OAuth 콜백 처리 | Client |
-| `/(auth)/auth/error` | OAuth 에러 | Client |
-| `/api/[...path]` | API 프록시 (백엔드 중계) | Route Handler |
+| 경로                    | 설명                         | 렌더링          |
+| ----------------------- | ---------------------------- | --------------- |
+| `/`                     | 홈페이지                     | Server          |
+| `/blog`                 | 게시글 목록 (무한 스크롤)    | Server + Client |
+| `/blog/[title]`         | 게시글 상세 (slug)           | Server + Client |
+| `/blog/write`           | 게시글 작성/수정 (OWNER)     | Client          |
+| `/portfolio`            | 포트폴리오 목록              | Server + Client |
+| `/portfolio/write`      | 포트폴리오 작성/수정 (OWNER) | Client          |
+| `/about`                | 소개                         | Server          |
+| `/contact`              | 연락처                       | Server          |
+| `/sitemap`              | 사이트맵                     | Server          |
+| `/(auth)/login`         | GitHub OAuth 로그인          | Client          |
+| `/(auth)/signup`        | 회원가입                     | Client          |
+| `/(auth)/auth/callback` | OAuth 콜백 처리              | Client          |
+| `/(auth)/auth/error`    | OAuth 에러                   | Client          |
+| `/api/[...path]`        | API 프록시 (백엔드 중계)     | Route Handler   |
 
 ## API 서비스 계층
 
@@ -25,15 +25,16 @@
 
 ```typescript
 // services/instance/index.ts
-// 환경에 따라 자동 분기
-const instance = isServer ? serverApiFetch : clientApiFetch;
+// 환경에 따라 자동 분기 (단일 인스턴스)
+const instance = typeof window === "undefined" ? serverApi : clientApi;
 ```
 
-| 인스턴스 | 환경 | 대상 | 쿠키 |
-|----------|------|------|------|
-| `clientApiFetch` | CSR | `/api/[...path]` 프록시 | 자동 (브라우저) |
-| `serverApiFetch` | SSR | `BACKEND_URL` 직접 | `cookies()` 헤더 전달 |
-| `publicServerApiFetch` | ISR | `BACKEND_URL` 직접 | 없음 (공개 API용) |
+| 인스턴스       | 환경 | 대상                    | 쿠키                  |
+| -------------- | ---- | ----------------------- | --------------------- |
+| `clientApi`    | CSR  | `/api/[...path]` 프록시 | 자동 (브라우저)       |
+| `serverApi`    | SSR  | `BACKEND_URL` 직접      | `cookies()` 헤더 전달 |
+
+서비스 함수는 `instance`를 내부적으로 사용하며, 소비자(페이지 컴포넌트)는 인스턴스를 직접 다루지 않는다.
 
 ### Query Key Factory
 
@@ -69,14 +70,14 @@ services/
 
 ### 클라이언트 상태 (Zustand)
 
-| Store | 용도 |
-|-------|------|
+| Store        | 용도                       |
+| ------------ | -------------------------- |
 | `ModalStore` | 모달 스택 관리 (열기/닫기) |
-| `ToastStore` | 토스트 알림 (추가/제거) |
+| `ToastStore` | 토스트 알림 (추가/제거)    |
 
 ## 컴포넌트 구조
 
-### 페이지별 _components
+### 페이지별 \_components
 
 각 라우트 폴더 내 `_components/`에 해당 페이지 전용 컴포넌트를 배치한다.
 
@@ -106,18 +107,18 @@ components/
 
 ### 토큰 관리
 
-| 쿠키 | HttpOnly | 용도 |
-|------|----------|------|
-| `access_token` | O | API 인증 (15분) |
-| `refresh_token` | O | 토큰 갱신 (7일) |
-| `is_logged_in` | X | 클라이언트 로그인 상태 확인 |
+| 쿠키            | HttpOnly | 용도                        |
+| --------------- | -------- | --------------------------- |
+| `access_token`  | O        | API 인증 (15분)             |
+| `refresh_token` | O        | 토큰 갱신 (7일)             |
+| `is_logged_in`  | X        | 클라이언트 로그인 상태 확인 |
 
 ### 토큰 갱신 경로
 
-| 경로 | 위치 | 트리거 |
-|------|------|--------|
-| SSR | `middleware.ts` | 페이지 요청 시 access_token 없고 refresh_token 있을 때 |
-| CSR | `api/[...path]/route.ts` | API 프록시 호출 시 401 응답 |
+| 경로 | 위치                     | 트리거                                                 |
+| ---- | ------------------------ | ------------------------------------------------------ |
+| SSR  | `middleware.ts`          | 페이지 요청 시 access_token 없고 refresh_token 있을 때 |
+| CSR  | `api/[...path]/route.ts` | API 프록시 호출 시 401 응답                            |
 
 ## 스타일링
 
