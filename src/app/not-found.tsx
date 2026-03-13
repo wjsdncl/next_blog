@@ -3,7 +3,7 @@ import NotFound from "@/Icons/NotFound.svg";
 
 export default function Page() {
   return (
-    <article className="mx-auto flex size-full grow flex-col items-center justify-center tablet:w-tablet">
+    <article className="mx-auto flex size-full grow flex-col items-center justify-center py-10 tablet:w-tablet">
       <NotFound height={"auto"} width={"50%"} />
       <span className="mt-6 text-xl font-semibold tablet:text-3xl">해당 페이지를 찾을 수 없습니다!</span>
 

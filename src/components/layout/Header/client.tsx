@@ -95,11 +95,21 @@ export default function ClientHeader({ user }: { user?: User }) {
 
   const renderAuthButton = (textSize: string) =>
     user ? (
-      <button onClick={openLogoutModal} className={cn(`${textSize} text-nowrap font-medium text-text-primary`)}>
+      <button
+        onClick={openLogoutModal}
+        className={cn(
+          `${textSize} text-nowrap font-medium text-text-primary transition-colors duration-200 hover:text-brand-tertiary`
+        )}
+      >
         로그아웃
       </button>
     ) : (
-      <Link href="/login" className={cn(`${textSize} font-medium text-text-primary`)}>
+      <Link
+        href="/login"
+        className={cn(
+          `${textSize} font-medium text-text-primary transition-colors duration-200 hover:text-brand-tertiary`
+        )}
+      >
         <span className={cn("flex size-full items-center justify-center text-nowrap")}>로그인</span>
       </Link>
     );
@@ -183,11 +193,23 @@ export default function ClientHeader({ user }: { user?: User }) {
                     `flex size-full items-center gap-4 font-semibold ${isSticky ? "text-base" : "text-lg"}`
                   )}
                 >
-                  {["Home", "Blog", "Portfolio", "About"].map((item) => (
-                    <li key={item}>
-                      <Link href={item === "Home" ? "/" : `/${item.toLowerCase()}`}>{item}</Link>
-                    </li>
-                  ))}
+                  {["Home", "Blog", "Portfolio", "About"].map((item) => {
+                    const href = item === "Home" ? "/" : `/${item.toLowerCase()}`;
+                    const isActive = pathname === href;
+                    return (
+                      <li key={item}>
+                        <Link
+                          href={href}
+                          className={cn(
+                            "transition-colors duration-200 hover:text-brand-tertiary",
+                            isActive && "text-brand-tertiary"
+                          )}
+                        >
+                          {item}
+                        </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
               </nav>
 

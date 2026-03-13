@@ -15,7 +15,7 @@ const Footer = () => {
       <article className="flex items-center justify-between gap-4 tablet:w-tablet desktop:w-desktop">
         <span className="text-nowrap font-medium">©wjdalswo 2024.</span>
         <div className="flex items-center justify-center gap-4 font-semibold">
-          <Link href="https://github.com/wjsdncl">Github</Link>
+          <Link href="https://github.com/wjsdncl" className="transition-colors duration-200 hover:text-brand-tertiary">Github</Link>
           {/* <Link href="/sitemap">Sitemap</Link> */}
           {/* <Link href="/contact">Contact</Link> */}
         </div>
