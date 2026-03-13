@@ -1,5 +1,4 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import { publicInstance } from "@/services/instance";
 import { getPortfolioList, PORTFOLIO_KEYS } from "@/services/portfolio.api";
 import { getUser } from "@/services/user.api";
 import ProjectList from "./_components/ProjectList";
@@ -7,14 +6,16 @@ import WriteLink from "./_components/WriteLink";
 
 export default async function Page() {
   const queryClient = new QueryClient();
-  const user = await getUser();
-  const isOwner = user?.role === "OWNER";
 
-  const portfolio = await getPortfolioList({ page: 1, limit: 10 }, publicInstance).catch(() => ({
-    portfolios: [],
-    isLast: true,
-    nextPage: 2,
-  }));
+  const [user, portfolio] = await Promise.all([
+    getUser(),
+    getPortfolioList({ page: 1, limit: 10 }).catch(() => ({
+      portfolios: [],
+      isLast: true,
+      nextPage: 2,
+    })),
+  ]);
+  const isOwner = user?.role === "OWNER";
 
   queryClient.setQueryData(PORTFOLIO_KEYS.all(), {
     pages: [portfolio],

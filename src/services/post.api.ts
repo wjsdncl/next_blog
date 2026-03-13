@@ -2,12 +2,11 @@
  * 게시글 API 서비스
  *
  * Query Key 규칙: POST_KEYS.list(order, search, category, tag) / POST_KEYS.detail(slug)
- * 캐시: next.revalidate(30분) + tags 기반 ISR
  */
 /* eslint-disable no-console */
 
 import { type PostRequest, type Post } from "@/types/blogType";
-import instance, { type ReadonlyApiInstance } from "./instance";
+import instance from "./instance";
 
 interface Pagination {
   page: number;
@@ -34,11 +33,9 @@ interface CategoriesResponse {
   totalPostCount: number;
 }
 
-export const getCategories = async (
-  apiInstance: ReadonlyApiInstance = instance
-): Promise<{ categories: Record<string, number>; totalPosts: number }> => {
+export const getCategories = async (): Promise<{ categories: Record<string, number>; totalPosts: number }> => {
   try {
-    const res = await apiInstance.GET<CategoriesResponse>("/categories", {
+    const res = await instance.GET<CategoriesResponse>("/categories", {
       next: {
         revalidate: 60 * 30,
         tags: [...CATEGORY_KEYS.all()],
@@ -94,24 +91,21 @@ export const POST_KEYS = {
   like: (id: string) => ["posts", id, "like"] as const,
 };
 
-export const getPostList = async (
-  {
-    page = 1,
-    limit = 10,
-    order = "newest",
-    search,
-    category,
-    tag,
-  }: {
-    page?: number;
-    limit?: number;
-    order?: "oldest" | "newest" | "like";
-    search?: string;
-    category?: string;
-    tag?: string;
-  },
-  apiInstance: ReadonlyApiInstance = instance
-) => {
+export const getPostList = async ({
+  page = 1,
+  limit = 10,
+  order = "newest",
+  search,
+  category,
+  tag,
+}: {
+  page?: number;
+  limit?: number;
+  order?: "oldest" | "newest" | "like";
+  search?: string;
+  category?: string;
+  tag?: string;
+}) => {
   try {
     const params: Record<string, string> = {
       page: String(page),
@@ -124,7 +118,7 @@ export const getPostList = async (
     if (tag) params.tag = tag;
 
     const searchParams = new URLSearchParams(params);
-    const postRes = await apiInstance.GET<PostResponse>(`/posts?${searchParams.toString()}`, {
+    const postRes = await instance.GET<PostResponse>(`/posts?${searchParams.toString()}`, {
       next: {
         revalidate: 60 * 30,
         tags: POST_KEYS.list(order, search, category, tag),

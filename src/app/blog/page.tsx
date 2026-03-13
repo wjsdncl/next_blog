@@ -1,7 +1,6 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { type Metadata } from "next";
 import nextDynamic from "next/dynamic";
-import { publicInstance } from "@/services/instance";
 import { getPostList, getCategories, POST_KEYS } from "@/services/post.api";
 import { getUser } from "@/services/user.api";
 import { type Post } from "@/types/blogType";
@@ -18,10 +17,7 @@ export default async function Page() {
   let categoryData = { categories: {} as Record<string, number>, totalPosts: 0 };
 
   try {
-    [posts, categoryData] = await Promise.all([
-      getPostList({ page: 1, limit: 10 }, publicInstance),
-      getCategories(publicInstance),
-    ]);
+    [posts, categoryData] = await Promise.all([getPostList({ page: 1, limit: 10 }), getCategories()]);
   } catch {
     // 백엔드 다운 시 빈 배열 fallback
   }

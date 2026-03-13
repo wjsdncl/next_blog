@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { type Portfolio, type PortfolioRequest } from "@/types/portfolioType";
-import instance, { type ReadonlyApiInstance } from "./instance";
+import instance from "./instance";
 
 interface Pagination {
   page: number;
@@ -66,16 +66,13 @@ export const PORTFOLIO_KEYS = {
   detail: (id: string) => ["portfolios", id] as const,
 };
 
-export const getPortfolioList = async (
-  {
-    page = 1,
-    limit = 10,
-  }: {
-    page?: number;
-    limit?: number;
-  },
-  apiInstance: ReadonlyApiInstance = instance
-): Promise<{
+export const getPortfolioList = async ({
+  page = 1,
+  limit = 10,
+}: {
+  page?: number;
+  limit?: number;
+}): Promise<{
   portfolios: Portfolio[];
   isLast: boolean;
   nextPage: number;
@@ -86,7 +83,7 @@ export const getPortfolioList = async (
       limit: limit.toString(),
     });
 
-    const response = await apiInstance.GET<PortfolioResponse>(`/portfolios?${searchParams.toString()}`, {
+    const response = await instance.GET<PortfolioResponse>(`/portfolios?${searchParams.toString()}`, {
       next: {
         revalidate: 60 * 60,
         tags: [...PORTFOLIO_KEYS.all()],
