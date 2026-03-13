@@ -46,7 +46,7 @@ export default async function Page({ params }: { params: { title: string } }) {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="mx-auto flex size-full justify-center gap-6 px-5 py-8 desktop:w-desktop">
         {/* 좌측 사이드바: 좋아요/공유 (데스크탑) */}
-        <aside className="hidden h-fit shrink-0 pt-28 desktop:flex desktop:w-[140px] desktop:justify-center">
+        <aside className="hidden h-fit shrink-0 pt-28 desktop:flex desktop:w-[140px] desktop:justify-end">
           <DesktopNavigation title={decodeURIComponent(title)} user={user} />
         </aside>
 
@@ -122,7 +122,7 @@ export default async function Page({ params }: { params: { title: string } }) {
         </div>
 
         {/* 우측 사이드바: 목차 (데스크탑) */}
-        <aside className="hidden shrink-0 pt-28 desktop:block desktop:w-[140px]">
+        <aside className="hidden shrink-0 pt-32 desktop:block desktop:w-[140px]">
           <GenerateTOC content={post.content} />
         </aside>
       </div>
