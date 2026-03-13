@@ -5,9 +5,13 @@
  * img: alt 텍스트에 {width}x{height} 포함 시 해당 크기로 렌더링
  *      예: ![설명{600x400}](url) → 600×400px
  */
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+const CodeBlock = dynamic(() => import("./CodeBlock"), {
+  ssr: false,
+  loading: () => <div className="my-4 rounded-md bg-[#282c34] p-4 text-sm text-gray-300">Loading...</div>,
+});
 
 interface ImageSize {
   width: number;
@@ -39,12 +43,8 @@ const components = {
     const match = /language-(\w+)/.exec(className || "");
     const language = match ? match[1] : "";
 
-    const isValidLanguage = Boolean(language && SyntaxHighlighter.supportedLanguages.includes(language));
-
     return !inline && language ? (
-      <SyntaxHighlighter style={oneDark} language={isValidLanguage ? language : "text"} PreTag="div" {...props}>
-        {String(children).replace(/\n$/, "")}
-      </SyntaxHighlighter>
+      <CodeBlock language={language}>{String(children).replace(/\n$/, "")}</CodeBlock>
     ) : (
       <code className={className} {...props}>
         {children}
@@ -52,10 +52,7 @@ const components = {
     );
   },
   img: ({ src = "", alt, ...props }: { src?: string; alt?: string }) => {
-    // alt 텍스트에서 크기 정보 파싱
     const sizeInfo = parseImageSize(alt);
-
-    // alt 텍스트에서 크기 정보 제거
     const cleanAlt = alt?.replace(/{(\d+)x(\d+)}/, "").trim();
 
     return (

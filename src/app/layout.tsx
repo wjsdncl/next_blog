@@ -9,8 +9,8 @@ import Header from "@/components/layout/Header";
 import QueryProvider from "@/components/providers/QueryProvider";
 
 const Footer = dynamic(() => import("@/components/layout/Footer"));
-const Modal = dynamic(() => import("@/components/layout/Modal"));
-const Toaster = dynamic(() => import("@/components/feedback/Toaster"));
+const Modal = dynamic(() => import("@/components/layout/Modal"), { ssr: false });
+const Toaster = dynamic(() => import("@/components/feedback/Toaster"), { ssr: false });
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
