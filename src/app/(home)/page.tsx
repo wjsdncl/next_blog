@@ -1,11 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
-import removeMarkdown from "remove-markdown";
-import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
-import { publicInstance } from "@/services/instance";
 import { getPostList } from "@/services/post.api";
 import { type Post } from "@/types/blogType";
-import cn from "@/utils/cn";
 import { diffDate } from "@/utils/formatDate";
 
 export default async function Page() {
@@ -14,72 +9,82 @@ export default async function Page() {
 
   try {
     [popularPosts, recentPosts] = await Promise.all([
-      getPostList({ limit: 4, order: "like" }, publicInstance).then((res) => res.posts),
-      getPostList({ limit: 4, order: "newest" }, publicInstance).then((res) => res.posts),
+      getPostList({ limit: 4, order: "like" }).then((res) => res.posts),
+      getPostList({ limit: 4, order: "newest" }).then((res) => res.posts),
     ]);
   } catch {
     // 백엔드 다운 시 빈 배열 fallback
   }
 
   return (
-    <div className="mx-auto flex size-full flex-col justify-between px-6 py-4 tablet:w-tablet tablet:max-w-none desktop:w-desktop desktop:px-0">
-      <section>
-        <div className="flex items-center justify-between">
-          <h2 className="ml-3 text-2xl font-bold">인기글</h2>
-          <Link href="/blog" className="mr-4 text-base text-gray-900">
-            전체보기
-          </Link>
-        </div>
+    <div className="mx-auto w-full px-6 py-12 tablet:w-tablet tablet:max-w-none tablet:px-0 desktop:w-desktop desktop:px-5">
+      <div className="flex flex-col gap-12 desktop:flex-row desktop:gap-16">
+        <section className="flex-1">
+          <h2 className="text-sm uppercase tracking-wider text-gray-800 [text-wrap:balance]">인기 글</h2>
+          <div className="mt-2 border-t border-gray-300" />
 
-        <PostSection posts={popularPosts} />
-      </section>
+          {popularPosts.length > 0 ? (
+            <ol className="mt-4">
+              {popularPosts.map((post, index) => (
+                <PostItem
+                  key={post.id}
+                  post={post}
+                  metric={`♡ ${post.like_count ?? 0}`}
+                  isLast={index === popularPosts.length - 1}
+                />
+              ))}
+            </ol>
+          ) : (
+            <p className="py-8 text-center text-gray-500">아직 작성된 글이 없습니다.</p>
+          )}
+        </section>
 
-      <section>
-        <h2 className="ml-3 mt-4 text-2xl font-bold">새로운 글</h2>
+        <section className="flex-1">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm uppercase tracking-wider text-gray-800 [text-wrap:balance]">최근 글</h2>
+            <Link
+              href="/blog"
+              className="text-sm text-gray-500 transition-colors duration-200 hover:text-brand-tertiary"
+            >
+              전체보기 →
+            </Link>
+          </div>
+          <div className="mt-2 border-t border-gray-300" />
 
-        <PostSection posts={recentPosts} />
-      </section>
+          {recentPosts.length > 0 ? (
+            <ol className="mt-4">
+              {recentPosts.map((post, index) => (
+                <PostItem
+                  key={post.id}
+                  post={post}
+                  metric={`댓글 ${post.comment_count}개`}
+                  isLast={index === recentPosts.length - 1}
+                />
+              ))}
+            </ol>
+          ) : (
+            <p className="py-8 text-center text-gray-500">아직 작성된 글이 없습니다.</p>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
 
-const PostSection = ({ posts }: { posts: Post[] }) => (
-  <div className="mt-4 grid grid-cols-1 gap-4 tablet:grid-cols-2 desktop:grid-cols-4">
-    {posts.map((post) => (
-      <Link
-        key={post.id}
-        href={`/blog/${post.slug}`}
-        className="flex flex-col rounded-md border border-gray-200 bg-gray-100 desktop:w-[280px]"
-      >
-        {post.cover_image && (
-          <div className="relative flex min-h-36 w-full items-center justify-center">
-            <Image src={post.cover_image} alt={"thumbnail"} className="rounded-t-md object-cover" fill sizes="300" />
-          </div>
-        )}
-        <div className={cn(`flex max-h-full grow flex-col px-4 pb-4 ${post.cover_image ? "pt-3" : "pt-4"}`)}>
-          <div className="size-full max-h-full grow border-b border-gray-400">
-            <h3 className="line-clamp-1 text-2xl font-semibold text-gray-800">{post.title}</h3>
-            {(post.excerpt || post.content) && (
-              <p
-                className={cn(
-                  `mb-4 mt-2 text-sm text-gray-700 ${post.cover_image ? "line-clamp-2" : "line-clamp-[9]"}`
-                )}
-              >
-                {removeMarkdown((post.excerpt || post.content || "").slice(0, 500))}
-              </p>
-            )}
-          </div>
-
-          <div className="mt-2">
-            <p className="mt-1 flex items-center gap-1 text-sm text-gray-700">
-              {diffDate(post.created_at)} <span className="font-extrabold">·</span> {post.comment_count} 개의 댓글
-              <span className="font-extrabold">·</span>
-              <FavoriteEmpty width={14} height={14} color="var(--color-gray-500)" />
-              {post.like_count ?? 0}
-            </p>
-          </div>
-        </div>
-      </Link>
-    ))}
-  </div>
+const PostItem = ({ post, metric, isLast }: { post: Post; metric: string; isLast: boolean }) => (
+  <li className={isLast ? "" : "border-b border-gray-200"}>
+    <Link
+      href={`/blog/${post.slug}`}
+      className="group block py-4 transition-transform duration-200 hover:translate-x-1"
+    >
+      <h3 className="line-clamp-1 text-lg font-medium text-gray-900 transition-colors duration-200 group-hover:text-brand-tertiary">
+        {post.title}
+      </h3>
+      <p className="mt-1 text-sm text-gray-500 [font-variant-numeric:tabular-nums]">
+        {diffDate(post.created_at)}
+        <span className="mx-1.5">·</span>
+        {metric}
+      </p>
+    </Link>
+  </li>
 );
