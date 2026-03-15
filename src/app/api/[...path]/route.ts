@@ -119,7 +119,7 @@ async function proxyRequest(request: NextRequest, { params }: { params: { path: 
   }
 
   const headers: Record<string, string> = { ...authHeaders };
-  if (contentType && !isFormData) {
+  if (contentType) {
     headers["Content-Type"] = contentType;
   }
 
@@ -130,9 +130,10 @@ async function proxyRequest(request: NextRequest, { params }: { params: { path: 
   };
 
   if (request.method !== "GET" && request.method !== "HEAD") {
-    fetchOptions.body = isFormData ? await request.arrayBuffer() : await request.text();
-    if (isFormData && contentType) {
-      headers["Content-Type"] = contentType;
+    if (isFormData) {
+      fetchOptions.body = Buffer.from(await request.arrayBuffer());
+    } else {
+      fetchOptions.body = await request.text();
     }
   }
 
