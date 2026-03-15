@@ -131,13 +131,22 @@ async function proxyRequest(request: NextRequest, { params }: { params: { path: 
 
   if (request.method !== "GET" && request.method !== "HEAD") {
     if (isFormData) {
-      fetchOptions.body = Buffer.from(await request.arrayBuffer());
+      fetchOptions.body = request.body;
+      // Node.js fetch에서 ReadableStream body 사용 시 duplex 필수
+      (fetchOptions as Record<string, unknown>).duplex = "half";
     } else {
       fetchOptions.body = await request.text();
     }
   }
 
   const response = await fetch(targetUrl, fetchOptions);
+
+  // 업로드 에러 디버깅
+  if (!response.ok && isFormData) {
+    const cloned = response.clone();
+    const errorBody = await cloned.text();
+    console.error("[Proxy] Upload failed:", response.status, errorBody);
+  }
 
   if (response.status >= 300 && response.status < 400) {
     const location = response.headers.get("Location");
