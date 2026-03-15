@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { type Control, useForm, useWatch } from "react-hook-form";
 import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
 import FavoriteFilled from "@/Icons/FavoriteFilled.svg";
 import { COMMENT_KEYS, toggleCommentLike } from "@/services/comment.api";
@@ -20,7 +20,6 @@ interface CommentItemProps {
   isLoggedIn: boolean;
   replyCommentId: string | null;
   editCommentId: string | null;
-  parentComment?: Comment;
   onReply: (commentId: string) => void;
   onEdit: (commentId: string) => void;
   onDelete: (commentId: string) => void;
@@ -36,7 +35,6 @@ export default function CommentItem({
   isLoggedIn,
   replyCommentId,
   editCommentId,
-  parentComment,
   onReply,
   onEdit,
   onDelete,
@@ -62,7 +60,7 @@ export default function CommentItem({
 
   const handleLike = () => {
     if (!likeCommentMutation.isPending) {
-      likeCommentMutation.mutateAsync(comment.id);
+      likeCommentMutation.mutate(comment.id);
     }
   };
 
@@ -71,7 +69,7 @@ export default function CommentItem({
     handleSubmit: handleReplySubmit,
     reset: resetReplyForm,
     formState: { isSubmitting: isReplySubmitting },
-    watch,
+    control: replyControl,
   } = useForm<CommentFormInputs>();
 
   const {
@@ -81,7 +79,7 @@ export default function CommentItem({
   } = useForm<CommentFormInputs>();
 
   const onReplySubmit = (data: CommentFormInputs) => {
-    const targetCommentId = depth >= 10 ? (comment.parent_id ?? comment.id) : comment.id;
+    const targetCommentId = comment.id;
     onSubmitReply(data.content, targetCommentId);
     resetReplyForm();
   };
@@ -171,11 +169,11 @@ export default function CommentItem({
           <textarea
             {...replyRegister("content", { required: true })}
             className="w-full resize-none rounded-lg border-2 border-gray-300 p-3 text-lg"
-            placeholder="답글을 입력하세요. (최대 200자)"
-            maxLength={200}
+            placeholder="답글을 입력하세요. (최대 2000자)"
+            maxLength={2000}
           />
           <div className="flex items-center justify-end gap-3">
-            <p className="text-sm text-gray-500">{200 - (watch("content")?.length ?? 0)} / 200</p>
+            <CharCounter control={replyControl} />
 
             <button
               type="submit"
@@ -197,7 +195,6 @@ export default function CommentItem({
           isLoggedIn={isLoggedIn}
           replyCommentId={replyCommentId}
           editCommentId={editCommentId}
-          parentComment={depth >= 9 ? (parentComment ?? comment) : comment}
           onReply={onReply}
           onEdit={onEdit}
           onDelete={onDelete}
@@ -210,4 +207,9 @@ export default function CommentItem({
       {depth === 0 && <div className="border-t-2 border-gray-200 pb-4" />}
     </div>
   );
+}
+
+function CharCounter({ control }: { control: Control<CommentFormInputs> }) {
+  const content = useWatch({ control, name: "content" });
+  return <p className="text-sm text-gray-500">{2000 - (content?.length ?? 0)} / 2000</p>;
 }

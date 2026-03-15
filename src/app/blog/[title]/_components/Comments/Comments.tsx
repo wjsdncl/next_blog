@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
 import { COMMENT_KEYS, deleteComment, updateComment, getComments, createComment } from "@/services/comment.api";
@@ -29,7 +29,6 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: COMMENT_KEYS.list(post.id, page, limit),
     queryFn: () => getComments(post.id, page, limit),
-    enabled: !!post.comment_count,
     retry: 0,
   });
 
@@ -161,7 +160,6 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
 
   return (
     <div className="flex flex-col gap-4 pb-32">
-      <Suspense fallback={null}>
         <form onSubmit={handleSubmit(onSubmit)} className="flex w-full flex-col gap-4">
           <div className="flex w-full grow items-center justify-between">
             <p className="text-2xl font-bold">{totalCount ?? 0}개의 댓글</p>
@@ -189,7 +187,6 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
             placeholder={user ? "댓글을 입력하세요." : "로그인 후 댓글을 작성할 수 있습니다."}
           />
         </form>
-      </Suspense>
 
       <div className="flex flex-col gap-4">
         {comments?.map((comment) => (
