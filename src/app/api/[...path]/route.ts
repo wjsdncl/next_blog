@@ -131,9 +131,9 @@ async function proxyRequest(request: NextRequest, { params }: { params: { path: 
 
   if (request.method !== "GET" && request.method !== "HEAD") {
     if (isFormData) {
-      fetchOptions.body = request.body;
-      // Node.js fetch에서 ReadableStream body 사용 시 duplex 필수
-      (fetchOptions as Record<string, unknown>).duplex = "half";
+      const arrayBuffer = await request.arrayBuffer();
+      fetchOptions.body = Buffer.from(arrayBuffer);
+      console.log("[Proxy] Upload body size:", arrayBuffer.byteLength, "Content-Type:", contentType);
     } else {
       fetchOptions.body = await request.text();
     }
@@ -145,7 +145,7 @@ async function proxyRequest(request: NextRequest, { params }: { params: { path: 
   if (!response.ok && isFormData) {
     const cloned = response.clone();
     const errorBody = await cloned.text();
-    console.error("[Proxy] Upload failed:", response.status, errorBody);
+    console.error("[Proxy] Upload failed:", response.status, errorBody, "Target:", targetUrl);
   }
 
   if (response.status >= 300 && response.status < 400) {
