@@ -136,7 +136,7 @@ export default function ImageCarousel({ images, slidesPerView = 1, className = "
       onClick={closeEnlargedView}
     >
       <button className="absolute right-6 top-6 rounded-full bg-zinc-200/20 p-1" onClick={closeEnlargedView}>
-        <CloseIcon width={24} height={24} color={"#fff"} />
+        <CloseIcon width={24} height={24} color="var(--color-white)" />
       </button>
       <div className="relative max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
         <div className="relative size-full">

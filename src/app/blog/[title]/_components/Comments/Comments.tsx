@@ -143,7 +143,7 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
               deleteCommentMutation.mutate(id);
               modalId && closeModal(modalId);
             }}
-            className="grow rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand-secondary dark:hover:bg-brand_dark-secondary"
+            className="grow rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand_dark-secondary"
           >
             삭제
           </button>
@@ -160,33 +160,33 @@ export default function Comments({ post, user }: { post: Post; user?: User }) {
 
   return (
     <div className="flex flex-col gap-4 pb-32">
-        <form onSubmit={handleSubmit(onSubmit)} className="flex w-full flex-col gap-4">
-          <div className="flex w-full grow items-center justify-between">
-            <p className="text-2xl font-bold">{totalCount ?? 0}개의 댓글</p>
-            {user ? (
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="h-12 w-20 rounded-lg bg-brand-primary text-lg font-bold text-text-primary transition-colors hover:bg-brand-secondary dark:hover:bg-brand_dark-secondary"
-              >
-                {isSubmitting ? "등록 중..." : "등록"}
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                className="flex h-12 w-20 items-center justify-center rounded-lg bg-gray-200 text-lg font-semibold text-gray-500"
-              >
-                로그인
-              </Link>
-            )}
-          </div>
-          <textarea
-            {...register("content", { required: true })}
-            disabled={!user || isSubmitting}
-            className="h-32 w-full resize-none rounded-lg border-2 border-gray-300 p-3 text-lg"
-            placeholder={user ? "댓글을 입력하세요." : "로그인 후 댓글을 작성할 수 있습니다."}
-          />
-        </form>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex w-full flex-col gap-4">
+        <div className="flex w-full grow items-center justify-between">
+          <p className="text-2xl font-bold">{totalCount ?? 0}개의 댓글</p>
+          {user ? (
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-12 w-20 rounded-lg bg-brand-primary text-lg font-bold text-text-primary transition-colors hover:bg-brand_dark-secondary"
+            >
+              {isSubmitting ? "등록 중..." : "등록"}
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="flex h-12 w-20 items-center justify-center rounded-lg bg-gray-200 text-lg font-semibold text-gray-500"
+            >
+              로그인
+            </Link>
+          )}
+        </div>
+        <textarea
+          {...register("content", { required: true })}
+          disabled={!user || isSubmitting}
+          className="h-32 w-full resize-none rounded-lg border-2 border-gray-300 p-3 text-lg"
+          placeholder={user ? "댓글을 입력하세요." : "로그인 후 댓글을 작성할 수 있습니다."}
+        />
+      </form>
 
       <div className="flex flex-col gap-4">
         {comments?.map((comment) => (

@@ -30,7 +30,7 @@ function Toaster() {
       case "info":
         return (
           <div className="w-6">
-            <Info width={24} height={24} color="#3B82F6" />
+            <Info width={24} height={24} color="var(--color-info, #3B82F6)" />
           </div>
         );
       case "success":
@@ -42,7 +42,7 @@ function Toaster() {
       case "error":
         return (
           <div className="rounded-full bg-error p-1">
-            <Close width={14} height={14} color="#fff" />
+            <Close width={14} height={14} color="var(--color-white)" />
           </div>
         );
       case "warning":

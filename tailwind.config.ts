@@ -62,6 +62,8 @@ export default {
           quaternary: "#323137",
         },
         error: "#EF4444",
+        success: "#10B981",
+        info: "#3B82F6",
       },
       fontFamily: {
         pretendard: ["var(--font-pretendard)"],
@@ -135,12 +137,12 @@ export default {
               lineHeight: "1.5",
             },
             blockquote: {
-              borderLeftColor: "#656079",
+              borderLeftColor: "var(--brand-primary)",
               paddingLeft: "1rem",
               fontStyle: "normal",
               quotes: "none",
-              backgroundColor: "#323137",
-              color: "#fff",
+              backgroundColor: "var(--brand-dark-quaternary)",
+              color: "var(--color-white)",
               paddingTop: "10px",
               paddingBottom: "10px",
               borderTopRightRadius: "0.25rem",
@@ -172,7 +174,7 @@ export default {
               tableLayout: "fixed",
             },
             thead: {
-              backgroundColor: "#292929",
+              backgroundColor: "var(--background-secondary)",
               color: "var(--color-white)",
             },
             th: {
@@ -187,14 +189,13 @@ export default {
               border: "1px solid var(--color-gray-300)",
             },
             "tbody tr:nth-child(even)": {
-              backgroundColor: "#101010",
+              backgroundColor: "var(--color-gray-100)",
             },
           },
         },
       },
     },
   },
-  darkMode: "selector",
   plugins: [
     require("@tailwindcss/typography"),
     plugin(({ addUtilities, addVariant }) => {

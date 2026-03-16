@@ -4,7 +4,7 @@ export default function LoadingOverlay() {
   return (
     <div>
       <div className="bg-white/80 fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm">
-        <HashLoader color="#8f83ed" size={50} speedMultiplier={1.2} />
+        <HashLoader color="var(--brand-tertiary, #8f83ed)" size={50} speedMultiplier={1.2} />
         <p className="mt-4 text-xl font-medium">
           <span className="inline-block text-2xl font-semibold">
             {["L", "o", "a", "d", "i", "n", "g"].map((char, i) => (

@@ -10,7 +10,7 @@ import dynamic from "next/dynamic";
 
 const CodeBlock = dynamic(() => import("./CodeBlock"), {
   ssr: false,
-  loading: () => <div className="my-4 rounded-md bg-[#282c34] p-4 text-sm text-gray-300">Loading...</div>,
+  loading: () => <div className="my-4 rounded-md bg-background-secondary p-4 text-sm text-gray-700">Loading...</div>,
 });
 
 interface ImageSize {

@@ -171,7 +171,7 @@ function Input<T extends FieldValues>({
             type={inputType}
             placeholder={placeholder}
             autoComplete={autoComplete}
-            className="size-full rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 pr-10 text-text-primary outline-none focus:border-brand-secondary dark:focus:border-brand_dark-primary"
+            className="size-full rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 pr-10 text-text-primary outline-none focus:border-brand_dark-primary"
           />
         )}
       />
@@ -206,7 +206,7 @@ function Textarea<T extends FieldValues>({ label, placeholder, rows = 2, validat
           placeholder={placeholder}
           style={{ maxHeight: `${rows * 2}rem` }}
           className={cn(
-            "size-full resize-none rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 outline-none focus:border-brand-secondary scrollbar:w-2 scrollbar:rounded-full scrollbar:bg-gray-200 scrollbar-thumb:rounded-full scrollbar-thumb:bg-gray-300 dark:focus:border-brand_dark-primary"
+            "size-full resize-none rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 outline-none focus:border-brand_dark-primary scrollbar:w-2 scrollbar:rounded-full scrollbar:bg-gray-200 scrollbar-thumb:rounded-full scrollbar-thumb:bg-gray-300"
           )}
           onChange={(e) => handleResize(e, field.onChange)}
         />
@@ -253,7 +253,7 @@ function Select<T extends FieldValues>({ label, options }: SelectProps<T>) {
         <select
           {...field}
           id={label}
-          className="size-full rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 outline-none focus:border-brand-secondary dark:focus:border-brand_dark-primary"
+          className="size-full rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 outline-none focus:border-brand_dark-primary"
         >
           {options.map((option) => (
             <option key={option} value={option}>
@@ -440,7 +440,7 @@ function Submit({ text = "입력", disabled }: SubmitProps) {
   return (
     <button
       type="submit"
-      className="size-full rounded-md bg-brand-tertiary px-3 py-2 text-lg font-semibold text-white hover:bg-brand-secondary active:bg-brand-primary disabled:bg-gray-200 disabled:hover:bg-gray-200 dark:bg-brand_dark-primary dark:hover:bg-brand_dark-secondary dark:active:bg-brand_dark-tertiary"
+      className="size-full rounded-md bg-brand_dark-primary px-3 py-2 text-lg font-semibold text-white hover:bg-brand_dark-secondary active:bg-brand_dark-tertiary disabled:bg-gray-200 disabled:hover:bg-gray-200"
       disabled={!isValid || disabled}
     >
       {text}

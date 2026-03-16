@@ -29,7 +29,7 @@ const TagInput = ({ tags, addTag, removeTag, addTags, style = "default" }: TagIn
 
   const tagStyle =
     style === "outline"
-      ? "group rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 pr-10 text-text-primary focus-within:border-brand-secondary dark:focus-within:border-brand_dark-primary"
+      ? "group rounded-md border-2 border-background-tertiary bg-background-secondary px-3 py-2 pr-10 text-text-primary focus-within:border-brand_dark-primary"
       : "";
 
   // 콤마로 구분된 태그 처리 함수

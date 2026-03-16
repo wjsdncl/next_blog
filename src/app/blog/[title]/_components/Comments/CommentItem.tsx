@@ -108,7 +108,7 @@ export default function CommentItem({
           <div className="flex items-center gap-2">
             <button onClick={handleLike} className="flex items-center gap-1 text-base text-text-primary">
               {comment.is_liked ? (
-                <FavoriteFilled width={18} height={18} color="#656079" />
+                <FavoriteFilled width={18} height={18} color="var(--brand-primary)" />
               ) : (
                 <FavoriteEmpty width={18} height={18} color="var(--text-primary)" />
               )}
@@ -147,7 +147,7 @@ export default function CommentItem({
             <button
               type="submit"
               disabled={isEditSubmitting}
-              className="rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand-secondary dark:hover:bg-brand_dark-secondary"
+              className="rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand_dark-secondary"
             >
               {isEditSubmitting ? "수정 중..." : "수정 완료"}
             </button>
@@ -178,7 +178,7 @@ export default function CommentItem({
             <button
               type="submit"
               disabled={isReplySubmitting}
-              className="rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand-secondary dark:hover:bg-brand_dark-secondary"
+              className="rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand_dark-secondary"
             >
               {isReplySubmitting ? "답글 등록 중..." : "답글 등록"}
             </button>

@@ -15,10 +15,7 @@ function App() {
           <div className="flex w-full items-center justify-center">
             <p>
               계정이 있다면{"\u00A0"}
-              <Link
-                href={"/login"}
-                className="font-semibold text-brand_dark-secondary underline dark:text-brand-secondary"
-              >
+              <Link href={"/login"} className="font-semibold text-brand-secondary underline">
                 로그인하기
               </Link>
             </p>

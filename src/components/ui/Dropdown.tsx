@@ -45,7 +45,7 @@ export default function Dropdown({
     <div ref={dropdownRef} className="relative inline-block text-left">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex w-full justify-between rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:ring-gray-700 dark:hover:bg-gray-700"
+        className="inline-flex w-full justify-between rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-gray-200 ring-1 ring-gray-700 hover:bg-gray-700"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -66,13 +66,13 @@ export default function Dropdown({
       </button>
 
       {isOpen && (
-        <div className="ring-black/5 absolute right-0 z-50 mt-2 w-full origin-top-right rounded-md bg-white ring-1 dark:bg-gray-800">
+        <div className="ring-black/5 absolute right-0 z-50 mt-2 w-full origin-top-right rounded-md bg-gray-800 ring-1">
           <div className="" role="listbox">
             {options.map((option) => (
               <button
                 key={option.value}
                 onClick={() => handleSelect(option)}
-                className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:bg-gray-700"
+                className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-200 hover:bg-gray-700 focus:bg-gray-700"
                 role="option"
                 aria-selected={selectedOption?.value === option.value}
               >

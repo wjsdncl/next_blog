@@ -24,7 +24,7 @@ export default function DeleteConfirmationModal({ projectId, onClose }: { projec
       <div className="flex gap-4">
         <button
           onClick={() => deletePortfolioMutation(projectId).then(onClose)}
-          className="grow rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand-secondary dark:hover:bg-brand_dark-secondary"
+          className="grow rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand_dark-secondary"
         >
           삭제
         </button>

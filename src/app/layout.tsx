@@ -22,6 +22,7 @@ const pretendard = localFont({
 export const metadata: Metadata = {
   title: "개발 블로그 | wjdalswo Devlog",
   description: "개발 블로그 및 포트폴리오 사이트입니다.",
+  other: { "theme-color": "#212121" },
   keywords:
     "next.js, react, typescript, tailwindcss, prettier, eslint, blog, portfolio, web development, frontend, backend, fullstack, 블로그, 포트폴리오, 웹 개발, 프론트엔드, 백엔드, 풀스택, 개발, 프로그래밍",
   openGraph: {
@@ -48,7 +49,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: Readonly<React.PropsWithChildren>) {
   return (
-    <html lang="ko" className={`${pretendard.variable} dark`}>
+    <html lang="ko" className={pretendard.variable}>
       <body className="size-full min-h-dvh bg-background-primary font-pretendard text-text-primary">
         <QueryProvider>
           <Header />

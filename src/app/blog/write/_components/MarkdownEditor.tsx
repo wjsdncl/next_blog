@@ -197,7 +197,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
               />
             )}
           />
-          <hr className="mt-3 w-full rounded-full border-[3px] border-brand-secondary dark:border-brand_dark-secondary" />
+          <hr className="mt-3 w-full rounded-full border-[3px] border-brand_dark-secondary" />
 
           <Controller
             name="tags"

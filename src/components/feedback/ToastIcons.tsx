@@ -4,8 +4,8 @@ import type IconType from "@/types/iconType";
 export function Check({
   width = 14,
   height = 14,
-  primary = "#10B981",
-  secondary = "#fff",
+  primary = "var(--color-success, #10B981)",
+  secondary = "var(--color-white)",
 }: {
   width?: number | string;
   height?: number | string;
@@ -44,7 +44,7 @@ export function Check({
   );
 }
 
-export function Info({ width = 24, height = 24, color = "#adadad" }: IconType) {
+export function Info({ width = 24, height = 24, color = "var(--color-gray-500)" }: IconType) {
   return (
     <svg width={width} height={height} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
       <path
@@ -55,10 +55,10 @@ export function Info({ width = 24, height = 24, color = "#adadad" }: IconType) {
   );
 }
 
-export function Loading({ width = 24, height = 24, color = "#10B981" }: IconType) {
+export function Loading({ width = 24, height = 24, color = "var(--color-success, #10B981)" }: IconType) {
   return (
     <svg width={width} height={height} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="10" stroke="#00000040" strokeWidth="4" />
+      <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.15)" strokeWidth="4" />
       <path
         fill={color}
         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
