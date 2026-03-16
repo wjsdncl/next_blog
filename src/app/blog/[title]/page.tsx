@@ -69,20 +69,6 @@ export default async function Page({ params }: { params: { title: string } }) {
             </div>
           )}
 
-          {/* 카테고리 */}
-          {post.category && (
-            <div className="mb-10 flex h-fit max-h-[200px] w-full rounded-lg bg-gray-200 p-8">
-              <div className="grow">
-                <Link
-                  href={`/blog?category=${post.category.name}`}
-                  className="text-2xl font-bold text-text-primary hover:underline"
-                >
-                  [ {post.category.name} ]
-                </Link>
-              </div>
-            </div>
-          )}
-
           {/* 썸네일 */}
           {post.cover_image && (
             <div className="relative h-[400px] w-full max-w-screen-tablet">

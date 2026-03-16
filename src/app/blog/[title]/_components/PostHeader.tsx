@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import { revalidatePosts } from "@/services/actions/revalidate.action";
@@ -57,7 +58,7 @@ export default function PostHeader({ title, user }: { title: string; user?: User
               DeletePostMutation.mutateAsync(post.id);
               modalId && closeModal(modalId);
             }}
-            className="grow rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand-secondary dark:hover:bg-brand_dark-secondary"
+            className="grow rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand_dark-secondary"
           >
             삭제
           </button>
@@ -110,45 +111,58 @@ export default function PostHeader({ title, user }: { title: string; user?: User
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pb-2">
+        <div className="flex items-center gap-2 text-base">
+          <p>{formatKoreanDate(post.created_at)}</p>
+          {post.category && (
+            <>
+              <span className="text-gray-400">|</span>
+              <Link
+                href={`/blog?category=${post.category.name}`}
+                className="text-base font-medium text-brand-tertiary hover:text-brand-quaternary hover:underline"
+              >
+                {post.category.name}
+              </Link>
+            </>
+          )}
+        </div>
+
+        {/* 사용자 권한에 따른 버튼 표시 */}
+        {user?.role === "OWNER" && (
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-text-primary">{isPublished ? "공개" : "비공개"}</span>
+              <button
+                type="button"
+                onClick={handleStatusToggle}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  !isPublished ? "bg-gray-300" : "bg-brand-primary"
+                }`}
+              >
+                <span className="sr-only">공개 상태 변경</span>
+                <span
+                  className={`inline-block size-[20px] rounded-full bg-white transition-transform ${
+                    !isPublished ? "translate-x-0" : "translate-x-6"
+                  }`}
+                />
+              </button>
+            </div>
+            <button type="button" onClick={handleEdit} className="text-base text-text-primary hover:underline">
+              수정
+            </button>
+            <button type="button" onClick={handleDeleteModal} className="text-base text-text-primary hover:underline">
+              삭제
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center justify-between pb-4">
         {/* 제목 */}
-        <p className="pb-6 text-[50px] font-bold leading-[52px] text-text-primary">{post.title}</p>
+        <p className="pb-2 text-[50px] font-bold leading-[52px] text-text-primary">{post.title}</p>
 
         <div className="desktop:hidden">
           <MobileNavigation title={title} user={user} />
-        </div>
-      </div>
-
-      <div className="flex size-full items-center justify-between pb-4">
-        <p className="grow text-base">{formatKoreanDate(post.created_at)}</p>
-        <div className="flex items-center gap-4">
-          {user?.role === "OWNER" && (
-            <>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-text-primary">{isPublished ? "공개" : "비공개"}</span>
-                <button
-                  type="button"
-                  onClick={handleStatusToggle}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    !isPublished ? "bg-gray-300" : "bg-brand-primary"
-                  }`}
-                >
-                  <span className="sr-only">공개 상태 변경</span>
-                  <span
-                    className={`inline-block size-[20px] rounded-full bg-white transition-transform ${
-                      !isPublished ? "translate-x-0" : "translate-x-6"
-                    }`}
-                  />
-                </button>
-              </div>
-              <button type="button" onClick={handleEdit} className="text-base text-text-primary hover:underline">
-                수정
-              </button>
-              <button type="button" onClick={handleDeleteModal} className="text-base text-text-primary hover:underline">
-                삭제
-              </button>
-            </>
-          )}
         </div>
       </div>
     </div>
