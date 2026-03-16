@@ -120,7 +120,7 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
   return (
     <nav
       aria-label="목차"
-      className="toc-scroll sticky top-[90px] mb-4 mt-32 max-h-[calc(100vh-80px)] overflow-y-auto overflow-x-hidden border-l-2 border-gray-400 py-4 pl-2 text-[15px] font-light text-gray-800"
+      className="toc-scroll sticky top-[90px] mb-4 mt-32 max-h-[calc(100vh-80px)] overflow-y-auto overflow-x-hidden border-l-2 border-gray-400 px-3 py-4 text-[15px] font-light text-gray-800"
     >
       <h2 className="sr-only">글 목차</h2>
       <ul>
