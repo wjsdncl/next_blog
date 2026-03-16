@@ -8,7 +8,7 @@ import { uploadImage } from "@/services/post.api";
 interface PreviewModalProps {
   title: string;
   content: string;
-  initialCoverImg: string;
+  initialCoverImg: string | null;
   onComplete: (coverImage: string | null) => void;
 }
 

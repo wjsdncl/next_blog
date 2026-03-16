@@ -94,7 +94,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
 
   const completeWriting = async (data: FormValues) => {
     if (completeWritingMutation.isPending || updatePostMutation.isPending) return;
-    const firstImage = markdown.match(/!\[.*?\]\((.*?)\)/)?.[1] || "";
+    const firstImage = markdown.match(/!\[.*?\]\((.*?)\)/)?.[1] || null;
 
     // 카테고리 name → ID 변환 (없는 카테고리는 자동 생성)
     const category_id = data.category ? await resolveCategoryId(data.category) : undefined;
@@ -106,7 +106,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       <PreviewModal
         title={data.title}
         content={data.content}
-        initialCoverImg={post?.cover_image || firstImage}
+        initialCoverImg={post?.cover_image || firstImage || null}
         onComplete={(coverImage) => {
           const postData: PostRequest = {
             title: data.title,
@@ -114,7 +114,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
             status: "PUBLISHED",
             category_id,
             tag_ids,
-            cover_image: coverImage,
+            cover_image: coverImage || null,
           };
           slug
             ? updatePostMutation.mutate({ id: post?.id as string, postData })
