@@ -16,6 +16,7 @@ import { resolveTagIds } from "@/services/tag.api";
 import { USER_KEYS } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import type { PostRequest } from "@/types/blogType";
+import toast from "@/utils/toast";
 import PreviewModal from "./PreviewModal";
 
 // FormValues 타입 정의
@@ -30,7 +31,13 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { handleSubmit, control, watch, setValue } = useForm<FormValues>({
+  const {
+    handleSubmit,
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<FormValues>({
     defaultValues: { title: "", category: "", content: "", tags: [] },
   });
 
@@ -57,6 +64,9 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       queryClient.invalidateQueries({ queryKey: [...USER_KEYS] });
       router.push("/blog");
     },
+    onError: (error: Error) => {
+      toast.error(error.message || "게시글 작성에 실패했습니다.");
+    },
   });
 
   const updatePostMutation = useMutation({
@@ -67,6 +77,9 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
       queryClient.invalidateQueries({ queryKey: POST_KEYS.all() });
       queryClient.invalidateQueries({ queryKey: [...USER_KEYS] });
       router.push("/blog");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "게시글 수정에 실패했습니다.");
     },
   });
 
@@ -161,7 +174,13 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
   }, []);
 
   return (
-    <form onSubmit={handleSubmit(completeWriting)} className="flex h-dvh w-full">
+    <form
+      onSubmit={handleSubmit(completeWriting, (fieldErrors) => {
+        const firstError = Object.values(fieldErrors)[0];
+        if (firstError?.message) toast.error(firstError.message as string);
+      })}
+      className="flex h-dvh w-full"
+    >
       <div className="flex max-w-[50%] basis-1/2 flex-col bg-background-primary">
         <div className="flex size-full flex-col gap-4 p-[64px_40px_10px]">
           <Controller
@@ -181,13 +200,13 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
           <Controller
             name="title"
             control={control}
+            rules={{ required: "제목을 입력해주세요" }}
             render={({ field }) => (
               <textarea
                 {...field}
-                className="min-h-[45px] w-full resize-none overflow-hidden text-5xl font-bold outline-none"
-                placeholder="제목을 입력하세요"
+                className={`min-h-[45px] w-full resize-none overflow-hidden text-5xl font-bold outline-none ${errors.title ? "placeholder:text-error" : ""}`}
+                placeholder="제목을 입력하세요 *"
                 rows={1}
-                required
                 onChange={(e) => {
                   field.onChange(e);
                   e.target.style.height = "auto";
@@ -218,6 +237,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
           <Controller
             name="content"
             control={control}
+            rules={{ required: "내용을 입력해주세요" }}
             render={({ field }) => (
               <textarea
                 {...field}
@@ -227,10 +247,9 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
                 onPaste={handlePaste}
                 onChange={(e) => field.onChange(e)}
                 onScroll={handleEditorScroll}
-                required
-                className="size-full resize-none text-lg outline-none scrollbar-hide"
+                className={`size-full resize-none text-lg outline-none scrollbar-hide ${errors.content ? "placeholder:text-error" : ""}`}
                 rows={1}
-                placeholder="글을 작성하세요"
+                placeholder="글을 작성하세요 *"
               />
             )}
           />
