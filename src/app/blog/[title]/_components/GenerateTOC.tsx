@@ -1,23 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
-import useFollowScroll from "@/hooks/useFollowScroll";
 
 interface GenerateTOCProps {
   content: string;
 }
-const SCROLL_THRESHOLD = 200;
-const HEADER_OFFSET = 60;
-
 const OBSERVER_OPTIONS = {
   rootMargin: "0px 0px -70% 0px",
   threshold: 1,
 } as const;
 
 const INDENT_CLASSES: { [key: string]: string } = {
-  1: "ml-1",
-  2: "ml-2",
-  3: "ml-4",
+  1: "",
+  2: "ml-3",
+  3: "ml-6",
 };
 
 /** 헤딩 텍스트에서 특수문자를 제거하고 중복 시 숫자를 붙여 고유 ID 생성 */
@@ -37,7 +33,6 @@ const generateUniqueId = (text: string, idCountMap: Map<string, number>): string
 
 export default function GenerateTOC({ content }: GenerateTOCProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const tocRef = useFollowScroll<HTMLDivElement>(SCROLL_THRESHOLD, 0.1, HEADER_OFFSET);
   const idCountMap = useRef(new Map<string, number>()).current;
 
   const headings = useMemo(() => content.match(/^#{1,3}\s+([^#\n]+)$/gm) || [], [content]);
@@ -124,9 +119,8 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
 
   return (
     <nav
-      ref={tocRef}
       aria-label="목차"
-      className="mb-4 border-l-2 border-gray-400 py-2 pl-1 text-[15px] font-light text-gray-800"
+      className="toc-scroll sticky top-[90px] mb-4 mt-32 max-h-[calc(100vh-80px)] overflow-y-auto overflow-x-hidden border-l-2 border-gray-400 py-4 pl-2 text-[15px] font-light text-gray-800"
     >
       <h2 className="sr-only">글 목차</h2>
       <ul>
@@ -137,8 +131,8 @@ export default function GenerateTOC({ content }: GenerateTOCProps) {
           const id = headingIdsRef.current[index] || `heading-${index}`;
           const isSelected = selectedIndex === index;
 
-          const liClass = INDENT_CLASSES[level] || "ml-1";
-          const aClass = `block pb-1 hover:underline transition-transform duration-200 ${
+          const liClass = INDENT_CLASSES[level] || "";
+          const aClass = `block break-words pb-1.5 hover:underline transition-transform duration-200 ${
             isSelected ? "scale-105 text-text-primary font-normal" : ""
           }`;
 
