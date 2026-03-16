@@ -9,11 +9,11 @@ interface PreviewModalProps {
   title: string;
   content: string;
   initialCoverImg: string;
-  onComplete: (coverImage: string) => void;
+  onComplete: (coverImage: string | null) => void;
 }
 
 export default function PreviewModal({ title, content, initialCoverImg, onComplete }: PreviewModalProps) {
-  const [coverImage, setCoverImg] = useState(initialCoverImg);
+  const [coverImage, setCoverImg] = useState<string | null>(initialCoverImg);
 
   const handleImageSelection = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -38,7 +38,13 @@ export default function PreviewModal({ title, content, initialCoverImg, onComple
         {coverImage ? (
           <div className="relative flex h-40 w-full items-center justify-center">
             <Image src={coverImage} alt="coverImage" className="object-cover" fill sizes="300" />
-            <button className="absolute -right-2 -top-2 rounded-full bg-gray-400 p-1" onClick={() => setCoverImg("")}>
+            <button
+              className="absolute -right-2 -top-2 rounded-full bg-gray-400 p-1"
+              onClick={(e) => {
+                e.preventDefault();
+                setCoverImg(null);
+              }}
+            >
               <CloseBold width={16} height={16} />
             </button>
           </div>

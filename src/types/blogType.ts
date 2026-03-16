@@ -30,7 +30,7 @@ export interface PostRequest {
   title: string;
   content: string;
   excerpt?: string;
-  cover_image?: string;
+  cover_image?: string | null;
   status?: PublishStatus;
   category_id?: string;
   tag_ids?: string[];
