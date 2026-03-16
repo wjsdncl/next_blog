@@ -2,11 +2,11 @@
  * React Markdown 커스텀 렌더러
  *
  * code: 언어 지정 시 SyntaxHighlighter(oneDark), 미지정 시 인라인 코드
- * img: alt 텍스트에 {width}x{height} 포함 시 해당 크기로 렌더링
+ * img: 네이티브 <img> 사용 (외부 도메인 제한 없음)
+ *      alt 텍스트에 {width}x{height} 포함 시 해당 크기로 렌더링
  *      예: ![설명{600x400}](url) → 600×400px
  */
 import dynamic from "next/dynamic";
-import Image from "next/image";
 
 const CodeBlock = dynamic(() => import("./CodeBlock"), {
   ssr: false,
@@ -51,29 +51,19 @@ const components = {
       </code>
     );
   },
-  img: ({ src = "", alt, ...props }: { src?: string; alt?: string }) => {
+  img: ({ src = "", alt }: { src?: string; alt?: string }) => {
     const sizeInfo = parseImageSize(alt);
     const cleanAlt = alt?.replace(/{(\d+)x(\d+)}/, "").trim();
 
     return (
-      <span className="relative my-4 block max-w-full">
-        <Image
+      <span className="my-4 block max-w-full">
+        <img
           src={src}
           alt={cleanAlt ?? "이미지"}
-          width={0}
-          height={0}
-          sizes="100vw"
-          className="size-auto max-h-[720px] max-w-full object-contain"
-          loading="eager"
-          style={
-            sizeInfo
-              ? {
-                  width: sizeInfo.width,
-                  ...(sizeInfo.height ? { height: sizeInfo.height } : {}),
-                }
-              : undefined
-          }
-          {...props}
+          loading="lazy"
+          decoding="async"
+          className="max-h-[720px] max-w-full object-contain"
+          {...(sizeInfo && { width: sizeInfo.width, height: sizeInfo.height })}
         />
       </span>
     );
