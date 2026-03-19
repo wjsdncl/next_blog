@@ -2,14 +2,17 @@ import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query
 import { redirect } from "next/navigation";
 import { getPortfolio, PORTFOLIO_KEYS } from "@/services/portfolio.api";
 import { getUser, USER_KEYS } from "@/services/user.api";
-import ProjectForm from "./_components/ProjectForm";
+import PortfolioForm from "./_components/PortfolioForm";
 
-export default async function PortfolioWritePage({ searchParams }: { searchParams: { id: string } }) {
+export default async function PortfolioWritePage({ searchParams }: { searchParams: Promise<{ slug?: string }> }) {
+  const { slug } = await searchParams;
   const queryClient = new QueryClient();
 
-  const [portfolio, user] = await Promise.all([searchParams.id ? getPortfolio(searchParams.id) : undefined, getUser()]);
+  const [portfolio, user] = await Promise.all([slug ? getPortfolio(slug) : undefined, getUser()]);
 
-  queryClient.setQueryData(PORTFOLIO_KEYS.detail(searchParams.id), portfolio);
+  if (slug) {
+    queryClient.setQueryData(PORTFOLIO_KEYS.detail(slug), portfolio);
+  }
   queryClient.setQueryData([...USER_KEYS], user);
 
   if (user?.role !== "OWNER") {
@@ -22,7 +25,7 @@ export default async function PortfolioWritePage({ searchParams }: { searchParam
 
       <div className="pt-4" />
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <ProjectForm id={searchParams.id} />
+        <PortfolioForm slug={slug} id={portfolio?.id} />
       </HydrationBoundary>
     </div>
   );

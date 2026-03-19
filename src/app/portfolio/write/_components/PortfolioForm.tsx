@@ -2,33 +2,44 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
 import Form from "@/components/ui/Form";
 import { revalidatePortfolios } from "@/services/actions/revalidate.action";
 import {
   createPortfolio,
   getPortfolio,
+  getTechStackList,
   PORTFOLIO_KEYS,
   updatePortfolio,
   resolveTechStackIds,
 } from "@/services/portfolio.api";
 import { uploadImage } from "@/services/post.api";
+import { type PublishStatus } from "@/types/blogType";
 import { type PortfolioRequest } from "@/types/portfolioType";
 import toast from "@/utils/toast";
+import PortfolioLinksEditor from "./PortfolioLinksEditor";
 
-export default function ProjectForm({ id }: { id?: string }) {
+export default function PortfolioForm({ slug, id }: { slug?: string; id?: string }) {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const statusRef = useRef<PublishStatus>("PUBLISHED");
+  const [links, setLinks] = useState<Array<{ type: string; url: string }>>([]);
 
-  // 포트폴리오 정보 조회 (수정 모드일 경우)
+  const { data: techStackList } = useQuery({
+    queryKey: ["tech-stacks"],
+    queryFn: getTechStackList,
+  });
+
+  const techStackSuggestions = techStackList?.map((t) => t.name) || [];
+
   const { data: portfolio } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: PORTFOLIO_KEYS.detail(id as string),
-    queryFn: () => getPortfolio(id as string),
-    enabled: !!id,
+    queryKey: PORTFOLIO_KEYS.detail(slug as string),
+    queryFn: () => getPortfolio(slug as string),
+    enabled: !!slug,
     retry: 0,
   });
 
-  // 포트폴리오 생성 뮤테이션
   const createPortfolioMutation = useMutation({
     mutationFn: createPortfolio,
     onSuccess: async () => {
@@ -38,7 +49,6 @@ export default function ProjectForm({ id }: { id?: string }) {
     },
   });
 
-  // 포트폴리오 수정 뮤테이션
   const updatePortfolioMutation = useMutation({
     mutationFn: async (data: { id: string; portfolioData: PortfolioRequest }) =>
       updatePortfolio({ id: data.id, portfolioData: data.portfolioData }),
@@ -49,13 +59,11 @@ export default function ProjectForm({ id }: { id?: string }) {
     },
   });
 
-  // 폼 제출 핸들러
   const onSubmit = async (formData: Record<string, string | string[]>) => {
     if (createPortfolioMutation.isPending || updatePortfolioMutation.isPending) {
       return;
     }
 
-    // 기술 스택 name → ID 변환 (없는 스택은 자동 생성)
     const techStackNames = Array.isArray(formData.techStack) ? formData.techStack : [];
     const tech_stack_ids = await resolveTechStackIds(techStackNames);
 
@@ -63,31 +71,23 @@ export default function ProjectForm({ id }: { id?: string }) {
       title: formData.title as string,
       content: formData.content as string,
       excerpt: formData.excerpt as string,
-      start_date: formData.startDate as string,
-      end_date: (formData.endDate as string) || undefined,
+      start_date: formData.startDate ? new Date(formData.startDate as string).toISOString() : undefined,
+      end_date: formData.endDate ? new Date(formData.endDate as string).toISOString() : undefined,
+      status: statusRef.current,
       tech_stack_ids,
-      links: [],
+      links: links.filter((l) => l.url.trim() !== ""),
     };
 
-    // GitHub/프로젝트 링크 처리
-    if (formData.githubLink) {
-      portfolioData.links = portfolioData.links || [];
-      portfolioData.links.push({ type: "github", url: formData.githubLink as string });
-    }
-    if (formData.projectLink) {
-      portfolioData.links = portfolioData.links || [];
-      portfolioData.links.push({ type: "live", url: formData.projectLink as string });
-    }
-
-    // 커버 이미지 처리
     if (formData.coverImageFile) {
       try {
         const imageUrl = await uploadImage(formData.coverImageFile as unknown as File);
         portfolioData.cover_image = imageUrl;
-      } catch (error) {
+      } catch {
         toast.error("이미지 업로드에 실패했습니다.");
         return;
       }
+    } else if (portfolio?.cover_image) {
+      portfolioData.cover_image = portfolio.cover_image;
     }
 
     toast.promise(
@@ -105,7 +105,10 @@ export default function ProjectForm({ id }: { id?: string }) {
     );
   };
 
-  // 기존 데이터 있을 때 폼 초기값 설정
+  const initialLinks = portfolio?.links?.length
+    ? portfolio.links.map((l) => ({ type: l.type, url: l.url }))
+    : undefined;
+
   const defaultValues = portfolio
     ? {
         title: portfolio.title,
@@ -114,8 +117,7 @@ export default function ProjectForm({ id }: { id?: string }) {
         startDate: portfolio.start_date || "",
         endDate: portfolio.end_date || "",
         techStack: portfolio.techStacks?.map((tech) => tech.name) || [],
-        githubLink: portfolio.links?.find((l) => l.type === "github")?.url || "",
-        projectLink: portfolio.links?.find((l) => l.type === "live")?.url || "",
+        coverImage: portfolio.cover_image || "",
       }
     : undefined;
 
@@ -212,55 +214,37 @@ export default function ProjectForm({ id }: { id?: string }) {
         <label className="text-lg font-medium" htmlFor="techStack">
           기술 스택
         </label>
-        <Form.TagInput label="techStack" style="outline" />
+        <Form.TagInput label="techStack" style="outline" suggestions={techStackSuggestions} />
       </div>
 
       <div className="pt-4" />
 
-      <div className="flex gap-5">
-        <div className="flex grow flex-col gap-2">
-          <label className="text-lg font-medium" htmlFor="githubLink">
-            Github 링크
-          </label>
-          <div className="h-10">
-            <Form.Input
-              label="githubLink"
-              placeholder="Github 링크를 입력해주세요."
-              validation={{
-                pattern: {
-                  value: /^(https?:\/\/)?(www\.)?github\.com\/[\w-]+\/[\w.-]+$/,
-                  message: "올바른 깃허브 주소를 입력해주세요.",
-                },
-              }}
-            />
-          </div>
-          <Form.Error name="githubLink" />
-        </div>
-
-        <div className="flex grow flex-col gap-2">
-          <label className="text-lg font-medium" htmlFor="projectLink">
-            프로젝트 링크
-          </label>
-          <div className="h-10">
-            <Form.Input
-              label="projectLink"
-              placeholder="프로젝트 링크를 입력해주세요."
-              validation={{
-                pattern: {
-                  value: /^(https?:\/\/)?(www\.)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(?::\d{1,5})?(?:\/[\w\.-]*)*\/?$/,
-                  message: "올바른 주소를 입력해주세요.",
-                },
-              }}
-            />
-          </div>
-          <Form.Error name="projectLink" />
-        </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-lg font-medium">링크</span>
+        <PortfolioLinksEditor initialLinks={initialLinks} onChange={setLinks} />
       </div>
 
       <div className="pt-4" />
 
-      <div className="mx-96 flex items-center justify-end">
-        <Form.Submit text="포트폴리오 작성하기" />
+      <div className="mx-96 flex items-center justify-end gap-3">
+        <button
+          type="submit"
+          className="rounded-md bg-gray-600 px-3 py-2 text-lg font-semibold text-white hover:bg-gray-700 active:bg-gray-800"
+          onClick={() => {
+            statusRef.current = "DRAFT";
+          }}
+        >
+          임시저장
+        </button>
+        <button
+          type="submit"
+          className="rounded-md bg-brand_dark-primary px-3 py-2 text-lg font-semibold text-white hover:bg-brand_dark-secondary active:bg-brand_dark-tertiary"
+          onClick={() => {
+            statusRef.current = "PUBLISHED";
+          }}
+        >
+          발행하기
+        </button>
       </div>
     </Form>
   );
