@@ -54,6 +54,7 @@ interface TagInputProps<T extends FieldValues> {
   label: Path<T>;
   style?: "default" | "outline";
   validation?: object;
+  suggestions?: string[];
 }
 
 interface SelectProps<T extends FieldValues> {
@@ -215,7 +216,7 @@ function Textarea<T extends FieldValues>({ label, placeholder, rows = 2, validat
   );
 }
 
-function TagInput<T extends FieldValues>({ label, style = "default", validation = {} }: TagInputProps<T>) {
+function TagInput<T extends FieldValues>({ label, style = "default", validation = {}, suggestions }: TagInputProps<T>) {
   const { control } = useFormContext<T>();
 
   return (
@@ -235,6 +236,7 @@ function TagInput<T extends FieldValues>({ label, style = "default", validation 
               field.onChange(uniqueTags);
             }}
             style={style}
+            suggestions={suggestions}
           />
         );
       }}

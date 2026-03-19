@@ -11,12 +11,13 @@ import { useShallow } from "zustand/shallow";
 import components from "@/components/content/MarkdownComponents";
 import TagInput from "@/components/ui/TagInput";
 import { revalidatePosts } from "@/services/actions/revalidate.action";
-import { getPost, POST_KEYS, updatePost, uploadImage, createPost, resolveCategoryId } from "@/services/post.api";
-import { resolveTagIds } from "@/services/tag.api";
+import { getPost, POST_KEYS, updatePost, uploadImage, createPost, resolveCategoryId, getCategories } from "@/services/post.api";
+import { getTagList, resolveTagIds } from "@/services/tag.api";
 import { USER_KEYS } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
 import type { PostRequest } from "@/types/blogType";
 import toast from "@/utils/toast";
+import CategoryAutocomplete from "./CategoryAutocomplete";
 import PreviewModal from "./PreviewModal";
 
 // FormValues 타입 정의
@@ -51,6 +52,23 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     retry: 0,
     enabled: !!slug,
   });
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+  });
+
+  const { data: tagList } = useQuery({
+    queryKey: ["tags"],
+    queryFn: getTagList,
+  });
+
+  const categoryOptions =
+    categoriesData?.categories
+      ? Object.entries(categoriesData.categories).map(([name, postCount]) => ({ name, postCount }))
+      : [];
+
+  const tagSuggestions = tagList?.map((t) => t.name) || [];
 
   const { openModal, closeModal } = useModalStore(
     useShallow((state) => ({ openModal: state.openModal, closeModal: state.closeModal }))
@@ -187,12 +205,10 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
             name="category"
             control={control}
             render={({ field }) => (
-              <input
-                {...field}
-                className="h-min w-full resize-none overflow-hidden text-xl font-bold outline-none"
-                placeholder="카테고리를 입력하세요"
-                onChange={(e) => field.onChange(e)}
-                onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+              <CategoryAutocomplete
+                value={field.value || ""}
+                onChange={field.onChange}
+                categories={categoryOptions}
               />
             )}
           />
@@ -230,6 +246,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
                   const uniqueTags = [...new Set([...(field.value || []), ...newTags])];
                   field.onChange(uniqueTags);
                 }}
+                suggestions={tagSuggestions}
               />
             )}
           />
