@@ -42,6 +42,8 @@ export interface Portfolio {
   links: PortfolioLink[];
 }
 
+export type PortfolioListItem = Omit<Portfolio, "content" | "links" | "updated_at">;
+
 export interface PortfolioRequest {
   title: string;
   content: string;

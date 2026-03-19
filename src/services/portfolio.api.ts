@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { type Portfolio, type PortfolioRequest } from "@/types/portfolioType";
+import { type Portfolio, type PortfolioListItem, type PortfolioRequest } from "@/types/portfolioType";
 import instance from "./instance";
 
 interface Pagination {
@@ -13,7 +13,7 @@ interface Pagination {
 
 interface PortfolioResponse {
   success: boolean;
-  data: Portfolio[];
+  data: PortfolioListItem[];
   pagination: Pagination;
 }
 
@@ -63,7 +63,7 @@ export const resolveTechStackIds = async (names: string[]): Promise<string[]> =>
 
 export const PORTFOLIO_KEYS = {
   all: () => ["portfolios"] as const,
-  detail: (id: string) => ["portfolios", id] as const,
+  detail: (slug: string) => ["portfolios", "detail", slug] as const,
 };
 
 export const getPortfolioList = async ({
@@ -73,7 +73,7 @@ export const getPortfolioList = async ({
   page?: number;
   limit?: number;
 }): Promise<{
-  portfolios: Portfolio[];
+  portfolios: PortfolioListItem[];
   isLast: boolean;
   nextPage: number;
 }> => {
@@ -104,12 +104,12 @@ export const getPortfolioList = async ({
   }
 };
 
-export const getPortfolio = async (id: string): Promise<Portfolio> => {
+export const getPortfolio = async (slug: string): Promise<Portfolio> => {
   try {
-    const response = await instance.GET<{ success: boolean; data: Portfolio }>(`/portfolios/${id}`);
+    const response = await instance.GET<{ success: boolean; data: Portfolio }>(`/portfolios/${slug}`);
     return response.data;
   } catch (error) {
-    console.error(`포트폴리오 조회 실패 (ID: ${id}):`, error);
+    console.error(`포트폴리오 조회 실패 (slug: ${slug}):`, error);
     throw error;
   }
 };
