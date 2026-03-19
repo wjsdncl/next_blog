@@ -1,5 +1,11 @@
 import { type PublishStatus } from "./blogType";
 
+export interface PortfolioImage {
+  id: string;
+  url: string;
+  order: number;
+}
+
 export interface PortfolioLink {
   id: string;
   type: string;
@@ -20,7 +26,6 @@ export interface Portfolio {
   slug: string;
   content: string;
   excerpt: string | null;
-  cover_image: string | null;
   start_date: string | null;
   end_date: string | null;
   status: PublishStatus;
@@ -39,6 +44,7 @@ export interface Portfolio {
     slug: string;
   }>;
   techStacks: TechStack[];
+  images: PortfolioImage[];
   links: PortfolioLink[];
 }
 
@@ -48,7 +54,6 @@ export interface PortfolioRequest {
   title: string;
   content: string;
   excerpt?: string;
-  cover_image?: string;
   start_date?: string;
   end_date?: string;
   status?: PublishStatus;
@@ -56,6 +61,10 @@ export interface PortfolioRequest {
   category_id?: string;
   tag_ids?: string[];
   tech_stack_ids?: string[];
+  images?: Array<{
+    url: string;
+    order: number;
+  }>;
   links?: Array<{
     type: string;
     url: string;

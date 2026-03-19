@@ -81,13 +81,13 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
     if (formData.coverImageFile) {
       try {
         const imageUrl = await uploadImage(formData.coverImageFile as unknown as File);
-        portfolioData.cover_image = imageUrl;
+        portfolioData.images = [{ url: imageUrl, order: 0 }];
       } catch {
         toast.error("이미지 업로드에 실패했습니다.");
         return;
       }
-    } else if (portfolio?.cover_image) {
-      portfolioData.cover_image = portfolio.cover_image;
+    } else if (portfolio?.images?.length) {
+      portfolioData.images = portfolio.images.map((img) => ({ url: img.url, order: img.order }));
     }
 
     toast.promise(
@@ -117,7 +117,7 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
         startDate: portfolio.start_date || "",
         endDate: portfolio.end_date || "",
         techStack: portfolio.techStacks?.map((tech) => tech.name) || [],
-        coverImage: portfolio.cover_image || "",
+        coverImage: portfolio.images?.[0]?.url || "",
       }
     : undefined;
 

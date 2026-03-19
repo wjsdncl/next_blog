@@ -17,7 +17,6 @@ export interface PortfolioCardProps {
   date: string;
   excerpt: string;
   techStacks: string[];
-  coverImage?: string | null;
   isOwner: boolean;
 }
 
