@@ -1,7 +1,7 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { getPortfolioList, PORTFOLIO_KEYS } from "@/services/portfolio.api";
 import { getUser } from "@/services/user.api";
-import ProjectList from "./_components/ProjectList";
+import PortfolioList from "./_components/PortfolioList";
 import WriteLink from "./_components/WriteLink";
 
 export default async function Page() {
@@ -31,7 +31,7 @@ export default async function Page() {
       <div className="pt-8" />
 
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <ProjectList isOwner={isOwner} />
+        <PortfolioList isOwner={isOwner} />
         <div className="fixed bottom-[100px] right-[16px] z-40 flex items-center justify-center overflow-hidden rounded-full tablet:right-[24px] desktop:right-[calc((100%-1200px)/2)]">
           <WriteLink isOwner={isOwner} />
         </div>

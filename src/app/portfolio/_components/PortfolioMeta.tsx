@@ -19,13 +19,15 @@ const ICON_MAP: Record<string, JSX.Element> = {
   demo: <LinkIcon width={20} height={20} color="var(--text-primary)" />,
 };
 
-export const ProjectLinks = ({ links }: { links: PortfolioLink[] }) => (
+export const PortfolioLinks = ({ links }: { links: PortfolioLink[] }) => (
   <div className="flex flex-row gap-4">
     {links.map((link) => (
       <a
         key={link.id}
         href={link.url}
-        className="flex w-fit items-center justify-center gap-2 text-nowrap rounded-lg border border-gray-400 px-3 py-2 text-sm font-medium tablet:text-base"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex w-fit items-center justify-center gap-2 text-nowrap rounded-lg border border-gray-400 px-3 py-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-brand-tertiary tablet:text-base"
       >
         {ICON_MAP[link.type] || <LinkIcon width={20} height={20} color="var(--text-primary)" />}
         {link.label || link.type}

@@ -3,10 +3,10 @@ import { revalidatePortfolios } from "@/services/actions/revalidate.action";
 import { deletePortfolio, PORTFOLIO_KEYS } from "@/services/portfolio.api";
 import toast from "@/utils/toast";
 
-export default function DeleteConfirmationModal({ projectId, onClose }: { projectId: string; onClose: () => void }) {
+export default function PortfolioDeleteModal({ portfolioId, onClose }: { portfolioId: string; onClose: () => void }) {
   const queryClient = useQueryClient();
 
-  const { mutateAsync: deletePortfolioMutation } = useMutation({
+  const { mutateAsync: deletePortfolioMutation, isPending } = useMutation({
     mutationFn: deletePortfolio,
     onSuccess: async () => {
       toast.success("포트폴리오가 삭제되었습니다.");
@@ -23,12 +23,17 @@ export default function DeleteConfirmationModal({ projectId, onClose }: { projec
       <p className="pb-8 pt-6 text-center text-2xl font-semibold">정말로 삭제하시겠습니까?</p>
       <div className="flex gap-4">
         <button
-          onClick={() => deletePortfolioMutation(projectId).then(onClose)}
-          className="grow rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand_dark-secondary"
+          onClick={() => deletePortfolioMutation(portfolioId).then(onClose)}
+          disabled={isPending}
+          className="grow rounded bg-brand-primary px-4 py-2 text-text-primary hover:bg-brand_dark-secondary focus-visible:ring-2 focus-visible:ring-brand-tertiary disabled:opacity-50"
         >
-          삭제
+          {isPending ? "삭제 중…" : "삭제"}
         </button>
-        <button onClick={onClose} className="grow rounded bg-gray-300 px-4 py-2 text-text-primary hover:bg-gray-400">
+        <button
+          onClick={onClose}
+          disabled={isPending}
+          className="grow rounded bg-gray-300 px-4 py-2 text-text-primary hover:bg-gray-400 focus-visible:ring-2 focus-visible:ring-brand-tertiary disabled:opacity-50"
+        >
           취소
         </button>
       </div>
