@@ -1,15 +1,10 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import { redirect } from "next/navigation";
 import { getUser, USER_KEYS } from "@/services/user.api";
 import MarkdownEditor from "./_components/MarkdownEditor";
 
 export default async function Page({ searchParams }: { searchParams: { title: string } }) {
   const queryClient = new QueryClient();
   const user = await getUser();
-
-  if (user?.role !== "OWNER") {
-    redirect("/login");
-  }
 
   queryClient.setQueryData([...USER_KEYS], user);
 

@@ -17,6 +17,23 @@ const authMap = new Map<RegExp, string>([[/^\/(login|signup)/, "/"]]);
 /** 비로그인 상태에서 접근 차단할 경로 → 리다이렉트 대상 */
 const guestMap = new Map<RegExp, string>();
 
+/** OWNER 역할만 접근 가능한 경로 */
+const ownerOnlyPaths = [/^\/blog\/write/, /^\/portfolio\/write/];
+
+/** access_token으로 유저 role 조회 */
+async function fetchUserRole(token: string): Promise<string | null> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/users/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) return null;
+    const json = await response.json();
+    return json.data?.role ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /** set-cookie 헤더에서 쿠키 값을 추출 */
 function extractCookieValue(setCookieHeaders: string[], name: string): string | null {
   const header = setCookieHeaders.find((c) => c.startsWith(`${name}=`));
@@ -53,6 +70,34 @@ async function refreshTokens(refreshToken: string): Promise<{ accessToken: strin
   }
 }
 
+/** 토큰 갱신 시도 후 새 access_token과 응답 객체를 반환 */
+async function tryRefresh(
+  request: NextRequest,
+  refreshToken: string,
+  cookieOptions: { loggedIn: object; token: object }
+): Promise<{ accessToken: string; response: NextResponse } | null> {
+  const result = await refreshTokens(refreshToken);
+  if (!result) return null;
+
+  const requestHeaders = new Headers(request.headers);
+  const existing = request.headers.get("cookie") || "";
+  requestHeaders.set("cookie", `${existing}; ${TOKEN_NAMES.ACCESS}=${result.accessToken}`);
+
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
+
+  response.cookies.set(TOKEN_NAMES.ACCESS, result.accessToken, {
+    ...cookieOptions.token,
+    maxAge: 60 * 15,
+  });
+  response.cookies.set(TOKEN_NAMES.REFRESH, result.newRefreshToken, {
+    ...cookieOptions.token,
+    maxAge: 60 * 60 * 24 * 7,
+  });
+  response.cookies.set(TOKEN_NAMES.LOGGED_IN, "true", cookieOptions.loggedIn);
+
+  return { accessToken: result.accessToken, response };
+}
+
 export const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
   const accessToken = request.cookies.get(TOKEN_NAMES.ACCESS);
@@ -64,53 +109,24 @@ export const middleware = async (request: NextRequest) => {
     httpOnly: false,
     ...(isProduction && { domain: ".wjdalswo.xyz" }),
   };
+  const tokenCookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax" as const,
+    path: "/",
+    ...(isProduction && { domain: ".wjdalswo.xyz" }),
+  };
 
   // ── 토큰 갱신: access_token 없고 refresh_token만 있을 때 ──
-  if (!accessToken && refreshToken) {
-    const result = await refreshTokens(refreshToken.value);
+  const refreshResult =
+    !accessToken && refreshToken
+      ? await tryRefresh(request, refreshToken.value, { loggedIn: loggedInCookieOptions, token: tokenCookieOptions })
+      : null;
 
-    if (result) {
-      // 요청 헤더에 새 access_token 주입 → 서버 컴포넌트에서 cookies()로 읽을 수 있도록
-      const requestHeaders = new Headers(request.headers);
-      const existing = request.headers.get("cookie") || "";
-      requestHeaders.set("cookie", `${existing}; ${TOKEN_NAMES.ACCESS}=${result.accessToken}`);
+  const resolvedAccessToken = refreshResult?.accessToken ?? accessToken?.value ?? null;
 
-      const response = NextResponse.next({ request: { headers: requestHeaders } });
-
-      // 모든 쿠키를 cookies API로 통일 설정 (headers.append와 혼용 시 덮어쓰기 문제 방지)
-      const tokenCookieOptions = {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: "lax" as const,
-        path: "/",
-        ...(isProduction && { domain: ".wjdalswo.xyz" }),
-      };
-
-      response.cookies.set(TOKEN_NAMES.ACCESS, result.accessToken, {
-        ...tokenCookieOptions,
-        maxAge: 60 * 15,
-      });
-
-      response.cookies.set(TOKEN_NAMES.REFRESH, result.newRefreshToken, {
-        ...tokenCookieOptions,
-        maxAge: 60 * 60 * 24 * 7,
-      });
-
-      response.cookies.set(TOKEN_NAMES.LOGGED_IN, "true", loggedInCookieOptions);
-
-      // 리다이렉트 체크 (갱신 성공 → 로그인 상태이므로 authMap 적용)
-      for (const [regex, redirectUrl] of authMap.entries()) {
-        if (regex.test(pathname)) {
-          return NextResponse.redirect(new URL(redirectUrl, request.url));
-        }
-      }
-
-      return response;
-    }
-  }
-
-  // ── 기존 리다이렉트 로직 ──
-  const isAuthenticated = !!accessToken || !!refreshToken;
+  // ── 리다이렉트 체크 ──
+  const isAuthenticated = !!resolvedAccessToken || !!refreshToken;
   const map = isAuthenticated ? authMap : guestMap;
 
   for (const [regex, redirectUrl] of map.entries()) {
@@ -119,7 +135,19 @@ export const middleware = async (request: NextRequest) => {
     }
   }
 
-  const response = NextResponse.next();
+  // ── OWNER 전용 경로 체크 ──
+  if (ownerOnlyPaths.some((regex) => regex.test(pathname))) {
+    if (!resolvedAccessToken) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    const role = await fetchUserRole(resolvedAccessToken);
+    if (role !== "OWNER") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
+  // ── 응답 반환 ──
+  const response = refreshResult?.response ?? NextResponse.next();
 
   if (isAuthenticated) {
     response.cookies.set(TOKEN_NAMES.LOGGED_IN, "true", loggedInCookieOptions);

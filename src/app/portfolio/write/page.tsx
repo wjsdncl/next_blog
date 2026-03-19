@@ -1,5 +1,4 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import { redirect } from "next/navigation";
 import { getPortfolio, PORTFOLIO_KEYS } from "@/services/portfolio.api";
 import { getUser, USER_KEYS } from "@/services/user.api";
 import PortfolioForm from "./_components/PortfolioForm";
@@ -14,10 +13,6 @@ export default async function PortfolioWritePage({ searchParams }: { searchParam
     queryClient.setQueryData(PORTFOLIO_KEYS.detail(slug), portfolio);
   }
   queryClient.setQueryData([...USER_KEYS], user);
-
-  if (user?.role !== "OWNER") {
-    redirect("/login");
-  }
 
   return (
     <div className="mx-auto flex size-full flex-col justify-between py-6 tablet:w-tablet desktop:w-desktop">
