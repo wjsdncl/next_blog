@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import cn from "@/utils/cn";
+import toast from "@/utils/toast";
 
 interface TagProps {
   text: string;
@@ -36,19 +37,24 @@ const TagInput = ({ tags, addTag, removeTag, addTags, style = "default", suggest
   const handleTagInput = (value: string) => {
     if (!value.trim()) return;
 
-    const tagArray = value
+    const allTags = value
       .split(/\s*,\s*/)
       .filter((tag) => tag.trim() !== "")
       .map((tag) => tag.trim());
 
-    if (tagArray.length > 1 && addTags) {
-      addTags(tagArray);
-    } else {
-      tagArray.forEach((tag) => {
-        if (tag) {
-          addTag(tag);
-        }
-      });
+    const duplicates = allTags.filter((tag) => tags.includes(tag));
+    const newTags = allTags.filter((tag) => !tags.includes(tag));
+
+    if (duplicates.length > 0) {
+      toast.error(`이미 추가된 항목: ${duplicates.join(", ")}`);
+    }
+
+    if (newTags.length > 0) {
+      if (newTags.length > 1 && addTags) {
+        addTags(newTags);
+      } else {
+        newTags.forEach((tag) => addTag(tag));
+      }
     }
 
     setInputValue("");
@@ -97,7 +103,7 @@ const TagInput = ({ tags, addTag, removeTag, addTags, style = "default", suggest
             <button
               key={suggestion}
               type="button"
-              onClick={() => addTag(suggestion)}
+              onClick={() => !tags.includes(suggestion) && addTag(suggestion)}
               className="rounded-md border border-gray-300 bg-gray-100 px-2.5 py-1 text-sm text-gray-600 transition-colors hover:border-brand-tertiary hover:text-brand-tertiary"
             >
               + {suggestion}

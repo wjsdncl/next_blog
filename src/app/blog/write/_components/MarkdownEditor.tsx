@@ -240,7 +240,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
             render={({ field }) => (
               <TagInput
                 tags={field.value}
-                addTag={(tag) => field.onChange([...field.value, tag])}
+                addTag={(tag) => !field.value.includes(tag) && field.onChange([...field.value, tag])}
                 removeTag={(tag) => field.onChange(field.value.filter((t) => t !== tag))}
                 addTags={(newTags: string[]) => {
                   const uniqueTags = [...new Set([...(field.value || []), ...newTags])];
