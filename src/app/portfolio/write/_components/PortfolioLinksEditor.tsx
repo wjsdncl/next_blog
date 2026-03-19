@@ -60,7 +60,7 @@ export default function PortfolioLinksEditor({ initialLinks, onChange }: Portfol
           <select
             value={link.type}
             onChange={(e) => handleTypeChange(index, e.target.value)}
-            className="h-10 w-28 shrink-0 rounded-md border border-gray-400 bg-gray-100 px-2 text-sm font-medium text-text-primary"
+            className="h-10 w-28 shrink-0 rounded-md border-2 border-background-tertiary bg-background-secondary px-2 text-sm font-medium text-text-primary outline-none focus:border-brand_dark-primary"
           >
             {LINK_TYPE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -74,13 +74,13 @@ export default function PortfolioLinksEditor({ initialLinks, onChange }: Portfol
             value={link.url}
             onChange={(e) => handleUrlChange(index, e.target.value)}
             placeholder="https://..."
-            className="h-10 grow rounded-md border border-gray-400 bg-gray-100 px-3 text-sm text-text-primary placeholder:text-gray-450"
+            className="h-10 grow rounded-md border-2 border-background-tertiary bg-background-secondary px-3 text-sm text-text-primary outline-none placeholder:text-gray-450 focus:border-brand_dark-primary"
           />
 
           <button
             type="button"
             onClick={() => handleRemove(index)}
-            className="flex size-10 shrink-0 items-center justify-center rounded-md border border-gray-400 text-gray-600 hover:bg-gray-200 hover:text-error"
+            className="flex size-10 shrink-0 items-center justify-center rounded-md border-2 border-background-tertiary text-gray-600 hover:bg-gray-200 hover:text-error"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -92,7 +92,7 @@ export default function PortfolioLinksEditor({ initialLinks, onChange }: Portfol
       <button
         type="button"
         onClick={handleAdd}
-        className="flex h-10 items-center justify-center gap-1 rounded-md border border-dashed border-gray-400 text-sm font-medium text-gray-600 hover:border-brand-tertiary hover:text-brand-tertiary"
+        className="flex h-10 items-center justify-center gap-1 rounded-md border-2 border-dashed border-background-tertiary text-sm font-medium text-gray-600 hover:border-brand-tertiary hover:text-brand-tertiary"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

@@ -397,7 +397,7 @@ function FileInput<T extends FieldValues>({
             <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {field.value.map((preview: FilePreview, index: number) => (
                 <div key={index} className="relative">
-                  <div className="group relative h-24 w-full overflow-hidden rounded-md">
+                  <div className="group relative aspect-[3/2] w-full overflow-hidden rounded-md bg-background-tertiary">
                     {preview.isUploaded && (
                       <div className="absolute left-1 top-1 z-10 rounded-full bg-blue-500 px-2 py-0.5 text-xs font-medium text-white">
                         저장됨
@@ -407,8 +407,8 @@ function FileInput<T extends FieldValues>({
                       src={preview.previewUrl}
                       alt={`업로드할 이미지 ${index + 1}`}
                       fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                      className="object-contain"
                     />
                   </div>
                   <button
