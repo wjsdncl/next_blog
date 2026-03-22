@@ -394,34 +394,31 @@ function FileInput<T extends FieldValues>({
           </div>
 
           {field.value && field.value.length > 0 && (
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            <div className="flex gap-4 overflow-x-auto pb-3 scrollbar:h-2 scrollbar:rounded-full scrollbar:bg-gray-200 scrollbar-thumb:rounded-full scrollbar-thumb:bg-gray-300">
               {field.value.map((preview: FilePreview, index: number) => (
-                <div key={index} className="relative">
-                  <div className="group relative aspect-[3/2] w-full overflow-hidden rounded-md bg-background-tertiary">
-                    {preview.isUploaded && (
-                      <div className="absolute left-1 top-1 z-10 rounded-full bg-blue-500 px-2 py-0.5 text-xs font-medium text-white">
-                        저장됨
-                      </div>
-                    )}
-                    <Image
-                      src={preview.previewUrl}
-                      alt={`업로드할 이미지 ${index + 1}`}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      className="object-contain"
-                    />
-                  </div>
+                <div
+                  key={index}
+                  className="group relative h-40 w-56 shrink-0 overflow-hidden rounded-md bg-background-tertiary"
+                >
+                  {preview.isUploaded && (
+                    <div className="absolute left-2 top-2 z-10 rounded-full bg-blue-500 px-2 py-0.5 text-xs font-medium text-white">
+                      저장됨
+                    </div>
+                  )}
+                  <Image
+                    src={preview.previewUrl}
+                    alt={`업로드할 이미지 ${index + 1}`}
+                    fill
+                    sizes="224px"
+                    className="object-contain"
+                  />
                   <button
                     type="button"
                     onClick={() => removePreview(index, field.onChange, field.value)}
-                    className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                    className="bg-black/50 hover:bg-black/75 absolute right-2 top-2 z-10 flex size-6 items-center justify-center rounded-full text-white transition-all duration-150 hover:scale-110"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="size-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path
-                        fillRule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path d="M1 1L9 9M9 1L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                     </svg>
                   </button>
                 </div>

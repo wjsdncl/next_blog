@@ -54,13 +54,13 @@ export default function PortfolioLinksEditor({ initialLinks, onChange }: Portfol
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="grid grid-cols-2 gap-3">
       {links.map((link, index) => (
         <div key={index} className="flex items-center gap-2">
           <select
             value={link.type}
             onChange={(e) => handleTypeChange(index, e.target.value)}
-            className="h-10 w-28 shrink-0 rounded-md border-2 border-background-tertiary bg-background-secondary px-2 text-sm font-medium text-text-primary outline-none focus:border-brand_dark-primary"
+            className="h-10 w-24 shrink-0 rounded-md border-2 border-background-tertiary bg-background-secondary px-2 text-sm font-medium text-text-primary outline-none focus:border-brand_dark-primary"
           >
             {LINK_TYPE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -74,7 +74,7 @@ export default function PortfolioLinksEditor({ initialLinks, onChange }: Portfol
             value={link.url}
             onChange={(e) => handleUrlChange(index, e.target.value)}
             placeholder="https://..."
-            className="h-10 grow rounded-md border-2 border-background-tertiary bg-background-secondary px-3 text-sm text-text-primary outline-none placeholder:text-gray-450 focus:border-brand_dark-primary"
+            className="h-10 min-w-0 grow rounded-md border-2 border-background-tertiary bg-background-secondary px-3 text-sm text-text-primary outline-none placeholder:text-gray-450 focus:border-brand_dark-primary"
           />
 
           <button
@@ -92,7 +92,7 @@ export default function PortfolioLinksEditor({ initialLinks, onChange }: Portfol
       <button
         type="button"
         onClick={handleAdd}
-        className="flex h-10 items-center justify-center gap-1 rounded-md border-2 border-dashed border-background-tertiary text-sm font-medium text-gray-600 hover:border-brand-tertiary hover:text-brand-tertiary"
+        className="col-span-2 flex h-10 items-center justify-center gap-1 rounded-md border-2 border-dashed border-background-tertiary text-sm font-medium text-gray-600 hover:border-brand-tertiary hover:text-brand-tertiary"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

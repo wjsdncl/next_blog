@@ -142,8 +142,8 @@ export default function ClientHeader({ user }: { user?: User }) {
     </>
   );
 
-  // 블로그 작성 페이지에서는 헤더를 표시하지 않음
-  if (pathname === "/blog/write") return null;
+  // 작성 페이지에서는 헤더를 표시하지 않음
+  if (pathname === "/blog/write" || pathname === "/portfolio/write") return null;
 
   return (
     <>

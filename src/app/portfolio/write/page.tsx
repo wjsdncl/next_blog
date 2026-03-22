@@ -15,13 +15,8 @@ export default async function PortfolioWritePage({ searchParams }: { searchParam
   queryClient.setQueryData([...USER_KEYS], user);
 
   return (
-    <div className="mx-auto flex size-full flex-col justify-between py-6 tablet:w-tablet desktop:w-desktop">
-      <h1 className="mx-auto w-full max-w-screen-tablet text-4xl font-bold">포트폴리오 작성하기</h1>
-
-      <div className="pt-4" />
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <PortfolioForm slug={slug} id={portfolio?.id} />
-      </HydrationBoundary>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PortfolioForm slug={slug} id={portfolio?.id} />
+    </HydrationBoundary>
   );
 }
