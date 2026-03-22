@@ -7,6 +7,7 @@
  *      예: ![설명{600x400}](url) → 600×400px
  */
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const CodeBlock = dynamic(() => import("./CodeBlock"), {
   ssr: false,
@@ -57,13 +58,14 @@ const components = {
 
     return (
       <span className="my-4 block max-w-full">
-        <img
+        <Image
           src={src}
           alt={cleanAlt ?? "이미지"}
-          loading="lazy"
-          decoding="async"
+          unoptimized
+          width={sizeInfo?.width ?? 0}
+          height={sizeInfo?.height ?? 0}
           className="max-h-[720px] max-w-full object-contain"
-          {...(sizeInfo && { width: sizeInfo.width, height: sizeInfo.height })}
+          style={!sizeInfo ? { width: "auto", height: "auto" } : undefined}
         />
       </span>
     );

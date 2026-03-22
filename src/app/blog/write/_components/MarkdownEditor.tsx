@@ -11,7 +11,15 @@ import { useShallow } from "zustand/shallow";
 import components from "@/components/content/MarkdownComponents";
 import TagInput from "@/components/ui/TagInput";
 import { revalidatePosts } from "@/services/actions/revalidate.action";
-import { getPost, POST_KEYS, updatePost, uploadImage, createPost, resolveCategoryId, getCategories } from "@/services/post.api";
+import {
+  getPost,
+  POST_KEYS,
+  updatePost,
+  uploadImage,
+  createPost,
+  resolveCategoryId,
+  getCategories,
+} from "@/services/post.api";
 import { getTagList, resolveTagIds } from "@/services/tag.api";
 import { USER_KEYS } from "@/services/user.api";
 import useModalStore from "@/stores/ModalStore";
@@ -63,10 +71,9 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
     queryFn: getTagList,
   });
 
-  const categoryOptions =
-    categoriesData?.categories
-      ? Object.entries(categoriesData.categories).map(([name, postCount]) => ({ name, postCount }))
-      : [];
+  const categoryOptions = categoriesData?.categories
+    ? Object.entries(categoriesData.categories).map(([name, postCount]) => ({ name, postCount }))
+    : [];
 
   const tagSuggestions = tagList?.map((t) => t.name) || [];
 
@@ -205,11 +212,7 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
             name="category"
             control={control}
             render={({ field }) => (
-              <CategoryAutocomplete
-                value={field.value || ""}
-                onChange={field.onChange}
-                categories={categoryOptions}
-              />
+              <CategoryAutocomplete value={field.value || ""} onChange={field.onChange} categories={categoryOptions} />
             )}
           />
 

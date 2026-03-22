@@ -132,7 +132,8 @@ async function proxyRequest(request: NextRequest, { params }: { params: { path: 
   if (request.method !== "GET" && request.method !== "HEAD") {
     if (isFormData) {
       const arrayBuffer = await request.arrayBuffer();
-      fetchOptions.body = Buffer.from(arrayBuffer);
+      fetchOptions.body = arrayBuffer;
+      // eslint-disable-next-line no-console
       console.log("[Proxy] Upload body size:", arrayBuffer.byteLength, "Content-Type:", contentType);
     } else {
       fetchOptions.body = await request.text();
@@ -145,6 +146,7 @@ async function proxyRequest(request: NextRequest, { params }: { params: { path: 
   if (!response.ok && isFormData) {
     const cloned = response.clone();
     const errorBody = await cloned.text();
+    // eslint-disable-next-line no-console
     console.error("[Proxy] Upload failed:", response.status, errorBody, "Target:", targetUrl);
   }
 

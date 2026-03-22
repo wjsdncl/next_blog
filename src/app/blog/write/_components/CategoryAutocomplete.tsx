@@ -60,9 +60,7 @@ export default function CategoryAutocomplete({ value, onChange, categories }: Ca
             </li>
           ))}
           {value && !categories.some((c) => c.name === value) && (
-            <li className="border-t border-gray-200 px-3 py-2 text-sm text-gray-500">
-              &quot;{value}&quot; 새로 생성
-            </li>
+            <li className="border-t border-gray-200 px-3 py-2 text-sm text-gray-500">&quot;{value}&quot; 새로 생성</li>
           )}
         </ul>
       )}

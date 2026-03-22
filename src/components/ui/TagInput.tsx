@@ -87,7 +87,9 @@ const TagInput = ({ tags, addTag, removeTag, addTags, style = "default", suggest
   return (
     <div className="flex flex-col gap-2">
       <div className={cn("group flex w-full flex-wrap items-center gap-2 py-1", tagStyle)}>
-        {tags?.map((tag) => <Tag key={tag} text={tag} onRemove={removeTag} />)}
+        {tags?.map((tag) => (
+          <Tag key={tag} text={tag} onRemove={removeTag} />
+        ))}
         <input
           className="grow truncate text-nowrap text-lg text-text-primary outline-none"
           placeholder="태그를 입력하세요"
