@@ -88,6 +88,7 @@ export default function PortfolioList({ isOwner }: { isOwner: boolean }) {
                   title={portfolio.title}
                   date={`${portfolio.start_date ? formatDate(portfolio.start_date) : ""} ~ ${portfolio.end_date ? formatDate(portfolio.end_date) : "진행중"}`}
                   excerpt={portfolio.excerpt || ""}
+                  summary={portfolio.summary}
                   techStacks={portfolio.techStacks.map((tech) => tech.name)}
                   category={portfolio.category?.name}
                   images={portfolio.images}

@@ -10,6 +10,7 @@ import remarkGfm from "remark-gfm";
 import components from "@/components/content/MarkdownComponents";
 import Form, { type FilePreview } from "@/components/ui/Form";
 import { revalidatePortfolios } from "@/services/actions/revalidate.action";
+import textSummarizer from "@/services/actions/summarize.action";
 import {
   createPortfolio,
   getPortfolio,
@@ -39,6 +40,7 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
   const router = useRouter();
   const statusRef = useRef<PublishStatus>("PUBLISHED");
   const [links, setLinks] = useState<Array<{ type: string; url: string }>>([]);
+  const [isSummaryEnabled, setIsSummaryEnabled] = useState(true);
   const [categoryName, setCategoryName] = useState("");
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
@@ -182,6 +184,13 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
         }
       }
       portfolioData.images = imageResults;
+    }
+
+    if (statusRef.current === "PUBLISHED" && isSummaryEnabled) {
+      const summary = await textSummarizer(formData.content);
+      if (summary) {
+        portfolioData.summary = summary;
+      }
     }
 
     toast.promise(
@@ -473,7 +482,24 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
               >
                 나가기
               </button>
-              <div className="flex gap-3">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm text-text-primary">AI 요약</span>
+                  <button
+                    type="button"
+                    onClick={() => setIsSummaryEnabled((prev) => !prev)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      isSummaryEnabled ? "bg-brand-primary" : "bg-gray-300"
+                    }`}
+                  >
+                    <span className="sr-only">AI 요약 생성 토글</span>
+                    <span
+                      className={`inline-block size-[20px] rounded-full bg-white transition-transform ${
+                        isSummaryEnabled ? "translate-x-6" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
                 <button
                   type="submit"
                   className="rounded-md bg-gray-600 px-3 py-2 text-lg font-semibold text-white hover:bg-gray-700 active:bg-gray-800"

@@ -23,6 +23,7 @@ export interface PortfolioCardProps {
   title: string;
   date: string;
   excerpt: string;
+  summary?: string[];
   techStacks: string[];
   category?: string;
   images: PortfolioImage[];
@@ -173,6 +174,13 @@ export default function PortfolioCard(portfolio: PortfolioCardProps) {
 
       <div>
         <p className="mb-3 line-clamp-5 text-lg font-medium">{portfolio.excerpt}</p>
+        {portfolio.summary && portfolio.summary.length > 0 && (
+          <ul className="flex flex-col gap-1 text-sm text-gray-600">
+            {portfolio.summary.map((sentence, i) => (
+              <li key={i}>{sentence}</li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <TechStack stack={portfolio.techStacks} />

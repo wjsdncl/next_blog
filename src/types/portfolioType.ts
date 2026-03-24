@@ -26,6 +26,7 @@ export interface Portfolio {
   slug: string;
   content: string;
   excerpt: string | null;
+  summary: string[];
   start_date: string | null;
   end_date: string | null;
   status: PublishStatus;
@@ -54,6 +55,7 @@ export interface PortfolioRequest {
   title: string;
   content: string;
   excerpt?: string;
+  summary?: string[];
   start_date?: string;
   end_date?: string;
   status?: PublishStatus;
