@@ -99,9 +99,11 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
   });
 
   // 포트폴리오 로드 후 카테고리명 설정
-  if (portfolio?.category?.name && !categoryName) {
-    setCategoryName(portfolio.category.name);
-  }
+  useEffect(() => {
+    if (portfolio?.category?.name) {
+      setCategoryName(portfolio.category.name);
+    }
+  }, [portfolio?.category?.name]);
 
   // 카테고리 드롭다운 외부 클릭 닫기
   useEffect(() => {
@@ -502,7 +504,8 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
                 </div>
                 <button
                   type="submit"
-                  className="rounded-md bg-gray-600 px-3 py-2 text-lg font-semibold text-white hover:bg-gray-700 active:bg-gray-800"
+                  disabled={createPortfolioMutation.isPending || updatePortfolioMutation.isPending}
+                  className="rounded-md bg-gray-600 px-3 py-2 text-lg font-semibold text-white hover:bg-gray-700 active:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
                   onClick={() => {
                     statusRef.current = "DRAFT";
                   }}
@@ -511,7 +514,8 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
                 </button>
                 <button
                   type="submit"
-                  className="rounded-md bg-brand_dark-primary px-3 py-2 text-lg font-semibold text-white hover:bg-brand_dark-secondary active:bg-brand_dark-tertiary"
+                  disabled={createPortfolioMutation.isPending || updatePortfolioMutation.isPending}
+                  className="rounded-md bg-brand_dark-primary px-3 py-2 text-lg font-semibold text-white hover:bg-brand_dark-secondary active:bg-brand_dark-tertiary disabled:cursor-not-allowed disabled:opacity-50"
                   onClick={() => {
                     statusRef.current = "PUBLISHED";
                   }}

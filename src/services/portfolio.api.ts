@@ -132,6 +132,15 @@ export const updatePortfolio = async ({ id, portfolioData }: { id: string; portf
   }
 };
 
+export const reorderPortfolios = async (items: { id: string; order: number }[]) => {
+  try {
+    return await instance.PATCH<{ success: boolean; message: string }>("/portfolios/reorder", { items });
+  } catch (error) {
+    console.error("포트폴리오 순서 변경 실패:", error);
+    throw error;
+  }
+};
+
 export const deletePortfolio = async (id: string) => {
   try {
     return await instance.DELETE<{ success: boolean }>(`/portfolios/${id}`);

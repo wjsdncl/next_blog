@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useShallow } from "zustand/shallow";
-import useDeviceSize from "@/hooks/useDeviceSize";
+import Github from "@/Icons/Github.svg";
+import LinkIcon from "@/Icons/Link.svg";
 import { revalidatePortfolios } from "@/services/actions/revalidate.action";
 import { PORTFOLIO_KEYS, updatePortfolio } from "@/services/portfolio.api";
 import useModalStore from "@/stores/ModalStore";
 import { type PublishStatus } from "@/types/blogType";
-import type { PortfolioImage } from "@/types/portfolioType";
+import type { PortfolioImage, PortfolioLink } from "@/types/portfolioType";
 import toast from "@/utils/toast";
 import PortfolioDeleteModal from "./PortfolioDeleteModal";
 import PortfolioDetailOverlay from "./PortfolioDetailOverlay";
@@ -27,6 +28,7 @@ export interface PortfolioCardProps {
   techStacks: string[];
   category?: string;
   images: PortfolioImage[];
+  links: PortfolioLink[];
   status: PublishStatus;
   isOwner: boolean;
 }
@@ -52,9 +54,8 @@ export default function PortfolioCard(portfolio: PortfolioCardProps) {
   const { isOwner } = portfolio;
   const [isExpanded, setIsExpanded] = useState(false);
   const articleRef = useRef<HTMLElement>(null);
-  const [coords, setCoords] = useState({ top: 0, width: 0 });
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, height: 0 });
   const { handleEdit, handleDelete } = usePortfolioActions(portfolio.id, portfolio.slug);
-  const deviceSize = useDeviceSize();
   const coverImage = portfolio.images[0];
   const queryClient = useQueryClient();
 
@@ -88,8 +89,12 @@ export default function PortfolioCard(portfolio: PortfolioCardProps) {
   const handleExpand = () => {
     if (!isExpanded && articleRef.current) {
       const rect = articleRef.current.getBoundingClientRect();
-      if (deviceSize === "mobile") setCoords({ top: rect.top, width: window.innerWidth });
-      else setCoords({ top: rect.top, width: rect.width });
+      setCoords({
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+      });
     }
     setIsExpanded(!isExpanded);
   };
@@ -97,34 +102,36 @@ export default function PortfolioCard(portfolio: PortfolioCardProps) {
   return (
     <article
       ref={articleRef}
-      className="flex flex-col gap-4 rounded-lg border-2 border-gray-300 bg-gray-100 p-5 text-text-primary"
+      className="group flex flex-col overflow-hidden rounded-xl bg-gray-100 text-text-primary shadow-sm transition-shadow duration-300 hover:shadow-md"
     >
       {coverImage && (
-        <div className="relative h-48 w-full overflow-hidden rounded-lg">
+        <div className="relative h-44 w-full overflow-hidden bg-gray-150 desktop:h-48">
           <Image
             src={coverImage.url}
             alt={`${portfolio.title} 커버 이미지`}
             fill
-            className="object-cover"
+            className="object-contain transition-transform duration-300 group-hover:scale-[1.02]"
             sizes="(max-width: 768px) 100vw, 768px"
           />
         </div>
       )}
 
-      <div className="flex flex-col gap-2 tablet:flex-row tablet:items-center">
-        <div className="flex flex-1 items-center gap-2">
-          <h2 className="text-3xl font-semibold">{portfolio.title}</h2>
+      <div className="flex flex-1 flex-col gap-3 p-5">
+        <div className="flex items-center gap-2 text-sm text-gray-700">
           {portfolio.category && (
-            <span className="rounded-full bg-gray-200 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+            <span className="rounded-full bg-brand_dark-tertiary px-2.5 py-0.5 text-xs font-semibold text-brand-quaternary">
               {portfolio.category}
             </span>
           )}
+          <span>{portfolio.date}</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 tablet:flex-row tablet:items-center tablet:justify-between">
+          <h2 className="text-xl font-bold tablet:text-2xl">{portfolio.title}</h2>
+
           {isOwner && (
             <div className="flex items-center gap-1.5">
-              <span className="text-sm text-text-primary">{isPublished ? "공개" : "비공개"}</span>
+              <span className="text-sm text-gray-500">{isPublished ? "공개" : "비공개"}</span>
               <button
                 type="button"
                 onClick={() => !statusToggleMutation.isPending && statusToggleMutation.mutate()}
@@ -141,49 +148,70 @@ export default function PortfolioCard(portfolio: PortfolioCardProps) {
               </button>
             </div>
           )}
-          <button
-            onClick={handleExpand}
-            className="rounded p-1 font-semibold text-brand-tertiary focus-visible:ring-2 focus-visible:ring-brand-tertiary"
-          >
-            자세히 보기
-          </button>
-          {isOwner && (
-            <>
-              <button
-                onClick={handleEdit}
-                className="rounded p-1 font-semibold text-brand-tertiary focus-visible:ring-2 focus-visible:ring-brand-tertiary"
-              >
-                수정
-              </button>
-              <button
-                onClick={handleDelete}
-                className="rounded p-1 font-semibold text-brand-tertiary focus-visible:ring-2 focus-visible:ring-brand-tertiary"
-              >
-                삭제
-              </button>
-            </>
-          )}
         </div>
-      </div>
 
-      <div className="flex items-center gap-2">
-        <p className="font-medium text-gray-800">{portfolio.date}</p>
-      </div>
+        {portfolio.excerpt && <p className="line-clamp-3 text-gray-700">{portfolio.excerpt}</p>}
 
-      <hr className="border-t-2 border-gray-400" />
-
-      <div>
-        <p className="mb-3 line-clamp-5 text-lg font-medium">{portfolio.excerpt}</p>
         {portfolio.summary && portfolio.summary.length > 0 && (
-          <ul className="flex flex-col gap-1 text-sm text-gray-600">
+          <ul className="flex flex-col gap-1.5 text-sm text-gray-700">
             {portfolio.summary.map((sentence, i) => (
-              <li key={i}>{sentence}</li>
+              <li key={i} className="flex gap-2">
+                <span className="mt-0.5 text-brand-tertiary">•</span>
+                <span>{sentence}</span>
+              </li>
             ))}
           </ul>
         )}
-      </div>
 
-      <TechStack stack={portfolio.techStacks} />
+        {portfolio.techStacks.length > 0 && <TechStack stack={portfolio.techStacks} />}
+
+        <div className="mt-auto flex items-center justify-between gap-2 pt-1">
+          <div className="flex items-center gap-1.5">
+            {(portfolio.links ?? [])
+              .filter((l) => l.type === "github" || l.type === "live")
+              .map((link) => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex size-8 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-200 hover:text-text-primary focus-visible:ring-2 focus-visible:ring-brand-tertiary"
+                  aria-label={link.type === "github" ? "GitHub" : "사이트"}
+                >
+                  {link.type === "github" ? (
+                    <Github width={18} height={18} color="currentColor" />
+                  ) : (
+                    <LinkIcon width={18} height={18} color="currentColor" />
+                  )}
+                </a>
+              ))}
+          </div>
+          <div className="flex items-center gap-2">
+            {isOwner && (
+              <>
+                <button
+                  onClick={handleEdit}
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-brand-tertiary"
+                >
+                  수정
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-brand-tertiary"
+                >
+                  삭제
+                </button>
+              </>
+            )}
+            <button
+              onClick={handleExpand}
+              className="rounded-lg bg-brand_dark-tertiary px-4 py-2 text-sm font-semibold text-brand-quaternary transition-colors hover:bg-brand_dark-secondary focus-visible:ring-2 focus-visible:ring-brand-tertiary"
+            >
+              자세히 보기 →
+            </button>
+          </div>
+        </div>
+      </div>
 
       {isExpanded &&
         createPortal(
@@ -197,6 +225,7 @@ export default function PortfolioCard(portfolio: PortfolioCardProps) {
             techStacks={portfolio.techStacks}
             category={portfolio.category}
             images={portfolio.images}
+            links={portfolio.links}
           />,
           document.body
         )}

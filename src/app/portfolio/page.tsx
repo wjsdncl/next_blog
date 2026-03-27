@@ -25,11 +25,8 @@ export default async function Page() {
   return (
     <div
       id="main-content"
-      className="mx-auto mt-6 flex size-full flex-col justify-between py-2 tablet:w-tablet desktop:w-desktop"
+      className="mx-auto flex size-full flex-col justify-between py-6 tablet:w-tablet desktop:w-desktop"
     >
-      <h1 className="mx-auto w-full max-w-screen-tablet text-center text-4xl font-bold">Projects</h1>
-      <div className="pt-8" />
-
       <HydrationBoundary state={dehydrate(queryClient)}>
         <PortfolioList isOwner={isOwner} />
         <div className="fixed bottom-[100px] right-[16px] z-40 flex items-center justify-center overflow-hidden rounded-full tablet:right-[24px] desktop:right-[calc((100%-1200px)/2)]">
