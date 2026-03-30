@@ -105,8 +105,7 @@ export default function PortfolioDetailOverlay({
             width: animTarget.width,
             maxHeight: animTarget.mobile ? "100vh" : `calc(100vh - ${animTarget.top * 2}px)`,
             borderRadius: animTarget.mobile ? 0 : 16,
-            transition:
-              "top 0.4s ease, left 0.4s ease, width 0.4s ease, max-height 0.4s ease, border-radius 0.4s ease",
+            transition: "top 0.4s ease, left 0.4s ease, width 0.4s ease, max-height 0.4s ease, border-radius 0.4s ease",
           }
         : {};
 
@@ -122,7 +121,7 @@ export default function PortfolioDetailOverlay({
         ref={panelRef}
         className={`relative z-10 overflow-y-auto overscroll-contain bg-gray-100 scrollbar-hide ${
           phase === "settled"
-            ? "fixed inset-x-0 top-0 mx-auto h-dvh max-h-dvh tablet:top-12 tablet:w-[90vw] tablet:max-h-[calc(100dvh-96px)] tablet:rounded-2xl desktop:w-desktop"
+            ? "fixed inset-x-0 top-0 mx-auto h-dvh max-h-dvh tablet:top-12 tablet:max-h-[calc(100dvh-96px)] tablet:w-[90vw] tablet:rounded-2xl desktop:w-desktop"
             : ""
         }`}
         style={panelStyle}
