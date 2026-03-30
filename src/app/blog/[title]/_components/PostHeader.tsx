@@ -86,8 +86,6 @@ export default function PostHeader({ title, user }: { title: string; user?: User
       await updatePost({
         id,
         postData: {
-          title: post.title,
-          content: post.content,
           status: post.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED",
         },
       });

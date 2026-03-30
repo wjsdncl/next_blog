@@ -64,8 +64,6 @@ export default function PortfolioCard(portfolio: PortfolioCardProps) {
       await updatePortfolio({
         id: portfolio.id,
         portfolioData: {
-          title: portfolio.title,
-          content: "",
           status: portfolio.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED",
         },
       });

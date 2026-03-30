@@ -123,7 +123,7 @@ export const createPortfolio = async (portfolioData: PortfolioRequest) => {
   }
 };
 
-export const updatePortfolio = async ({ id, portfolioData }: { id: string; portfolioData: PortfolioRequest }) => {
+export const updatePortfolio = async ({ id, portfolioData }: { id: string; portfolioData: Partial<PortfolioRequest> }) => {
   try {
     return await instance.PATCH<{ success: boolean; data: Portfolio }>(`/portfolios/${id}`, portfolioData);
   } catch (error) {

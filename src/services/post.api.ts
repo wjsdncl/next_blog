@@ -171,7 +171,7 @@ export const createPost = async (postData: PostRequest) => {
   }
 };
 
-export const updatePost = async ({ id, postData }: { id: string; postData: PostRequest }) => {
+export const updatePost = async ({ id, postData }: { id: string; postData: Partial<PostRequest> }) => {
   try {
     return await instance.PATCH<{ success: boolean; data: Post }>(`/posts/${id}`, postData);
   } catch (error) {
