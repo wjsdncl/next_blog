@@ -1,17 +1,24 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import useLikePost from "@/hooks/useLikePost";
 import FavoriteEmpty from "@/Icons/FavoriteEmpty.svg";
 import FavoriteFilled from "@/Icons/FavoriteFilled.svg";
 import Share from "@/Icons/Share.svg";
+import { getPost, POST_KEYS } from "@/services/post.api";
 import { type User } from "@/types/authType";
-import usePostActions from "./usePostActions";
+import { copyCurrentUrl } from "@/utils/clipboard";
 
 export default function DesktopNavigation({ title, user }: { title: string; user?: User }) {
-  const { post, handleLike, handleShare } = usePostActions(title, user);
+  const { data: post } = useQuery({
+    queryKey: POST_KEYS.detail(title),
+    queryFn: () => getPost(title),
+  });
+  const { handleLike } = useLikePost(title, user);
 
   return (
     <nav className="sticky top-[90px] mt-32 flex h-fit flex-col items-center gap-2 rounded-full border-2 border-gray-300 px-3 py-4 text-text-primary">
-      <button type="button" aria-label="좋아요" onClick={handleLike} className="size-8">
+      <button type="button" aria-label="좋아요" onClick={() => post?.id && handleLike(post.id)} className="size-8">
         {post?.is_liked ? (
           <FavoriteFilled width="100%" height="100%" color="var(--brand-primary)" />
         ) : (
@@ -21,7 +28,7 @@ export default function DesktopNavigation({ title, user }: { title: string; user
 
       <p className="font-medium">{post?.like_count}</p>
 
-      <button type="button" aria-label="공유" onClick={handleShare} className="size-8">
+      <button type="button" aria-label="공유" onClick={copyCurrentUrl} className="size-8">
         <Share width="100%" height="100%" color="var(--text-primary)" />
       </button>
     </nav>

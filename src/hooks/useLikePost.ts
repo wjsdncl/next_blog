@@ -1,22 +1,17 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useEffect } from "react";
-import { getPost, likePost, POST_KEYS } from "@/services/post.api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { likePost, POST_KEYS } from "@/services/post.api";
 import type { User } from "@/types/authType";
 import type { Post } from "@/types/blogType";
 import toast from "@/utils/toast";
 
-export default function usePostActions(title: string, user?: User) {
+export default function useLikePost(slug: string, user?: User) {
   const abortControllerRef = useRef<AbortController | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: post } = useQuery({
-    queryKey: POST_KEYS.detail(title),
-    queryFn: () => getPost(title),
-  });
-
-  const likePostMutation = useMutation({
+  const mutation = useMutation({
     mutationFn: async (id: string) => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
@@ -30,12 +25,12 @@ export default function usePostActions(title: string, user?: User) {
       return result;
     },
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: POST_KEYS.detail(title) });
+      await queryClient.cancelQueries({ queryKey: POST_KEYS.detail(slug) });
 
-      const previousPost = queryClient.getQueryData<Post>(POST_KEYS.detail(title));
+      const previousPost = queryClient.getQueryData<Post>(POST_KEYS.detail(slug));
 
       if (previousPost) {
-        queryClient.setQueryData<Post>(POST_KEYS.detail(title), {
+        queryClient.setQueryData<Post>(POST_KEYS.detail(slug), {
           ...previousPost,
           is_liked: !previousPost.is_liked,
           like_count: previousPost.is_liked ? previousPost.like_count - 1 : previousPost.like_count + 1,
@@ -47,34 +42,22 @@ export default function usePostActions(title: string, user?: User) {
     onError: (error, _, context) => {
       if (error.name !== "AbortError") {
         if (context?.previousPost) {
-          queryClient.setQueryData(POST_KEYS.detail(title), context.previousPost);
+          queryClient.setQueryData(POST_KEYS.detail(slug), context.previousPost);
         }
         toast.error("좋아요 요청에 실패했습니다.");
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: POST_KEYS.detail(title) });
+      queryClient.invalidateQueries({ queryKey: POST_KEYS.detail(slug) });
     },
   });
 
-  const handleShare = async () => {
-    try {
-      await navigator.clipboard.writeText(decodeURIComponent(window.location.href));
-      toast.success("링크가 클립보드에 복사되었습니다.");
-    } catch {
-      toast.error("링크 복사에 실패했습니다.");
-    }
-  };
-
-  const handleLike = () => {
+  const handleLike = (postId: string) => {
     if (!user) {
       toast.error("로그인 후 이용할 수 있습니다.");
       return;
     }
-
-    if (post?.id) {
-      likePostMutation.mutate(post.id);
-    }
+    mutation.mutate(postId);
   };
 
   useEffect(() => {
@@ -85,5 +68,5 @@ export default function usePostActions(title: string, user?: User) {
     };
   }, []);
 
-  return { post, handleLike, handleShare };
+  return { handleLike };
 }
