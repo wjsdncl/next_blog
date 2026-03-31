@@ -60,7 +60,7 @@ export default function PortfolioDetailOverlay({
 
   useEffect(() => {
     if (phase !== "animating") return;
-    const timer = setTimeout(() => setPhase("settled"), 400);
+    const timer = setTimeout(() => setPhase("settled"), 300);
     return () => clearTimeout(timer);
   }, [phase]);
 
@@ -81,20 +81,30 @@ export default function PortfolioDetailOverlay({
     const vw = typeof window !== "undefined" ? window.innerWidth : coords.width;
     const mobile = coords.width >= vw - 48;
     const width = mobile ? vw : Math.min(vw * 0.9, 1200);
-    return { mobile, width, left: (vw - width) / 2, top: mobile ? 0 : 48 };
+    const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+    const top = mobile ? 0 : 48;
+    const targetHeight = mobile ? vh : vh - top * 2;
+    return { mobile, width, left: (vw - width) / 2, top, targetHeight };
   });
+
+  const scaleX = coords.width / animTarget.width;
+  const scaleY = coords.height / animTarget.targetHeight;
+  const translateX = coords.left - animTarget.left;
+  const translateY = coords.top - animTarget.top;
 
   const panelStyle: React.CSSProperties =
     phase === "initial"
       ? {
           position: "fixed",
-          top: coords.top,
-          left: coords.left,
-          width: coords.width,
-          height: coords.height,
-          maxHeight: coords.height,
-          borderRadius: 12,
+          top: animTarget.top,
+          left: animTarget.left,
+          width: animTarget.width,
+          height: animTarget.targetHeight,
+          borderRadius: animTarget.mobile ? 0 : 16,
           overflow: "hidden",
+          transform: `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`,
+          transformOrigin: "top left",
+          willChange: "transform",
           transition: "none",
         }
       : phase === "animating"
@@ -103,15 +113,19 @@ export default function PortfolioDetailOverlay({
             top: animTarget.top,
             left: animTarget.left,
             width: animTarget.width,
-            maxHeight: animTarget.mobile ? "100vh" : `calc(100vh - ${animTarget.top * 2}px)`,
+            height: animTarget.targetHeight,
+            overflow: "hidden",
             borderRadius: animTarget.mobile ? 0 : 16,
-            transition: "top 0.4s ease, left 0.4s ease, width 0.4s ease, max-height 0.4s ease, border-radius 0.4s ease",
+            transform: "translate(0, 0) scale(1, 1)",
+            transformOrigin: "top left",
+            willChange: "transform",
+            transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           }
         : {};
 
   return (
     <div
-      className={`fixed inset-0 z-50 transition-colors duration-300 ${isAnimated ? "bg-black_opacity-80 backdrop-blur-sm" : "bg-transparent"}`}
+      className={`fixed inset-0 z-50 transition-colors duration-300 ${isAnimated ? "bg-black_opacity-80" : "bg-transparent"}`}
       role="dialog"
       aria-modal="true"
       aria-label={`${title} 상세 보기`}
