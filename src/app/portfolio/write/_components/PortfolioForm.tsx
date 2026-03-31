@@ -40,7 +40,8 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
   const router = useRouter();
   const statusRef = useRef<PublishStatus>("PUBLISHED");
   const [links, setLinks] = useState<Array<{ type: string; url: string }>>([]);
-  const [isSummaryEnabled, setIsSummaryEnabled] = useState(true);
+  const [isSummaryEnabled, setIsSummaryEnabled] = useState(!slug);
+  const [isSummarizing, setIsSummarizing] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
@@ -155,7 +156,7 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
   });
 
   const onSubmit = async (formData: FormValues) => {
-    if (createPortfolioMutation.isPending || updatePortfolioMutation.isPending) return;
+    if (createPortfolioMutation.isPending || updatePortfolioMutation.isPending || isSummarizing) return;
 
     const tech_stack_ids = await resolveTechStackIds(formData.techStack);
 
@@ -189,9 +190,16 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
     }
 
     if (statusRef.current === "PUBLISHED" && isSummaryEnabled) {
-      const summary = await textSummarizer(formData.content);
-      if (summary) {
-        portfolioData.summary = summary;
+      setIsSummarizing(true);
+      const toastId = toast.loading("AI 요약 생성 중...");
+      try {
+        const summary = await textSummarizer(formData.content);
+        if (summary) {
+          portfolioData.summary = summary;
+        }
+      } finally {
+        setIsSummarizing(false);
+        toast.remove(toastId);
       }
     }
 
@@ -504,7 +512,7 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
                 </div>
                 <button
                   type="submit"
-                  disabled={createPortfolioMutation.isPending || updatePortfolioMutation.isPending}
+                  disabled={createPortfolioMutation.isPending || updatePortfolioMutation.isPending || isSummarizing}
                   className="rounded-md bg-gray-600 px-3 py-2 text-lg font-semibold text-white hover:bg-gray-700 active:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
                   onClick={() => {
                     statusRef.current = "DRAFT";
@@ -514,7 +522,7 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
                 </button>
                 <button
                   type="submit"
-                  disabled={createPortfolioMutation.isPending || updatePortfolioMutation.isPending}
+                  disabled={createPortfolioMutation.isPending || updatePortfolioMutation.isPending || isSummarizing}
                   className="rounded-md bg-brand_dark-primary px-3 py-2 text-lg font-semibold text-white hover:bg-brand_dark-secondary active:bg-brand_dark-tertiary disabled:cursor-not-allowed disabled:opacity-50"
                   onClick={() => {
                     statusRef.current = "PUBLISHED";
