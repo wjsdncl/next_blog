@@ -11,7 +11,7 @@ Next.js 14 (App Router) 기반 블로그 프론트엔드.
 - **State Management**: Zustand 5.0
 - **Form**: React Hook Form 7.60
 - **Markdown**: react-markdown 9.1, remark-gfm, rehype-slug
-- **AI**: @google/genai 1.44 (게시글 요약)
+- **AI**: @google/genai 1.44 (포트폴리오 요약)
 
 ## 로컬 개발
 
@@ -27,6 +27,7 @@ npm install
 
 ```env
 BACKEND_URL=http://localhost:8000
+GEMINI_API_KEY=your-gemini-api-key
 ```
 
 ### 3. 실행
@@ -41,45 +42,29 @@ npm run format    # Prettier 포맷
 ## 프로젝트 구조
 
 ```
-blog/
-├── src/
-│   ├── app/                  # Next.js App Router
-│   │   ├── (auth)/           # 인증 관련 (login, signup, callback)
-│   │   ├── (home)/           # 홈페이지
-│   │   ├── blog/             # 블로그 (목록, 상세, 작성)
-│   │   ├── portfolio/        # 포트폴리오 (목록, 작성)
-│   │   ├── about/            # 소개 페이지
-│   │   ├── contact/          # 연락처 페이지
-│   │   ├── sitemap/          # 사이트맵
-│   │   ├── api/[...path]/    # API 프록시 (백엔드 중계)
-│   │   └── layout.tsx        # 루트 레이아웃
-│   ├── components/           # 공유 UI 컴포넌트
-│   │   ├── layout/           # Header, Footer, Modal
-│   │   ├── providers/        # QueryProvider
-│   │   ├── ui/               # Dropdown, Form, TagInput, Toggle
-│   │   ├── feedback/         # Toast, LoadingOverlay
-│   │   └── content/          # MarkdownComponents, ImageCarousel
-│   ├── hooks/                # 커스텀 훅 (useDeviceSize, useFollowScroll)
-│   ├── services/             # API 서비스 레이어
-│   │   ├── instance/         # fetch 인스턴스 (SSR/CSR 분기)
-│   │   ├── actions/          # Server Actions (revalidate, summarize)
-│   │   ├── post.api.ts       # 게시글 API + Query Keys
-│   │   ├── comment.api.ts    # 댓글 API
-│   │   ├── auth.api.ts       # 인증 API
-│   │   ├── portfolio.api.ts  # 포트폴리오 API
-│   │   ├── tag.api.ts        # 태그 API
-│   │   └── user.api.ts       # 사용자 API
-│   ├── stores/               # Zustand (ModalStore, ToastStore)
-│   ├── types/                # TypeScript 타입 정의
-│   ├── utils/                # 유틸리티 (cn, token, formatDate, toast)
-│   ├── Icons/                # SVG 아이콘 (SVGR)
-│   ├── styles/               # globals.css
-│   └── middleware.ts         # 인증 토큰 갱신 미들웨어
-├── public/
-│   ├── fonts/                # Pretendard 폰트
-│   └── images/
-└── docs/
-    └── troubleshooting.md    # 트러블슈팅 기록
+blog/src/
+├── app/                      # Next.js App Router
+│   ├── (auth)/               # 인증 (login, callback)
+│   ├── (home)/               # 홈페이지
+│   ├── blog/                 # 블로그 (목록, 상세, 작성)
+│   ├── portfolio/            # 포트폴리오 (목록, 작성)
+│   ├── about/, contact/      # 소개, 연락처
+│   └── api/[...path]/        # API 프록시 (백엔드 중계)
+├── components/               # 공유 UI 컴포넌트
+│   ├── layout/               # Header, Footer, Modal
+│   ├── ui/                   # Dropdown, Form, TagInput, Toggle
+│   ├── feedback/             # Toaster, LoadingOverlay
+│   └── content/              # MarkdownComponents, ImageCarousel
+├── hooks/                    # 커스텀 훅
+├── services/                 # API 서비스 레이어
+│   ├── instance/             # fetch 인스턴스 (SSR/CSR 분기)
+│   └── actions/              # Server Actions (revalidate, summarize)
+├── stores/                   # Zustand 전역 상태
+├── types/                    # TypeScript 타입 정의
+├── utils/                    # 유틸리티 함수
+├── Icons/                    # SVG 아이콘 (SVGR)
+├── styles/                   # 글로벌 스타일
+└── middleware.ts             # 인증 토큰 갱신 미들웨어
 ```
 
 ## 주요 아키텍처
@@ -89,7 +74,6 @@ blog/
 ```
 SSR (서버 컴포넌트) → serverInstance → 백엔드 직접 호출 + cookies()
 CSR (클라이언트)    → clientInstance → /api/[...path] 프록시 경유
-ISR (정적 생성)     → publicInstance → 백엔드 직접 호출 (쿠키 없음)
 ```
 
 ### 인증 흐름
@@ -107,4 +91,5 @@ ISR (정적 생성)     → publicInstance → 백엔드 직접 호출 (쿠키 �
 
 ## 문서
 
+- [Architecture](docs/architecture.md) - 프론트엔드 아키텍처 문서
 - [Troubleshooting](docs/troubleshooting.md) - 프론트엔드 트러블슈팅 기록
