@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface LinkEntry {
   type: string;
@@ -13,6 +13,8 @@ const LINK_TYPE_OPTIONS = [
   { value: "demo", label: "Demo" },
   { value: "docs", label: "Docs" },
   { value: "figma", label: "Figma" },
+  { value: "playstore", label: "Play Store" },
+  { value: "appstore", label: "App Store" },
   { value: "other", label: "기타" },
 ];
 
@@ -28,6 +30,14 @@ interface PortfolioLinksEditorProps {
 
 export default function PortfolioLinksEditor({ initialLinks, onChange }: PortfolioLinksEditorProps) {
   const [links, setLinks] = useState<LinkEntry[]>(initialLinks ?? DEFAULT_LINKS);
+
+  useEffect(() => {
+    if (initialLinks && initialLinks.length > 0) {
+      setLinks(initialLinks);
+      onChange(initialLinks);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialLinks]);
 
   const updateLinks = (updated: LinkEntry[]) => {
     setLinks(updated);
