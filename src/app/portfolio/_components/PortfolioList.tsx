@@ -36,7 +36,7 @@ function groupByCategory(portfolios: PortfolioListItem[]): { groups: CategoryGro
   const ungrouped: PortfolioListItem[] = [...noCategory];
 
   for (const [name, items] of categoryMap) {
-    if (items.length >= 2) {
+    if (items.length >= 1) {
       groups.push({ name, portfolios: items });
     } else {
       ungrouped.push(...items);
