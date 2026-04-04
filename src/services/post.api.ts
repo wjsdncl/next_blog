@@ -230,3 +230,20 @@ export const uploadImage = async (file: File): Promise<string> => {
     throw error;
   }
 };
+
+export interface StorageImage {
+  name: string;
+  url: string;
+  size: number;
+  createdAt: string;
+}
+
+export const getStorageImages = async (): Promise<StorageImage[]> => {
+  try {
+    const response = await instance.GET<{ success: boolean; data: StorageImage[] }>("/upload/storage");
+    return response.data;
+  } catch (error) {
+    console.error("Storage 이미지 목록 조회 실패:", error);
+    return [];
+  }
+};

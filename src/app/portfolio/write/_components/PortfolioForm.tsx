@@ -24,6 +24,7 @@ import { type PublishStatus } from "@/types/blogType";
 import { type PortfolioRequest } from "@/types/portfolioType";
 import toast from "@/utils/toast";
 import PortfolioLinksEditor from "./PortfolioLinksEditor";
+import StorageImagePicker from "./StorageImagePicker";
 
 type FormValues = {
   title: string;
@@ -44,6 +45,7 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isStoragePickerOpen, setIsStoragePickerOpen] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const leftPanelRef = useRef<HTMLDivElement>(null);
@@ -443,7 +445,16 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
 
                 {/* 이미지 — full width, 가로 스크롤 */}
                 <div className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">이미지</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">이미지</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsStoragePickerOpen(true)}
+                      className="rounded-md bg-gray-200 px-2.5 py-1 text-xs font-medium text-text-primary hover:bg-gray-300"
+                    >
+                      스토리지에서 선택
+                    </button>
+                  </div>
                   <Form.FileInput label="images" />
                 </div>
 
@@ -547,6 +558,16 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
           </div>
         </div>
       </form>
+
+      {isStoragePickerOpen && (
+        <StorageImagePicker
+          onSelect={(selected) => {
+            const current = watch("images");
+            setValue("images", [...current, ...selected]);
+          }}
+          onClose={() => setIsStoragePickerOpen(false)}
+        />
+      )}
     </FormProvider>
   );
 }
