@@ -238,12 +238,27 @@ export interface StorageImage {
   createdAt: string;
 }
 
-export const getStorageImages = async (): Promise<StorageImage[]> => {
+interface StorageImagesResponse {
+  images: StorageImage[];
+  hasNext: boolean;
+  nextPage: number | null;
+}
+
+export const getStorageImages = async ({ page = 1 }: { page?: number } = {}): Promise<StorageImagesResponse> => {
   try {
-    const response = await instance.GET<{ success: boolean; data: StorageImage[] }>("/upload/storage");
-    return response.data;
+    const response = await instance.GET<{
+      success: boolean;
+      data: StorageImage[];
+      hasNext: boolean;
+      nextPage: number | null;
+    }>(`/upload/storage?page=${page}`);
+    return {
+      images: response.data,
+      hasNext: response.hasNext,
+      nextPage: response.nextPage,
+    };
   } catch (error) {
     console.error("Storage 이미지 목록 조회 실패:", error);
-    return [];
+    return { images: [], hasNext: false, nextPage: null };
   }
 };
