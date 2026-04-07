@@ -16,7 +16,7 @@ interface StorageImagePickerProps {
 
 export default function StorageImagePicker({ onSelect, onClose }: StorageImagePickerProps) {
   const [selectedUrls, setSelectedUrls] = useState<Set<string>>(new Set());
-  const [enlargedUrl, setEnlargedUrl] = useState<string | null>(null);
+  const [enlargedIndex, setEnlargedIndex] = useState<number | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
@@ -68,14 +68,26 @@ export default function StorageImagePicker({ onSelect, onClose }: StorageImagePi
     onClose();
   }, [selectedUrls, onSelect, onClose]);
 
+  const goPrev = useCallback(() => {
+    setEnlargedIndex((i) => (i !== null && i > 0 ? i - 1 : i));
+  }, []);
+
+  const goNext = useCallback(() => {
+    setEnlargedIndex((i) => (i !== null && i < images.length - 1 ? i + 1 : i));
+  }, [images.length]);
+
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (enlargedUrl) {
-          setEnlargedUrl(null);
+        if (enlargedIndex !== null) {
+          setEnlargedIndex(null);
         } else {
           onClose();
         }
+      }
+      if (enlargedIndex !== null) {
+        if (e.key === "ArrowLeft") goPrev();
+        if (e.key === "ArrowRight") goNext();
       }
     };
     window.addEventListener("keydown", handleKey);
@@ -84,7 +96,7 @@ export default function StorageImagePicker({ onSelect, onClose }: StorageImagePi
       window.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
     };
-  }, [onClose, enlargedUrl]);
+  }, [onClose, enlargedIndex, goPrev, goNext]);
 
   const formatSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes}B`;
@@ -120,7 +132,7 @@ export default function StorageImagePicker({ onSelect, onClose }: StorageImagePi
               <div className="flex h-40 items-center justify-center text-text-secondary">이미지가 없습니다.</div>
             ) : (
               <div className="grid grid-cols-4 gap-3">
-                {images.map((img: StorageImage) => {
+                {images.map((img: StorageImage, index: number) => {
                   const isSelected = selectedUrls.has(img.url);
                   return (
                     <div key={img.name} className="relative aspect-square">
@@ -156,7 +168,7 @@ export default function StorageImagePicker({ onSelect, onClose }: StorageImagePi
                       {/* 확대 버튼 */}
                       <button
                         type="button"
-                        onClick={() => setEnlargedUrl(img.url)}
+                        onClick={() => setEnlargedIndex(index)}
                         className="absolute right-1 top-1 rounded bg-black/50 p-1 text-white opacity-0 transition-opacity hover:bg-black/70 [div:hover>&]:opacity-100"
                         aria-label="이미지 확대"
                       >
@@ -205,28 +217,62 @@ export default function StorageImagePicker({ onSelect, onClose }: StorageImagePi
       </div>
 
       {/* 이미지 확대 오버레이 */}
-      {enlargedUrl && (
+      {enlargedIndex !== null && images[enlargedIndex] && (
         <div
           className="fixed inset-0 z-[70] flex items-center justify-center bg-black_opacity-80 backdrop-blur-sm"
-          onClick={() => setEnlargedUrl(null)}
+          onClick={() => setEnlargedIndex(null)}
         >
+          {/* 닫기 */}
           <button
             className="absolute right-4 top-4 z-10 rounded-full p-2 text-white transition-colors hover:bg-gray-400"
-            onClick={() => setEnlargedUrl(null)}
+            onClick={() => setEnlargedIndex(null)}
             aria-label="닫기"
           >
             <CloseBold width={24} height={24} />
           </button>
+
+          {/* 카운터 */}
+          <span className="absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm text-white">
+            {enlargedIndex + 1} / {images.length}
+          </span>
+
+          {/* 이전 버튼 */}
+          {enlargedIndex > 0 && (
+            <button
+              className="absolute left-4 z-10 rounded-full bg-black/50 p-3 text-white transition-colors hover:bg-black/70"
+              onClick={(e) => { e.stopPropagation(); goPrev(); }}
+              aria-label="이전 이미지"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+          )}
+
+          {/* 이미지 */}
           <div className="relative max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
             <Image
-              src={enlargedUrl}
-              alt="확대 이미지"
+              src={images[enlargedIndex].url}
+              alt={images[enlargedIndex].name}
               width={1200}
               height={800}
               className="max-h-[90vh] w-auto rounded-lg object-contain"
               unoptimized
             />
           </div>
+
+          {/* 다음 버튼 */}
+          {enlargedIndex < images.length - 1 && (
+            <button
+              className="absolute right-4 z-10 rounded-full bg-black/50 p-3 text-white transition-colors hover:bg-black/70"
+              onClick={(e) => { e.stopPropagation(); goNext(); }}
+              aria-label="다음 이미지"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          )}
         </div>
       )}
     </>,
