@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
@@ -298,9 +298,11 @@ export default function PortfolioForm({ slug, id }: { slug?: string; id?: string
     right.scrollTop = Math.min(1, extraScroll / leftMaxExtra) * rightMaxScroll;
   }, []);
 
-  const initialLinks = portfolio?.links?.length
-    ? portfolio.links.map((l) => ({ type: l.type, url: l.url }))
-    : undefined;
+  const initialLinks = useMemo(
+    () =>
+      portfolio?.links?.length ? portfolio.links.map((l) => ({ type: l.type, url: l.url })) : undefined,
+    [portfolio?.links]
+  );
 
   return (
     <FormProvider {...methods}>
