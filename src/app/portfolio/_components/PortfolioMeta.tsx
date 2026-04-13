@@ -5,7 +5,10 @@ import { type PortfolioLink } from "@/types/portfolioType";
 export const TechStack = ({ stack }: { stack: string[] }) => (
   <div className="flex flex-wrap gap-2">
     {stack.map((tech, index) => (
-      <span key={index} className="rounded-full bg-brand_dark-quaternary px-3 py-1 text-xs font-medium text-gray-700">
+      <span
+        key={index}
+        className="rounded-full bg-brand_dark-quaternary px-2.5 py-0.5 text-[11px] font-medium text-gray-700"
+      >
         {tech}
       </span>
     ))}

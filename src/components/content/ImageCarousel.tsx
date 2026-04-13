@@ -13,6 +13,7 @@ interface ImageCarouselProps {
   height?: string;
   objectFit?: "contain" | "cover";
   className?: string;
+  columns?: 1 | 2;
 }
 
 function resolveUrl(item: ImageItem): string {
@@ -137,21 +138,41 @@ export default function ImageCarousel({
   height = "h-64 tablet:h-96",
   objectFit = "contain",
   className = "",
+  columns = 1,
 }: ImageCarouselProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activePage, setActivePage] = useState(0);
   const [enlargedIndex, setEnlargedIndex] = useState<number | null>(null);
+  const [slidesPerView, setSlidesPerView] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (columns === 1) {
+      setSlidesPerView(1);
+      return;
+    }
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => setSlidesPerView(mq.matches ? 2 : 1);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [columns]);
+
+  const pageCount = Math.ceil(images.length / slidesPerView);
 
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    setActiveIndex(Math.round(el.scrollLeft / el.clientWidth));
+    setActivePage(Math.round(el.scrollLeft / el.clientWidth));
   }, []);
 
-  const scrollTo = useCallback((index: number) => {
-    scrollRef.current?.scrollTo({ left: index * (scrollRef.current?.clientWidth ?? 0), behavior: "smooth" });
-    setActiveIndex(index);
+  const scrollToPage = useCallback((page: number) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({ left: page * el.clientWidth, behavior: "smooth" });
+    setActivePage(page);
   }, []);
+
+  const slideWidthClass = columns === 2 ? "w-full tablet:w-1/2" : "w-full";
 
   if (images.length === 0) return null;
 
@@ -167,27 +188,31 @@ export default function ImageCarousel({
           {images.map((img, i) => (
             <div
               key={resolveKey(img, i)}
-              className={`relative ${height} w-full shrink-0 cursor-pointer snap-center bg-gray-150`}
-              onClick={() => setEnlargedIndex(i)}
+              className={`${height} ${slideWidthClass} shrink-0 snap-start ${columns === 2 ? "tablet:p-1.5" : ""}`}
             >
-              <Image
-                src={resolveUrl(img)}
-                alt={`${alt} ${i + 1}`}
-                fill
-                className={objectFit === "contain" ? "object-contain" : "object-cover"}
-                sizes="(max-width: 768px) 100vw, 1000px"
-              />
+              <div
+                className={`relative size-full cursor-pointer bg-gray-150 ${columns === 2 ? "tablet:overflow-hidden tablet:rounded-lg" : ""}`}
+                onClick={() => setEnlargedIndex(i)}
+              >
+                <Image
+                  src={resolveUrl(img)}
+                  alt={`${alt} ${i + 1}`}
+                  fill
+                  className={objectFit === "contain" ? "object-contain" : "object-cover"}
+                  sizes={columns === 2 ? "(max-width: 768px) 100vw, 500px" : "(max-width: 768px) 100vw, 1000px"}
+                />
+              </div>
             </div>
           ))}
         </div>
 
         {/* Nav buttons */}
-        {images.length > 1 && (
+        {pageCount > 1 && (
           <>
             <button
               type="button"
-              onClick={() => scrollTo(activeIndex - 1)}
-              disabled={activeIndex === 0}
+              onClick={() => scrollToPage(activePage - 1)}
+              disabled={activePage === 0}
               className="absolute left-0 top-0 flex h-full w-14 items-center justify-center text-gray-700 opacity-0 transition-all hover:bg-gradient-to-r hover:from-black_opacity-10 hover:to-transparent focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-tertiary disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:from-transparent group-hover/carousel:opacity-100 [&:not(:disabled)]:hover:text-gray-900"
               aria-label="이전 이미지"
             >
@@ -207,8 +232,8 @@ export default function ImageCarousel({
             </button>
             <button
               type="button"
-              onClick={() => scrollTo(activeIndex + 1)}
-              disabled={activeIndex === images.length - 1}
+              onClick={() => scrollToPage(activePage + 1)}
+              disabled={activePage === pageCount - 1}
               className="absolute right-0 top-0 flex h-full w-14 items-center justify-center text-gray-700 opacity-0 transition-all hover:bg-gradient-to-l hover:from-black_opacity-10 hover:to-transparent focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-tertiary disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:from-transparent group-hover/carousel:opacity-100 [&:not(:disabled)]:hover:text-gray-900"
               aria-label="다음 이미지"
             >
@@ -231,15 +256,15 @@ export default function ImageCarousel({
       </div>
 
       {/* Dot indicators */}
-      {images.length > 1 && (
+      {pageCount > 1 && (
         <div className="mt-3 flex justify-center gap-1.5">
-          {images.map((_, i) => (
+          {Array.from({ length: pageCount }, (_, i) => (
             <button
               key={i}
               type="button"
-              onClick={() => scrollTo(i)}
-              className={`size-2 rounded-full transition-colors ${i === activeIndex ? "bg-brand-tertiary" : "bg-gray-400"}`}
-              aria-label={`이미지 ${i + 1}`}
+              onClick={() => scrollToPage(i)}
+              className={`size-2 rounded-full transition-colors ${i === activePage ? "bg-brand-tertiary" : "bg-gray-400"}`}
+              aria-label={`페이지 ${i + 1}`}
             />
           ))}
         </div>

@@ -55,6 +55,7 @@ export default function PortfolioCard(portfolio: PortfolioCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const articleRef = useRef<HTMLElement>(null);
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, height: 0 });
+  const [isCoverPortrait, setIsCoverPortrait] = useState(false);
   const { handleEdit, handleDelete } = usePortfolioActions(portfolio.id, portfolio.slug);
   const coverImage = portfolio.images[0];
   const queryClient = useQueryClient();
@@ -103,12 +104,26 @@ export default function PortfolioCard(portfolio: PortfolioCardProps) {
       className="group flex flex-col overflow-hidden rounded-xl bg-gray-100 text-text-primary shadow-sm transition-shadow duration-300 hover:shadow-md"
     >
       {coverImage && (
-        <div className="relative h-44 w-full overflow-hidden bg-gray-150 desktop:h-48">
+        <div className="relative aspect-[2/1] w-full overflow-hidden bg-gray-150">
+          <Image
+            src={coverImage.url}
+            alt=""
+            aria-hidden="true"
+            fill
+            className="scale-110 object-cover opacity-60 blur-xl"
+            sizes="(max-width: 768px) 100vw, 768px"
+          />
           <Image
             src={coverImage.url}
             alt={`${portfolio.title} 커버 이미지`}
             fill
-            className="object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+            onLoad={(e) => {
+              const img = e.currentTarget;
+              setIsCoverPortrait(img.naturalHeight > img.naturalWidth);
+            }}
+            className={`relative object-contain transition-transform duration-300 ${
+              isCoverPortrait ? "scale-125 group-hover:scale-[1.28]" : "group-hover:scale-[1.02]"
+            }`}
             sizes="(max-width: 768px) 100vw, 768px"
           />
         </div>
@@ -152,7 +167,7 @@ export default function PortfolioCard(portfolio: PortfolioCardProps) {
 
         {portfolio.summary && portfolio.summary.length > 0 && (
           <div className="flex flex-col gap-2">
-            <span className="flex w-fit items-center gap-1 rounded-full bg-brand_dark-quaternary px-2.5 py-0.5 text-xs font-semibold text-gray-700">
+            <span className="flex w-fit items-center gap-1 rounded-full bg-brand_dark-quaternary px-2 py-0.5 text-[11px] font-semibold text-gray-700">
               ✦ AI 요약
             </span>
             <ul className="flex flex-col gap-1.5 text-sm text-gray-700">

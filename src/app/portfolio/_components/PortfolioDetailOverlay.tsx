@@ -82,7 +82,7 @@ export default function PortfolioDetailOverlay({
     const mobile = coords.width >= vw - 48;
     const width = mobile ? vw : Math.min(vw * 0.9, 1200);
     const vh = typeof window !== "undefined" ? window.innerHeight : 800;
-    const top = mobile ? 0 : 48;
+    const top = mobile ? 0 : 16;
     const targetHeight = mobile ? vh : vh - top * 2;
     return { mobile, width, left: (vw - width) / 2, top, targetHeight };
   });
@@ -125,17 +125,29 @@ export default function PortfolioDetailOverlay({
 
   return (
     <div
-      className={`fixed inset-0 z-50 transition-colors duration-300 ${isAnimated ? "bg-black_opacity-80" : "bg-transparent"}`}
+      className={`fixed inset-0 z-50 overflow-y-auto overscroll-contain transition-colors duration-300 scrollbar-hide ${isAnimated ? "bg-black_opacity-80" : "bg-transparent"}`}
       role="dialog"
       aria-modal="true"
       aria-label={`${title} 상세 보기`}
     >
       <button type="button" className="fixed inset-0 z-0 cursor-default" onClick={onClose} aria-label="닫기" />
+      {isAnimated && (
+        <>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none fixed inset-x-0 top-0 z-30 h-6 bg-gradient-to-b from-black_opacity-40 to-transparent"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none fixed inset-x-0 bottom-0 z-30 h-6 bg-gradient-to-t from-black_opacity-40 to-transparent"
+          />
+        </>
+      )}
       <div
         ref={panelRef}
-        className={`relative z-10 overflow-y-auto overscroll-contain bg-gray-100 scrollbar-hide ${
+        className={`relative z-10 bg-gray-100 ${
           phase === "settled"
-            ? "fixed inset-x-0 top-0 mx-auto h-dvh max-h-dvh tablet:top-12 tablet:max-h-[calc(100dvh-96px)] tablet:w-[90vw] tablet:rounded-2xl desktop:w-desktop"
+            ? "mx-auto my-0 w-full overflow-hidden tablet:my-4 tablet:w-[90vw] tablet:rounded-2xl desktop:w-desktop"
             : ""
         }`}
         style={panelStyle}
@@ -173,7 +185,13 @@ export default function PortfolioDetailOverlay({
         <div className={`transition-opacity delay-200 duration-300 ${isAnimated ? "opacity-100" : "opacity-0"}`}>
           {/* Hero Image Gallery */}
           {displayImages.length > 0 ? (
-            <ImageCarousel images={displayImages} alt={title} className="mb-6" />
+            <ImageCarousel
+              images={displayImages}
+              alt={title}
+              columns={2}
+              height="h-[40vh] tablet:h-[55vh]"
+              className="mb-6"
+            />
           ) : (
             <div className="pt-6" />
           )}
