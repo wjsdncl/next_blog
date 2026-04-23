@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRef, useEffect } from "react";
 import { likePost, POST_KEYS } from "@/services/post.api";
 import type { User } from "@/types/authType";
 import type { Post } from "@/types/blogType";
