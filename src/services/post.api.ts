@@ -33,14 +33,22 @@ interface CategoriesResponse {
   totalPostCount: number;
 }
 
-export const getCategories = async (): Promise<{ categories: Record<string, number>; totalPosts: number }> => {
+export const getCategories = async ({ isOwner = false }: { isOwner?: boolean } = {}): Promise<{
+  categories: Record<string, number>;
+  totalPosts: number;
+}> => {
   try {
-    const res = await instance.GET<CategoriesResponse>("/categories", {
-      next: {
-        revalidate: 60 * 30,
-        tags: [...CATEGORY_KEYS.all()],
-      },
-    });
+    // OWNER는 비공개 게시글까지 포함하므로 역할별로 응답이 달라짐.
+    // Next.js fetch 캐시는 URL 기준이라 권한이 다른 사용자 간 응답이 섞일 수 있으므로 OWNER는 캐시 바이패스.
+    const fetchOptions: RequestInit = isOwner
+      ? { cache: "no-store" }
+      : {
+          next: {
+            revalidate: 60 * 30,
+            tags: [...CATEGORY_KEYS.all()],
+          },
+        };
+    const res = await instance.GET<CategoriesResponse>("/categories", fetchOptions);
 
     const categories = res.data.reduce(
       (acc, cat) => {

@@ -17,7 +17,7 @@ export default async function Page() {
   let categoryData = { categories: {} as Record<string, number>, totalPosts: 0 };
 
   try {
-    [posts, categoryData] = await Promise.all([getPostList({ page: 1, limit: 10 }), getCategories()]);
+    [posts, categoryData] = await Promise.all([getPostList({ page: 1, limit: 10 }), getCategories({ isOwner })]);
   } catch {
     // 백엔드 다운 시 빈 배열 fallback
   }

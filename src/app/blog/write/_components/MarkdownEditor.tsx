@@ -62,8 +62,8 @@ export default function MarkdownEditor({ slug }: { slug?: string }) {
   });
 
   const { data: categoriesData } = useQuery({
-    queryKey: ["categories"],
-    queryFn: getCategories,
+    queryKey: ["categories", "owner"],
+    queryFn: () => getCategories({ isOwner: true }),
   });
 
   const { data: tagList } = useQuery({
